@@ -4,9 +4,22 @@ All notable changes to the misc tools will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/), 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Removed
+- Removed deprecated function calls from bio_programs 'parse_meme_names`, 
+    `create_mygene_report`, `get_all_utrs`, `get_read_length_distribution`, 
+    `count_reads` and `count_aligned_reads`.
+- Removed deprecated function calls from `bed_utils`.
+- Removed deprecated function calls from 
+    `fastx_utils`, `bam_utils`.
+
+### Fixed
+- Minor changes to `bio_utils.plotting.plot_read_length_distribution`, 
+    see [ISSUE #87](https://github.com/dieterich-lab/rp-bp/issues/87). In progress.
+
 ## [0.2.5] - 2017-12-08
 ### Updated
-- Remove deprecated function call from `mygene_utils`
+- Removed deprecated function call from `mygene_utils`
 
 ## [0.2.4] - 2017-10-26
 ### Updated
