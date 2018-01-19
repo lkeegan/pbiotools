@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Minor changes to `bio_utils.plotting.plot_read_length_distribution`, 
     see [ISSUE #87](https://github.com/dieterich-lab/rp-bp/issues/87). In progress.
 
+### Added
+- Added restricted support for GFF3 specifications, in particular this requires removing the
+    STOP codons from the CDSs. Reference annotations file with gff extension are now 
+    treated as GGF3.
+
 ## [0.2.5] - 2017-12-08
 ### Updated
 - Removed deprecated function call from `mygene_utils`
