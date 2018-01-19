@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Removed deprecated function calls from `bed_utils`.
 - Removed deprecated function calls from 
     `fastx_utils`, `bam_utils`.
+- Removed deprecated function call from `gtf_utils`
 
 ### Fixed
 - Minor changes to `bio_utils.plotting.plot_read_length_distribution`, 
