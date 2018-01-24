@@ -109,8 +109,8 @@ def main():
     attr_name = "transcript_id "
     offset = len(attr_name)
     is_quote = 1
-    use_gff3_specs = False
-    if args.gtf.endswith('gff'):
+    use_gff3_specs = args.gtf.endswith('gff')
+    if use_gff3_specs:
         msg = """The program will use GFF3 specifications to extract features. In addition, 
         the stop codon will be removed from the CDSs."""
         logger.info(msg)
@@ -119,7 +119,6 @@ def main():
         attr_name = "Parent="
         offset = len(attr_name)
         is_quote = 0
-        use_gff3_specs = True
 
     # gtf or gff, we use the same fields
     gtf = gtf_utils.read_gtf(args.gtf)
@@ -170,10 +169,10 @@ def main():
         cds_start_df = cds_start_df.merge(strand_df, on='id', how='left')
         cds_end_df = cds_end_df.merge(strand_df, on='id', how='left')
 
-        m_positive = cds_end_df['strand'] == '+'
+        m_positive = cds_end_df['strand'].apply(lambda x: bool(x == '+'))
         cds_end_df.loc[m_positive, 'cds_end'] = cds_end_df.loc[m_positive, 'cds_end'] - 3
         cds_end_df.drop('strand', axis=1, inplace=True)
-        m_negative = cds_start_df['strand'] == '-'
+        m_negative = cds_start_df['strand'].apply(lambda x: bool(x == '-'))
         cds_start_df.loc[m_negative, 'cds_start'] = cds_start_df.loc[m_negative, 'cds_start'] + 3
         cds_start_df.drop('strand', axis=1, inplace=True)
 
