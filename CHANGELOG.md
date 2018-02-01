@@ -1,5 +1,5 @@
 # Change Log
-All notable changes to the misc tools will be documented in this file.
+All notable changes to the bio tools will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/), 
 and this project adheres to [Semantic Versioning](http://semver.org/).
@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added restricted support for GFF3 specifications, in particular this requires removing the
     STOP codons from the CDSs. Reference annotations file with gff extension are now 
     treated as GGF3.
+- Handling of additional options passed to star via arguments to `star_utils`. 
 
 ## [0.2.5] - 2017-12-08
 ### Updated
