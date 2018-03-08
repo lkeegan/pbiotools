@@ -64,7 +64,8 @@ setup(name='bio-utils',
             'openpyxl',
             'graphviz',
             'biopython',
-            'mygene'
+            'mygene',
+            'misc==0.2.7'
         ],
         include_package_data=True,
         test_suite='nose.collector',
