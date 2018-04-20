@@ -141,6 +141,7 @@ def read_star_tr_file(filename:str):
     return transcript_info
 
 # make an attempt to guess the correct "read a gzipped file" command
+# keep here for backward compatibility
 default_read_files_command = "zcat"
 if sys.platform.startswith("darwin"):
     default_read_files_command = "gzcat"
@@ -169,12 +170,12 @@ def add_star_options(parser, star_executable:str="STAR",
         "executable", default=star_executable)
 
     star_options.add_argument('--star-read-files-command', help="The system "
-        "command to read gzipped files", default=default_read_files_command)
+        "command to read gzipped files", default=read_files_command)
 
-    star_options.add_argument('--star-additional-options', help="A space-delimited "
-        "list of options to pass to star (for the mapping step only). Each option "
-        "must be quoted separately as in \"--starOption value\". If specified, star "
-        "options will override default/config settings.", nargs='*', type=str)
+    star_options.add_argument("""--star-additional-options', help="A space-delimited
+        list of options to pass to star (for the mapping step only). Each option
+        must be quoted separately as in "--starOption value". If specified, star
+        options will override default settings.""", nargs='*', type=str)
 
 def get_star_options_string(args):
     """ Extract the flags and options specified for STAR added with 
