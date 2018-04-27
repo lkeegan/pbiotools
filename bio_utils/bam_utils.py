@@ -421,9 +421,7 @@ def remove_multimappers(align_in, align_out, n_map=1, index=True,
     be indexed only if it is already sorted.
 
     N.B. This requires the SAM NH tag. If using STAR, default output include
-    NH HI AS nM attributes. If multiple alignments of a read start with another
-    value than 1 (with STAR, modified using --outSAMattrIHstart), than this
-    needs to be specified. See also STAR options --outSAMprimaryFlag and
+    NH HI AS nM attributes. See also STAR options --outSAMprimaryFlag and
     --outSAMmultNmax, which may affect the behaviour of this function.
 
         Arguments:
