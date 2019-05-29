@@ -4,13 +4,18 @@ All notable changes to the `pbio` package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/), 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.0.0] - 2019-05-24
-This is major version change due to reorganisation of the package structure, obtained by merging 
+## [Unreleased]
+
+## [1.0.0] - started 2019-05-24
+This is a major version change due to reorganisation of the package structure, obtained by merging 
 the defunct pymisc-utils (see [pyllars](https://github.com/bmmalone/pyllars)) and [riboseq-utils](https://github.com/dieterich-lab/riboseq-utils).
 The package name has been changed from `bio_utils` to `pbio` to reflect this change in API.
 
 *Before this development version is merged with the master branch (and used/tested in Rp-Bp), more 
 changes are expected to happen, upgrade packages version, deprecation of some functions/scripts, PyPI support?*
+
+### Changed
+- Configure setup() using setup.cfg
 
 ### Fixed
 - Missing argument for BED6 in `bed_utils.get_all_bed_sequences`.

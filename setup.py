@@ -20,6 +20,6 @@ class SetupDevelop(develop):
 setup(
     cmdclass={
         'install': SetupInstall,
-        'develop': SetupDevelop,
+        'develop': SetupDevelop
     }
 )

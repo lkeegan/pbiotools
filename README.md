@@ -4,7 +4,7 @@ It combines utilities and programs from the defunct pymisc-utils (see [pyllars](
 and [riboseq-utils](https://github.com/dieterich-lab/riboseq-utils).
 
 
-##Installation
+## Installation
 
 To install from the command line:
 
@@ -68,11 +68,11 @@ cd pybio-utils
 pip --verbose install [-e] .
 ```
 
-##Usage
+## Usage
 
 There is currently limited documentation, see [docs](docs/bio.md).
 
-##Uninstallation
+## Uninstallation
 
 To remove the `pbio` package:
 
