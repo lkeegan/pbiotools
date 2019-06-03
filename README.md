@@ -6,47 +6,32 @@ and [riboseq-utils](https://github.com/dieterich-lab/riboseq-utils).
 
 ## Installation
 
-To install from the command line:
+The `pbio` package can be installed in editable mode by adding the `-e` option to 
+the `requirements.txt` file. 
 
+## Installation (virtual environment)
+
+To install `pbio` and dependencies, first create a virtual environment:
+ 
 ```
-# Clone the git repository.
-git clone https://github.com/dieterich-lab/pybio-utils.git
-cd pybio-utils
-   
-# To install in editable mode, replace "install" with "develop"...
-python setup.py install --verbose --user
-# ... or use pip (add option -e to install in editable mode).
-pip3 --verbose --user install [-e] .
+python3 -m venv /path/to/virtual/environment
 ```
 
-The `--user` option instructs `setup.py` to install the package in the user site-packages directory for the running Python.
-Python automatically searches this directory, so it is not necessary to add this path to the PYTHONPATH variable.
-
-## Virtual environment installation
-
-It is a good practice to install a package and its dependencies in a virtual environment. 
-The `venv` module provides support for creating environments with their own site directories. 
-See [venv](https://docs.python.org/3/library/venv.html) for more information about Python 
-virtual environments. To create a virtual environment:
-
-```
-python -m venv /path/to/virtual/environment
-```
-
-To activate the new virtual environment and install the package:
+For information about Python virtual environments, see the [venv](https://docs.python.org/3/library/venv.html) documentation.
+To activate the new virtual environment and install `pbio`:
 
 ```
 # Activate the new virtual environment.
 source /path/to/virtual/environment/bin/activate
 
-# If necessary, upgrade pip and additional packages.
-pip install --upgrade pip
+# If necessary, upgrade pip and wheel or additional packages (such as setuptools if installing in editable mode).
+pip install --upgrade pip setuptools wheel
 
-# Clone the git repository.
+# Clone the git repository
 git clone https://github.com/dieterich-lab/pybio-utils.git
 cd pybio-utils
 
-pip --verbose install [-e] .
+pip --verbose install -r requirements.txt
 
 ```
 
@@ -56,7 +41,7 @@ The package can also be installed within an [anaconda](https://www.continuum.io/
 
 ```
 # Create the anaconda environment.
-conda create -n my_new_environment python=3.5 anaconda
+conda create -n my_new_environment python=3.6 anaconda
 
 # Activate the new environment.
 source activate my_new_environment
@@ -65,7 +50,7 @@ source activate my_new_environment
 git clone https://github.com/dieterich-lab/pybio-utils.git
 cd pybio-utils
 
-pip --verbose install [-e] .
+pip --verbose install -r requirements.txt
 ```
 
 ## Usage
@@ -79,3 +64,5 @@ To remove the `pbio` package:
 ```
 pip uninstall pbio
 ```
+
+If the package was installed in a dedicated virtual environment, this environment can also be cleared or removed.
