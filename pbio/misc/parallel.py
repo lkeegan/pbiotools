@@ -6,7 +6,7 @@ loops. The functions mostly wrap joblib.Parallel.
 import logging
 import sys 
 
-def apply_parallel_iter(items, num_procs, func, *args, progress_bar=False, total=None, num_groups=None):
+def apply_parallel_iter(items, num_procs, func, *args, progress_bar=False, total=None, num_groups=None, backend='loky'):
     """ This function parallelizes applying a function to all items in an iterator using the 
         joblib library. In particular, func is called for each of the items in the list. (Unless
         num_groups is given. In this case, the iterator must be "split-able", e.g., a list or
@@ -55,14 +55,14 @@ def apply_parallel_iter(items, num_procs, func, *args, progress_bar=False, total
 
     if progress_bar:
         import tqdm
-        ret_list = joblib.Parallel(n_jobs=num_procs)(joblib.delayed(func)(item, *args) 
+        ret_list = joblib.Parallel(n_jobs=num_procs, backend=backend)(joblib.delayed(func)(item, *args) 
             for item in tqdm.tqdm(items, leave=True, file=sys.stdout, total=total))
     else:
-        ret_list = joblib.Parallel(n_jobs=num_procs)(joblib.delayed(func)(item, *args) for item in items)
+        ret_list = joblib.Parallel(n_jobs=num_procs, backend=backend)(joblib.delayed(func)(item, *args) for item in items)
     return ret_list
 
 
-def apply_parallel_groups(groups, num_procs, func, *args, progress_bar=False):
+def apply_parallel_groups(groups, num_procs, func, *args, progress_bar=False, backend='loky'):
     """ This function parallelizes applying a function to groupby results using the 
         joblib library. In particular, func is called for each of the groups in groups. 
         
@@ -97,14 +97,14 @@ def apply_parallel_groups(groups, num_procs, func, *args, progress_bar=False):
 
     if progress_bar:
         import tqdm
-        ret_list = joblib.Parallel(n_jobs=num_procs)(joblib.delayed(func)(group, *args) 
+        ret_list = joblib.Parallel(n_jobs=num_procs, backend=backend)(joblib.delayed(func)(group, *args) 
             for name,group in tqdm.tqdm(groups, total=len(groups), leave=True, file=sys.stdout))
     else:
-        ret_list = joblib.Parallel(n_jobs=num_procs)(joblib.delayed(func)(group, *args) 
+        ret_list = joblib.Parallel(n_jobs=num_procs, backend=backend)(joblib.delayed(func)(group, *args) 
             for name, group in groups)
     return ret_list
 
-def apply_groups(groups, func, *args, progress_bar=False):
+def apply_groups(groups, func, *args, progress_bar=False, backend='loky'):
     """ Apply func to each group in groups.
 
     The primary reason to use this over groups.apply(.) is that this directly
@@ -136,10 +136,11 @@ def apply_groups(groups, func, *args, progress_bar=False):
         num_procs, 
         func, 
         *args, 
-        progress_bar=progress_bar
+        progress_bar=progress_bar,
+        backend=backend
     )
 
-def apply_parallel_split(data_frame, num_procs, func, *args, progress_bar=False, num_groups=None):
+def apply_parallel_split(data_frame, num_procs, func, *args, progress_bar=False, num_groups=None, backend='loky'):
     """ This function parallelizes applying a function to the rows of a data frame using the
         joblib library. The data frame is first split into num_procs equal-sized groups, and
         then func is called on each of the groups.
@@ -176,10 +177,10 @@ def apply_parallel_split(data_frame, num_procs, func, *args, progress_bar=False,
 
     parallel_indices = np.arange(len(data_frame)) // (len(data_frame) / num_groups)
     split_groups = data_frame.groupby(parallel_indices)
-    res = apply_parallel_groups(split_groups, num_procs, func, *args, progress_bar=progress_bar)
+    res = apply_parallel_groups(split_groups, num_procs, func, *args, progress_bar=progress_bar, backend=backend)
     return res
 
-def apply_parallel(data_frame, num_procs, func, *args, progress_bar=False):
+def apply_parallel(data_frame, num_procs, func, *args, progress_bar=False, backend='loky'):
     """ This function parallelizes applying a function to the rows of a data frame using the
         joblib library. The function is called on each row individually.
 
@@ -213,15 +214,15 @@ def apply_parallel(data_frame, num_procs, func, *args, progress_bar=False):
         
     if progress_bar:
         import tqdm
-        ret_list = joblib.Parallel(n_jobs=num_procs)(joblib.delayed(func)(row[1], *args) 
+        ret_list = joblib.Parallel(n_jobs=num_procs, backend=backend)(joblib.delayed(func)(row[1], *args) 
             for row in tqdm.tqdm(data_frame.iterrows(), total=len(data_frame), 
                 leave=True, file=sys.stdout))
     else:
-        ret_list = joblib.Parallel(n_jobs=num_procs)(joblib.delayed(func)(row[1], *args) 
+        ret_list = joblib.Parallel(n_jobs=num_procs, backend=backend)(joblib.delayed(func)(row[1], *args) 
             for row in data_frame.iterrows())
     return ret_list
 
-def apply_df_simple(data_frame, func, *args, progress_bar=False):
+def apply_df_simple(data_frame, func, *args, progress_bar=False, backend='loky'):
     """ This function applies func to all rows in data_frame, passing in arguments args. It
         collects the results as a list with the return value of func(row, *args) as each item
         in the list. It is not parallelized in any way.
@@ -246,10 +247,10 @@ def apply_df_simple(data_frame, func, *args, progress_bar=False):
 
     """
     num_procs = 1
-    return apply_parallel(data_frame, num_procs, func, *args, progress_bar=progress_bar) 
+    return apply_parallel(data_frame, num_procs, func, *args, progress_bar=progress_bar, backend=backend) 
 
 
-def apply_iter_simple(items, func, *args, progress_bar=False, total=None, num_groups=None):
+def apply_iter_simple(items, func, *args, progress_bar=False, total=None, num_groups=None, backend='loky'):
     """ This function applies func to all items in the iterator items, passing in arguments args. It
         collects the results as a list with the return value of func(row, *args) as each item
         in the list. It is not parallelized in any way.
@@ -287,6 +288,6 @@ def apply_iter_simple(items, func, *args, progress_bar=False, total=None, num_gr
 
     num_procs = 1
     return apply_parallel_iter(items, num_procs, func, *args, progress_bar=progress_bar, 
-        total=total, num_groups=num_groups)
+        total=total, num_groups=num_groups, backend=backend)
 
 
