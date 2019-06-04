@@ -3,11 +3,12 @@ programs used for Ribo-seq periodicity estimation. It is required for the instal
 It combines utilities and programs from the defunct pymisc-utils (see [pyllars](https://github.com/bmmalone/pyllars))
 and [riboseq-utils](https://github.com/dieterich-lab/riboseq-utils).
 
-
 ## Installation
 
-The `pbio` package can be installed in editable mode by adding the `-e` option to 
-the `requirements.txt` file. 
+To install the local VCS project in development mode, use the `--editable` or `-e` option, otherwise
+this flag can be ignored. 
+
+Pinned version of selected dependencies are listed in the `requirements.txt` file for reproducible installation.
 
 ## Installation (virtual environment)
 
@@ -31,7 +32,8 @@ pip install --upgrade pip setuptools wheel
 git clone https://github.com/dieterich-lab/pybio-utils.git
 cd pybio-utils
 
-pip --verbose install -r requirements.txt
+# The period is required, it is the local project path (pybio-utils)
+pip --verbose install -r requirements.txt [-e] . 2>&1 | tee install.log
 
 ```
 
@@ -50,7 +52,7 @@ source activate my_new_environment
 git clone https://github.com/dieterich-lab/pybio-utils.git
 cd pybio-utils
 
-pip --verbose install -r requirements.txt
+pip --verbose install -r requirements.txt [-e] . 2>&1 | tee install.log
 ```
 
 ## Usage
@@ -65,4 +67,4 @@ To remove the `pbio` package:
 pip uninstall pbio
 ```
 
-If the package was installed in a dedicated virtual environment, this environment can also be cleared or removed.
+If the package is installed in a dedicated virtual environment, this environment can also be cleared or removed.

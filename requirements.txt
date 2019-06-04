@@ -11,6 +11,3 @@ statsmodels==0.9.0
 biopython==1.73
 pysam==0.15.2 # with samtools-1.7
 pyyaml==5.1
-
-# NOTE: -e . for editable mode
-.
