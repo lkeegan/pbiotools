@@ -15,6 +15,7 @@ The package name has been changed from `bio_utils` to `pbio` to reflect this cha
 changes are expected to happen, upgrade packages version, deprecation of some functions/scripts, PyPI support?*
 
 ### Changed
+- Rename ORF files in `ribo.ribo_filenames`
 - Configure setup() using setup.cfg
 
 ### Fixed

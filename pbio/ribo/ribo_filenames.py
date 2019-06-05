@@ -282,15 +282,13 @@ def get_exons(
         name, 
         is_annotated=False, 
         is_de_novo=False,
-        is_orf=False,
         note=None
     ):
 
     note_str = get_note_string(note)
     c = get_annotated_string(is_annotated)
     d = get_de_novo_string(is_de_novo)
-    orf_subscr = 'orfs' if is_orf else 'exons'
-    fn = '{}.{}{}{}{}.bed.gz'.format(name, orf_subscr, c, d, note_str)
+    fn = '{}.orfs-exons{}{}{}.bed.gz'.format(name, c, d, note_str)
     return os.path.join(base_path, 'transcript-index', fn)
  
 
@@ -487,7 +485,7 @@ def get_orfs(base_path, name, is_annotated=False, is_de_novo=False, note=None):
     note_str = get_note_string(note)
     c = get_annotated_string(is_annotated)
     d = get_de_novo_string(is_de_novo)
-    fn = '{}.genomic-orfs{}{}{}.bed.gz'.format(name, c, d, note_str)
+    fn = '{}.orfs-genomic{}{}{}.bed.gz'.format(name, c, d, note_str)
     return os.path.join(base_path, 'transcript-index', fn)
 
 
