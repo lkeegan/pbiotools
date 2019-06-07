@@ -292,6 +292,20 @@ def get_exons(
     return os.path.join(base_path, 'transcript-index', fn)
  
 
+def get_labels(
+        base_path,
+        name,
+        is_annotated=False,
+        is_de_novo=False,
+        note=None
+    ):
+
+    note_str = get_note_string(note)
+    c = get_annotated_string(is_annotated)
+    d = get_de_novo_string(is_de_novo)
+    fn = '{}.orfs-labels{}{}{}.bed.gz'.format(name, c, d, note_str)
+    return os.path.join(base_path, 'transcript-index', fn)
+
 ### g
 
 def get_gtf(

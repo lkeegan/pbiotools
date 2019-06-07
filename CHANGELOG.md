@@ -15,7 +15,7 @@ The package name has been changed from `bio_utils` to `pbio` to reflect this cha
 changes are expected to happen, upgrade packages version, deprecation of some functions/scripts, PyPI support?*
 
 ### Changed
-- Rename ORF files in `ribo.ribo_filenames`
+- Rename ORF files in `ribo.ribo_filenames`, adjust ORF labels in `ribo.ribo_utils`
 - Configure setup() using setup.cfg
 
 ### Fixed
@@ -23,6 +23,7 @@ changes are expected to happen, upgrade packages version, deprecation of some fu
 - Call to `shell_utils` in `bam_to_wiggle.py`.
 
 ### Added
+- New file for ORF labels in `ribo.ribo_filenames`
 - Add backend option to `parallel`, enabling to resort to the old `multiprocessing` backend.
 - Various functionality to `bam_utils` to filter BAM files by tag, flag;
     rewrite `remove_multimapping_reads` into `remove_multimappers`, the former

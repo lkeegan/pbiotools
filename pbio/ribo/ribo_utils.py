@@ -18,8 +18,7 @@ class _return_key_dict(dict):
 
 orf_type_labels_mapping = {'canonical': ['canonical'],
                            'canonical_variant':
-                               ['canonical_extended', 'canonical_truncated', 'novel_canonical_extended'],
-                           'within': ['within'],
+                               ['canonical_variant', 'novel_canonical_variant', 'within'],
                            'five_prime': ['five_prime', 'five_prime_overlap'],
                            'three_prime': ['three_prime', 'three_prime_overlap'],
                            'noncoding': ['noncoding', 'novel_noncoding'],
@@ -28,7 +27,7 @@ orf_type_labels_mapping = {'canonical': ['canonical'],
                                      'novel_overlap',
                                      'suspect',
                                      'novel_suspect',
-                                     'novel_canonical_truncated',
+                                     'novel_within',  # these 3 are in principle invalid labels
                                      'novel_five_prime',
                                      'novel_three_prime']}
 
@@ -36,7 +35,6 @@ orf_type_labels_reverse_mapping = {v: k for k, l in orf_type_labels_mapping.item
 
 orf_type_labels_display_name_map = {'canonical': 'Canonical',
                                     'canonical_variant': 'Can. (variant)',
-                                    'within': 'Can. (oof)',
                                     'five_prime': 'uORF',
                                     'three_prime': 'dORF',
                                     'noncoding': 'ncORF',
@@ -44,9 +42,8 @@ orf_type_labels_display_name_map = {'canonical': 'Canonical',
                                     'other': 'Other'}
 
 orf_type_display_name_map = {'canonical': 'Canonical',
-                             'canonical_extended': 'Can. extended',
-                             'canonical_truncated': 'Can. truncated',
-                             'within': 'Can. oof',
+                             'canonical_variant': 'Can. (variant)',
+                             'within': 'Can. (within)',
                              'five_prime': 'uORF',
                              'three_prime': 'dORF',
                              'noncoding': 'ncORF',
@@ -55,13 +52,13 @@ orf_type_display_name_map = {'canonical': 'Canonical',
                              'suspect': 'Suspect',
                              'overlap': 'Overlap',
                              'novel': 'Novel',
-                             'novel_canonical_extended': 'Novel can. extended',
-                             'novel_canonical_truncated': 'Novel can. truncated',
-                             'novel_five_prime': 'Novel uORF',
-                             'novel_three_prime': 'Novel dORF',
+                             'novel_canonical_variant': 'Novel can. (variant)',
                              'novel_noncoding': 'Novel ncORF',
                              'novel_overlap': 'Novel overlap',
-                             'novel_suspect': 'Novel suspect'}
+                             'novel_suspect': 'Novel suspect',
+                             'novel_within': 'Novel within', # these 3 are in principle invalid labels
+                             'novel_five_prime': 'Novel uORF',
+                             'novel_three_prime': 'Novel dORF'}
 
 orf_type_labels = list(orf_type_labels_mapping.keys())
 orf_types = list(orf_type_display_name_map.keys())
