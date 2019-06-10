@@ -13,8 +13,29 @@ class _return_key_dict(dict):
     def __missing__(self, key):
         return key
 
-# Define ORFs labels and categories
+# These options are set as in rpbp.defaults.
+# When called from the Rp-Bp pipeline (select-final-prediction-set), default
+# options (or else specified via the configuration file) are ALWAYS
+# passed as arguments. Functions with these defaults arguments are ot meant to
+# be called outside of the Rp-Bp prediction pipeline.
 
+defaults = {
+    'min_metagene_profile_count': 1000,
+    'min_metagene_bf_mean': 5,
+    'max_metagene_bf_var': None,
+    'min_metagene_bf_likelihood': 0.5,
+    'min_bf_mean': 5,
+    'min_bf_likelihood': 0.5,
+    'max_bf_var': None,
+    'orf_min_length': 20,
+    'orf_min_profile_count': None,
+    'chisq_alpha': 0.01,
+    'smoothing_fraction': 0.2,
+    'smoothing_reweighting_iterations': 0
+}
+
+
+# Define ORFs labels and categories
 
 orf_type_labels_mapping = {'canonical': ['canonical'],
                            'canonical_variant':
@@ -66,37 +87,22 @@ orf_types = list(orf_type_display_name_map.keys())
 ###
 #   The following functions are helpful for parsing information out of the identifiers.
 ###
+
 def get_transcript_id(orf_id, sep="_"):
+
     return orf_id.split(sep)[0]
 
 def get_all_transcript_ids(orfs, sep="_", num_cpus=1, progress_bar=False):
+
     import pbio.misc.parallel as parallel
 
-    transcript_ids = parallel.apply_parallel_iter(  orfs['id'],
-                                                    num_cpus,
-                                                    get_transcript_id,
-                                                    sep,
-                                                    progress_bar=progress_bar)
+    transcript_ids = parallel.apply_parallel_iter(orfs['id'],
+                                                  num_cpus,
+                                                  get_transcript_id,
+                                                  sep,
+                                                  progress_bar=progress_bar)
 
     return transcript_ids
-
-###
-#   The following functions are helpful for parsing information out of the identifiers.
-###
-def get_transcript_id(orf_id, sep="_"):
-    return orf_id.split(sep)[0]
-
-def get_all_transcript_ids(orfs, sep="_", num_cpus=1, progress_bar=False):
-    import pbio.misc.parallel as parallel
-
-    transcript_ids = parallel.apply_parallel_iter(  orfs['id'],
-                                                    num_cpus,
-                                                    get_transcript_id,
-                                                    sep,
-                                                    progress_bar=progress_bar)
-
-    return transcript_ids
-
 
 ###
 #   The following functions are all used for parsing replicates, etc., from the config file.
@@ -111,13 +117,17 @@ def get_sample_reverse_map(config):
 
     reverse_map.update(riboseq_reverse_map)
     reverse_map.update(rnaseq_reverse_map)
+
     return reverse_map
 
+
 def get_riboseq_replicates(config):
+
     if 'riboseq_biological_replicates' in config:
         if config['riboseq_biological_replicates'] is not None:
             msg = "Found 'riboseq_biological_replicates' key in config file"
             logger.info(msg)
+
             return config['riboseq_biological_replicates']
         
     msg = ("Did not find 'riboseq_biological_replicates' key in config file. "
@@ -128,7 +138,9 @@ def get_riboseq_replicates(config):
     ret = {
         name: [name] for name, sample in config['riboseq_samples'].items()
     }
+
     return ret
+
 
 def get_riboseq_replicates_reverse_map(config):
     """ Extract a mapping from sample to condition. """
@@ -139,6 +151,7 @@ def get_riboseq_replicates_reverse_map(config):
 
     ret_reverse_map = _return_key_dict()
     ret_reverse_map.update(reverse_map)
+
     return ret_reverse_map
 
 
@@ -152,6 +165,7 @@ def get_field_condition_name_map(config):
 
     condition_name_map.update(riboseq_map)
     condition_name_map.update(rnaseq_map)
+
     return condition_name_map
 
 
@@ -187,6 +201,7 @@ def get_rnaseq_condition_name_map(config):
 
 
 def get_rnaseq_replicates(config):
+
     if 'rnaseq_biological_replicates' in config:
         if config['rnaseq_biological_replicates'] is not None:
             msg = "Found 'rnaseq_biological_replicates' key in config file"
@@ -202,6 +217,7 @@ def get_rnaseq_replicates(config):
     ret = {
         name: [name] for name, sample in config['rnaseq_samples'].items()
     }
+
     return ret
 
 
@@ -214,7 +230,9 @@ def get_rnaseq_replicates_reverse_map(config):
 
     ret_reverse_map = _return_key_dict()
     ret_reverse_map.update(reverse_map)
+
     return ret_reverse_map
+
 
 def get_matching_conditions(config):
     if 'matching_conditions' in config:
@@ -238,6 +256,7 @@ def get_matching_conditions(config):
     }
     
     return matching_conditions
+
 
 def get_matching_condition_and_replicates(condition:str, config:dict, 
         names_only:bool=False, raise_on_error:bool=True):
@@ -355,6 +374,7 @@ def get_criterion_condition(condition, criterion, config):
             "not a valid criterion.".format(criterion))
         raise ValueError(msg)
 
+
 def get_riboseq_cell_type_samples(config):
     if 'riboseq_cell_type_samples' in config:
         if config['riboseq_cell_type_samples'] is not None:
@@ -370,6 +390,7 @@ def get_riboseq_cell_type_samples(config):
     cell_type_samples = {
         x: [x] for x in riboseq_replicates
     }
+
     return cell_type_samples
 
 
@@ -388,7 +409,9 @@ def get_rnaseq_cell_type_samples(config):
     cell_type_samples = {
         x: [x] for x in rnaseq_replicates
     }
+
     return cell_type_samples
+
 
 def get_sample_name_map(config):
     """ Extract the mapping from the '{ribo,rna}seq_sample_name_map', or create
@@ -405,6 +428,7 @@ def get_sample_name_map(config):
 
     return sample_name_map
 
+
 def get_condition_name_map(config):
     """ Extract the mapping from the 'condition_name_map' and create a default
     one for all conditions without an entry.
@@ -414,6 +438,7 @@ def get_condition_name_map(config):
         condition_name_map.update(config['condition_name_map'])
 
     return condition_name_map
+
 
 def filter_condition_pairs(config, allowed_conditions):
     """ Create an iterator which yields only condition pairs for which both 
@@ -447,21 +472,8 @@ def filter_condition_pairs(config, allowed_conditions):
             yield cp
 
 
-
-###
-#
-# This function is used to extract the lengths and offsets which count as
-# "periodic," based on the values in the config file.
-#
-###
-
-default_min_metagene_profile_count = 1000
-default_min_metagene_bf_mean = 5
-default_max_metagene_bf_var = None
-default_min_metagene_bf_likelihood = 0.5
-
 def get_periodic_lengths_and_offsets(config, name, do_not_call=False,
-        isoform_strategy=None, is_unique=True):
+        isoform_strategy=None, is_unique=True, default_params=None):
 
     """ This function applies a set of filters to metagene profiles to select those
         which are "periodic" based on the read counts and Bayes factor estimates.
@@ -519,6 +531,9 @@ def get_periodic_lengths_and_offsets(config, name, do_not_call=False,
         is_unique: bool
             whether only unique reads are used in the files
 
+        default_params: default parameters, always passed when called ffrom
+            the Rp-Bp pipeline
+
         Returns
         -------
         lengths: list of strings
@@ -537,28 +552,29 @@ def get_periodic_lengths_and_offsets(config, name, do_not_call=False,
 
         return (lengths, offsets)
 
+    if default_params is None:
+        default_params = defaults
+
     # filter out the lengths which do not satisfy the quality thresholds
-    min_metagene_profile_count = config.get(
-        "min_metagene_profile_count", default_min_metagene_profile_count)
+    min_metagene_profile_count = config.get('min_metagene_profile_count',
+                                            default_params['min_metagene_profile_count'])
 
-    min_bf_mean = config.get(
-        "min_metagene_bf_mean", default_min_metagene_bf_mean)
+    min_bf_mean = config.get('min_metagene_bf_mean',
+                             default_params['min_metagene_bf_mean'])
 
-    max_bf_var = config.get(
-        "max_metagene_bf_var", default_max_metagene_bf_var)
+    max_bf_var = config.get('max_metagene_bf_var',
+                            default_params['max_metagene_bf_var'])
         
-    min_bf_likelihood = config.get(
-        "min_metagene_bf_likelihood", default_min_metagene_bf_likelihood)
+    min_bf_likelihood = config.get('min_metagene_bf_likelihood',
+                                   default_params['min_metagene_bf_likelihood'])
 
     note_str = config.get('note', None)
 
-    periodic_offsets = filenames.get_periodic_offsets(
-        config['riboseq_data'],
-        name, 
-        is_unique=is_unique,
-        isoform_strategy=isoform_strategy,
-        note=note_str
-    )
+    periodic_offsets = filenames.get_periodic_offsets(config['riboseq_data'],
+                                                      name,
+                                                      is_unique=is_unique,
+                                                      isoform_strategy=isoform_strategy,
+                                                      note=note_str)
     
     if not os.path.exists(periodic_offsets):
         msg = ("The periodic offsets file does not exist. Please ensure the "
@@ -580,7 +596,6 @@ def get_periodic_lengths_and_offsets(config, name, do_not_call=False,
             raise FileNotFoundError(msg)
     
     offsets_df = pd.read_csv(periodic_offsets)
-
 
     # we always use the count filter
     m_count = offsets_df['highest_peak_profile_sum'] > min_metagene_profile_count
@@ -653,10 +668,7 @@ def get_periodic_lengths_and_offsets(config, name, do_not_call=False,
 
     return (lengths, offsets)
 
-###
-#   This function extracts the p-sites from alignments, given the offsets
-#   and periodic read lengths.
-###
+
 def get_p_sites(bam_file, periodic_lengths, offsets):
     """ Given a bam file of mapped riboseq reads, this function filters
         out the reads of non-periodic length, adjusts the start and end
@@ -778,15 +790,9 @@ def get_p_sites(bam_file, periodic_lengths, offsets):
     
     return map_df
 
-###
-#   This function smoothes the profiles, frame-by-frame
-###
 
-default_fraction = 0.2
-default_reweighting_iterations = 0
-
-def smooth_profile(profile, reweighting_iterations=default_reweighting_iterations, 
-        fraction=default_fraction):
+def smooth_profile(profile, reweighting_iterations=defaults['smoothing_reweighting_iterations'],
+                   fraction=defaults['smoothing_fraction']):
 
     """ This function smoothes the given ORF profile using the frame-specific
         approach. It assumes the profile is a dense numpy array and that any
@@ -845,20 +851,8 @@ def smooth_profile(profile, reweighting_iterations=default_reweighting_iteration
     return smoothed_profile
 
 
-
-# These options are set as in rpbp.defaults.
-# When called from the Rp-Bp pipeline (select-final-prediction-set), default
-# options (or else specified via the configuration file) are always
-# passed as arguments.
-
-default_min_profile = None
-default_min_bf_mean = 5
-default_max_bf_var = None
-default_min_bf_likelihood = 0.5
-default_min_length = 20
-default_chisq_alpha = 0.01
-
-def get_base_filter(bf, min_profile=default_min_profile, min_length=default_min_length):
+def get_base_filter(bf, min_profile=defaults['orf_min_profile_count'],
+                    min_length=defaults['orf_min_length']):
     """ This function extracts the ORFs from the BF dataframe which meet the
         minimum requirements to be considered for prediction. Namely, these
         requirements are:
@@ -894,9 +888,9 @@ def get_base_filter(bf, min_profile=default_min_profile, min_length=default_min_
     m_base = m_profile & m_length & m_x1_gt_x2 & m_x1_gt_x3
     return m_base
 
-def get_bf_filter(bf, min_bf_mean=default_min_bf_mean, 
-                    max_bf_var=default_max_bf_var,
-                    min_bf_likelihood=default_min_bf_likelihood):
+def get_bf_filter(bf, min_bf_mean=defaults['min_bf_mean'],
+                  max_bf_var=defaults['max_bf_var'],
+                  min_bf_likelihood=defaults['min_bf_likelihood']):
 
     """ This function applies filters to the Bayes factor estimates to find all
         ORFs which should be predicted as translated. This does not consider the
@@ -977,15 +971,14 @@ def get_bf_filter(bf, min_bf_mean=default_min_bf_mean,
     return m_bf_mean & m_bf_var & m_bf_likelihood
 
 
-
-def get_predicted_orfs(bf, min_signal=default_min_profile, 
-                            min_length=default_min_length,
-                            min_bf_mean=default_min_bf_mean, 
-                            max_bf_var=default_max_bf_var,
-                            min_bf_likelihood=default_min_bf_likelihood,
-                            chisq_alpha=default_chisq_alpha,
-                            select_longest_by_stop=True,
-                            use_chi_square=False):
+def get_predicted_orfs(bf, min_signal=defaults['orf_min_profile_count'],
+                       min_length=defaults['orf_min_length'],
+                       min_bf_mean=defaults['min_bf_mean'],
+                       max_bf_var=defaults['max_bf_var'],
+                       min_bf_likelihood=defaults['min_bf_likelihood'],
+                       chisq_alpha=defaults['chisq_alpha'],
+                       select_longest_by_stop=True,
+                       use_chi_square=False):
     """ This function applies a set of filters to ORFs to select those which
         are predicted as "translated." This function selects translated ORFs
         based on the Bayes factor estimates or the chi-square p-values. ORFs
@@ -1077,7 +1070,7 @@ def get_predicted_orfs(bf, min_signal=default_min_profile,
         m_chisq_pval = all_orfs['chi_square_p'] < corrected_significance_level
         predicted_orfs = all_orfs[m_chisq_pval]
     else:
-        m_bf =  get_bf_filter(all_orfs, min_bf_mean, max_bf_var, min_bf_likelihood)
+        m_bf = get_bf_filter(all_orfs, min_bf_mean, max_bf_var, min_bf_likelihood)
         predicted_orfs = all_orfs[m_bf]
     
     if select_longest_by_stop:

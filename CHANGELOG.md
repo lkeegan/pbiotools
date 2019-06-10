@@ -20,6 +20,7 @@ changes are expected to happen, upgrade packages version, deprecation of some fu
 - Configure setup() using setup.cfg
 
 ### Fixed
+- Missing parameters in function calls, hard coded defaults
 - Missing argument for BED6 in `bed_utils.get_all_bed_sequences`.
 - Call to `shell_utils` in `bam_to_wiggle.py`.
 
