@@ -15,6 +15,7 @@ The package name has been changed from `bio_utils` to `pbio` to reflect this cha
 changes are expected to happen, upgrade packages version, deprecation of some functions/scripts, PyPI support?*
 
 ### Changed
+- Changed `star_utils` to `pgrm_utils` and add functions for cmd parser to call flexbar 
 - Rename ORF files in `ribo.ribo_filenames`, adjust ORF labels in `ribo.ribo_utils`
 - Configure setup() using setup.cfg
 

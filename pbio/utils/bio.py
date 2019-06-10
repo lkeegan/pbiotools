@@ -333,6 +333,12 @@ def get_bowtie2_index_files(base_index_name):
             list of strings: the paths to all of the files expected for a Bowtie2 index
                 based on the provided index_name
     """
+
+    import pbio.misc.utils as utils
+
+    utils.raise_deprecation_warning("misc.utils.bio.get_bowtie2_index_files",
+                                    "misc.utils.pgrm_utils")
+
     bowtie_extensions = ['.1.bt2', '.2.bt2', '.3.bt2', '.4.bt2', '.rev.1.bt2', '.rev.2.bt2']
     
     bowtie_files = ['{}{}'.format(base_index_name, bowtie_extension) 

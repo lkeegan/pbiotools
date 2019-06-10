@@ -1,8 +1,60 @@
-###
-#   Helper functions for working with STAR. It mostly includes things like
-#   checking if all of the index files exist and adding command line arguments.
-###
-import sys
+
+"""Module provides functions to interact with and handle options
+for STAR and Flexbar.
+"""
+
+import logging
+logger = logging.getLogger(__name__)
+
+
+# generic functions
+
+
+def get_final_args(default_args, args):
+    """ Extract the final flags and options from args to construct the
+    command line call to programs. Arguments args override defaults.
+
+        Parameters
+        ---------
+        default_args: dict of default arguments
+        args: list of string arguments
+
+        Returns
+        -------
+        final_options_str: string
+            a string containing the final options suitable to pass to another command
+        """
+
+    # create dict from list of strings
+    final_options = {}
+    final_options_str = ''
+    if args is not None:
+        final_options = {'{}'.format(opt.rsplit()[0].strip('--')): ' '.join(opt.rsplit()[1:])
+                         for opt in args}
+        final_options_str = ' '.join(['--{} {}'.format(key, val) for (key, val) in
+                                      final_options.items()])
+
+    # now search if key exist, else use default
+    for key, val in default_args.items():
+        if key not in final_options:
+            if isinstance(val, (str,)) and (len(str(val)) > 0):
+                val = val
+            elif isinstance(val, (int, float)) and (len(str(val)) > 0):
+                val = str(val)
+            elif len(val) > 0:
+                # assume this is a list
+                val = ' '.join(str(v) for v in val)
+            else:
+                msg = "Default argument type not supported, or no argument given"
+                logger.critical(msg)
+
+            key_val_str = '--{} {}'.format(key, val)
+            final_options_str = '{}'.format(' '.join([final_options_str, key_val_str]))
+
+    return final_options_str
+
+
+# STAR
 
 def create_star_tmp(tmp_path:str, tmp_name:str='STAR'):
     """ Ensure the specified directory is ready for use as the temp directory
@@ -140,14 +192,8 @@ def read_star_tr_file(filename:str):
 
     return transcript_info
 
-# make an attempt to guess the correct "read a gzipped file" command
-# keep here for backward compatibility
-default_read_files_command = "zcat"
-if sys.platform.startswith("darwin"):
-    default_read_files_command = "gzcat"
 
-def add_star_options(parser, star_executable:str="STAR", 
-        star_read_files_command:str=default_read_files_command):
+def add_star_options(parser, star_executable:str="STAR"):
     """ Add options to a cmd parser to call STAR.
 
     N.B. This is primarily intended for use with the rp-bp and b-tea projects.
@@ -160,24 +206,22 @@ def add_star_options(parser, star_executable:str="STAR",
     star_executable: string
         The name of the star executable. For example, "STARlong" is typically
         used for mapping longer reads, while "STAR" is for most HTS data.
-
-    read_files_command: string
-        The system command to read gzipped files.
+    star_options: list of strings
+        Additional options to pass to STAR
     """
+
     star_options = parser.add_argument_group("STAR options")
 
     star_options.add_argument('--star-executable', help="The name of the STAR "
         "executable", default=star_executable)
 
-    star_options.add_argument('--star-read-files-command', help="The system "
-        "command to read gzipped files", default=star_read_files_command)
-
-    star_options.add_argument('--star-additional-options', help="""A space-delimited
+    star_options.add_argument('--star-options', help="""A space-delimited
         list of options to pass to star (for the mapping step only). Each option
-        must be quoted separately as in '"--starOption value"', using hard, then soft 
-        quotes, where "--starOption" is the long parameter name from star, and "value"
+        must be quoted separately as in "--starOption value", using soft 
+        quotes, where '--starOption' is the long parameter name from star, and 'value'
         is the value given to this parameter. If specified, star options will override 
         default settings.""", nargs='*', type=str)
+
 
 def get_star_options_string(args):
     """ Extract the flags and options specified for STAR added with 
@@ -197,21 +241,95 @@ def get_star_options_string(args):
 
     args_dict = vars(args)
 
-    star_options = ['star_executable', 'star_read_files_command']
+    star_options = ['star_executable']
 
     # create a new dictionary mapping from the flag to the value
     star_options = {'--{}'.format(o.replace('_', '-')): args_dict[o]
         for o in star_options if args_dict[o] is not None}
 
-    s = ' '.join("{} {}".format(k,shlex.quote(v)) 
-                    for k,v in star_options.items())
+    s = ' '.join("{} {}".format(k, shlex.quote(v))
+                    for k, v in star_options.items())
 
     # if additional options
-    if args_dict['star_additional_options']:
-        star_additional_options_str = "--star-additional-options {}".format(
-            ' '.join("'" + star_option + "'" for star_option
-                     in args_dict['star_additional_options']))
+    if args_dict['star_options']:
+        star_additional_options_str = "--star-options {}".format(
+            ' '.join(shlex.quote(star_option) for star_option
+                     in args_dict['star_options']))
         s = "{}".format(' '.join([s, star_additional_options_str]))
 
     return s
 
+
+# Flexbar
+
+
+def add_flexbar_options(parser):
+    """ Add options to a cmd parser to call flexbar.
+
+    N.B. This is primarily intended for use with the rp-bp and b-tea projects.
+
+    Parameters
+    ----------
+    parser: argparse.ArgumentParser
+        The parser to which the options will be added
+
+    flexbaroptions: list of strings
+        Additional options to pass to flexbar
+    """
+
+    flexbar_options = parser.add_argument_group("Flexbar options")
+
+    flexbar_options.add_argument('--flexbar-options', help="""Optional argument: a space-delimited 
+        list of options to pass to flexbar. Each option must be quoted separately as in 
+        "--flexbarOption value", using soft quotes, where '--flexbarOption'
+        is the long parameter name from flexbar and 'value' is the value given to this parameter. 
+        If specified, flexbar options will override default settings.""", nargs='*', type=str)
+
+
+def get_flexbar_options_string(args):
+    """ Extract the flags and options specified for flexbar added with
+    add_flexbar_options.
+
+    Parameters
+    ---------
+    args: argparse.Namespace
+        The parsed arguments
+
+    Returns
+    -------
+    flexbar_options: string
+        a string containing flexbar options suitable to pass to another command
+    """
+    import shlex
+
+    args_dict = vars(args)
+
+    s = ""
+    if args_dict['flexbar_options']:
+        flexbar_option_str = "--flexbar-options {}".format(
+            ' '.join(shlex.quote(flx_op) for flx_op in args_dict['flexbar_options']))
+        s = "{}".format(' '.join([s, flexbar_option_str]))
+
+    return s
+
+
+# Bowtie 2
+
+
+def get_bowtie2_index_files(base_index_name):
+    """ This function returns a list of all of the files necessary for a Bowtie2 index
+        that was created with the given base_index_name.
+
+        Args:
+            base_index_name (string): the path and base name used to create the bowtie2 index
+
+        Returns:
+            list of strings: the paths to all of the files expected for a Bowtie2 index
+                based on the provided index_name
+    """
+    bowtie_extensions = ['.1.bt2', '.2.bt2', '.3.bt2', '.4.bt2', '.rev.1.bt2', '.rev.2.bt2']
+
+    bowtie_files = ['{}{}'.format(base_index_name, bowtie_extension)
+                    for bowtie_extension in bowtie_extensions]
+
+    return bowtie_files

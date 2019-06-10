@@ -845,18 +845,17 @@ def smooth_profile(profile, reweighting_iterations=default_reweighting_iteration
     return smoothed_profile
 
 
-###
-#
-# This function extracts all ORFs which count as "translated", according to the
-# values in the config file.
-#
-###
+
+# These options are set as in rpbp.defaults.
+# When called from the Rp-Bp pipeline (select-final-prediction-set), default
+# options (or else specified via the configuration file) are always
+# passed as arguments.
 
 default_min_profile = None
 default_min_bf_mean = 5
 default_max_bf_var = None
-default_min_bf_likelihood = None
-default_min_length = 0
+default_min_bf_likelihood = 0.5
+default_min_length = 20
 default_chisq_alpha = 0.01
 
 def get_base_filter(bf, min_profile=default_min_profile, min_length=default_min_length):
