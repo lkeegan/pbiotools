@@ -16,7 +16,7 @@ class _return_key_dict(dict):
 # These options are set as in rpbp.defaults.
 # When called from the Rp-Bp pipeline (select-final-prediction-set), default
 # options (or else specified via the configuration file) are ALWAYS
-# passed as arguments. Functions with these defaults arguments are ot meant to
+# passed as arguments. Functions with these defaults arguments are not meant to
 # be called outside of the Rp-Bp prediction pipeline.
 
 defaults = {
@@ -27,7 +27,7 @@ defaults = {
     'min_bf_mean': 5,
     'min_bf_likelihood': 0.5,
     'max_bf_var': None,
-    'orf_min_length': 20,
+    'orf_min_length': 8,
     'orf_min_profile_count': None,
     'chisq_alpha': 0.01,
     'smoothing_fraction': 0.2,
@@ -633,7 +633,7 @@ def get_periodic_lengths_and_offsets(config, name, do_not_call=False,
         m_bf_likelihood = likelihood > min_bf_likelihood
 
     if (max_bf_var is None) and (min_bf_likelihood is None):
-        m_bf_mean = bf['highest_peak_bf_mean'] > min_bf_mean
+        m_bf_mean = offsets_df['highest_peak_bf_mean'] > min_bf_mean
 
     filtered_periodic_offsets = offsets_df[m_count & m_bf_mean & m_bf_var & m_bf_likelihood]
 
