@@ -51,8 +51,9 @@ def create_symlink(src, dst, remove=True, create=False, call=True):
             logging.warning(msg)
             os.remove(dst)
         else:
-            msg = "A file already exists at: '{}'".format(dst)
-            raise FileExistsError(msg)
+            msg = "[utils.create_symlink]: file already exists at: '{}'. Skipping.".format(dst)
+            logging.warning(msg)
+            return
 
     if create:
         os.makedirs(os.path.dirname(dst), exist_ok=True)
