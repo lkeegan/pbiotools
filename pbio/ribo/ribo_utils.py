@@ -134,7 +134,7 @@ def get_riboseq_replicates(config):
             "Using each 'riboseq_sample' as a single-condition replicate.")
     logger.info(msg)
 
-    # create a dictionary mapping from the sample name to asingle-element list
+    # create a dictionary mapping from the sample name to a single-element list
     ret = {
         name: [name] for name, sample in config['riboseq_samples'].items()
     }
@@ -433,9 +433,14 @@ def get_condition_name_map(config):
     """ Extract the mapping from the 'condition_name_map' and create a default
     one for all conditions without an entry.
     """
+
     condition_name_map = _return_key_dict()
-    if 'condition_name_map' in config:
-        condition_name_map.update(config['condition_name_map'])
+
+    if 'riboseq_condition_name_map' in config:
+        condition_name_map.update(config['riboseq_condition_name_map'])
+
+    if 'rnaseq_condition_name_map' in config:
+        condition_name_map.update(config['rnaseq_condition_name_map'])
 
     return condition_name_map
 

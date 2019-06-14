@@ -643,7 +643,6 @@ def get_seq_bam(seq, base, name, **kwargs):
         s = get_riboseq_bam(base, name, **kwargs)
     return s
 
-
 ### riboseq
 
 # b
@@ -1013,6 +1012,14 @@ def get_rnaseq_bam(rnaseq_base, name, **kwargs):
 
 def get_rnaseq_bam_path(base_path):
     return os.path.join(base_path, 'mapping',)
+
+
+def get_rnaseq_read_length_distribution(rnaseq_base, name, **kwargs):
+
+    s = get_rnaseq_bam_base(rnaseq_base, name, **kwargs)
+    s = s + ".length-distribution.csv.gz"
+    return s
+
 
 def get_rnaseq_bitseq(
         rnaseq_base,

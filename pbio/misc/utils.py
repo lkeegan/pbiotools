@@ -469,7 +469,7 @@ def check_files_exist(files, raise_on_error=True, logger=logger,
     if raise_on_error:
         raise FileNotFoundError(msg)
     else:
-        logger.warn(msg)
+        logger.warning(msg)
 
     return False
 
