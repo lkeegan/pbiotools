@@ -1270,3 +1270,134 @@ def dict_product(dicts):
         http://stackoverflow.com/a/40623158/621449
     """
     return (dict(zip(dicts, x)) for x in itertools.product(*dicts.values()))
+
+
+def call_func_if_not_exists(func, out_files, *args, in_files=[], overwrite=False,
+    call=True, raise_on_error=True, file_checkers=None, to_delete=[],
+    keep_delete_files=False, **kwargs):
+
+    """Call a python function with extra checks on input/output files, etc.
+    This is adapted from shell_utils.call_if_not_exists, see this function
+    for more details.
+
+    N.B. The function must not have any return value, so this should be used with
+    functions that perform writing operations, etc. In particular first 2 positional
+    arguments are input and output files, respectively. As they are passed as lists,
+    the function is called as many times as required, but in and out files must match!
+
+        Arguments:
+            func (function object): the function to execute
+
+            out_files (string or list of strings): path to output files to
+            check. If they do not exist, then this wil be created.
+
+            in_files (list of strings): paths to input files to check
+            before calling the function
+
+            overwrite (bool): whether to overwrite the files
+
+            call (bool): whether to call the function, regardless of whether the
+            file exists or not
+
+            raise_on_error (bool): whether to raise an exception
+
+            file_checkers (dict-like): a mapping from a file name to a function
+            which is used to verify that file. The function should return
+            True to indicate the file is okay or False if it is corrupt. The
+            functions must also accept "raise_on_error" and "logger"
+            keyword arguments.
+
+            to_delete (list of strings): paths to files to delete if the function
+            is executed successfully
+
+            keep_delete_files (bool): if this value is True, then the to_delete
+            files will not be deleted, regardless of whether the command
+            succeeded or not. If the call does not complete, these are never deleted.
+        Return:
+            None
+        Import:
+            os
+            shlex
+    """
+    import os
+    import shlex
+
+    func_name = func.__name__
+    args_str = [str(arg) for arg in args]
+    args_str = ",".join(args_str)
+    kwargs_str = ["{}={}".format(key, value) for key, value in kwargs.items()]
+    kwargs_str = ",".join(kwargs_str)
+    all_args = args_str + kwargs_str
+
+    # make sure we are working with a list
+    if isinstance(out_files, str):
+        out_files = [out_files]
+
+    # then check number of i/o files
+    if len(in_files) != len(out_files):
+        msg = "Expected same number of input and output files!"
+        raise ValueError(msg)
+
+    # check if the input files exist
+    missing_in_files = []
+    for in_f in in_files:
+        # remove surrounding quotes if file name has a space, pass it through shell
+        in_f = shlex.split(in_f)[0]
+        if not os.path.exists(in_f):
+            missing_in_files.append(in_f)
+
+    if len(missing_in_files) > 0:
+        msg = "Some input files {} are missing. Skipping call: \n{}:{}".format(missing_in_files,
+                                                                               func_name, all_args)
+        logger.warning(msg)
+        return
+
+    # check if the output files exist
+    all_out_exists = False
+    if out_files is not None:
+        all_out_exists = all([os.path.exists(of) for of in out_files])
+
+    all_valid = True
+    if overwrite or not all_out_exists:
+        # create necessary paths and
+        if out_files is not None:
+            [os.makedirs(os.path.dirname(x), exist_ok=True) for x in out_files]
+
+        # make the call
+        if call:
+            for in_f, out_f in zip(in_files, out_files):
+                func(in_f, out_f, *args, **kwargs)
+        else:
+            msg = "skipping due to [--do-not-call] flag"
+            logger.info(msg)
+
+        if (not call) or (file_checkers is None):
+            # do not check the files if we are not calling anything
+            pass
+        else:
+            # check the files
+            for filename, checker_function in file_checkers.items():
+                msg = "Checking file for validity: {}".format(filename)
+                logger.debug(msg)
+
+                is_valid = checker_function(filename, logger=logger,
+                                        raise_on_error=False)
+                if not is_valid:
+                    all_valid = False
+                    msg = "File {} appears to be corrupted".format(filename)
+                    if raise_on_error:
+                        raise OSError(msg)
+                    else:
+                        logger.critical(msg)
+    else:
+        msg = "All output files {} already exist. Skipping call: \n{}:{}".format(out_files,
+                                                                                 func_name, all_args)
+        logger.warning(msg)
+
+    if (not keep_delete_files) and all_valid:
+        # the command succeeded, so delete the specified files
+        for filename in to_delete:
+            if os.path.exists(filename):
+                msg = "Removing file: {}".format(filename)
+                logger.info(msg)
+                os.remove(filename)
