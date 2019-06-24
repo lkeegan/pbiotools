@@ -25,14 +25,17 @@ def get_final_args(default_args, args):
             a string containing the final options suitable to pass to another command
         """
 
+    from collections import defaultdict
+
     # create dict from list of strings
-    final_options = {}
+    final_options = defaultdict(list)
     final_options_str = ''
     if args is not None:
-        final_options = {'{}'.format(opt.rsplit()[0].strip('--')): ' '.join(opt.rsplit()[1:])
-                         for opt in args}
-        final_options_str = ' '.join(['--{} {}'.format(key, val) for (key, val) in
-                                      final_options.items()])
+        for opt in args:
+            final_options['{}'.format(opt.rsplit()[0].strip('--'))].append(' '.join(opt.rsplit()[1:]))
+
+        final_options_str = ' '.join(['--{} {}'.format(key, val) for (key, values) in
+                                      final_options.items() for val in values])
 
     # now search if key exist, else use default
     for key, val in default_args.items():
