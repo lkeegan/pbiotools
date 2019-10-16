@@ -262,3 +262,77 @@ def get_star_options_string(args):
 
     return s
 
+
+# Flexbar
+
+
+def add_flexbar_options(parser):
+    """ Add options to a cmd parser to call flexbar.
+
+    N.B. This is primarily intended for use with the rp-bp and b-tea projects.
+
+    Parameters
+    ----------
+    parser: argparse.ArgumentParser
+        The parser to which the options will be added
+
+    flexbaroptions: list of strings
+        Additional options to pass to flexbar
+    """
+
+    flexbar_options = parser.add_argument_group("Flexbar options")
+
+    flexbar_options.add_argument('--flexbar-options', help="""Optional argument: a space-delimited 
+        list of options to pass to flexbar. Each option must be quoted separately as in 
+        "--flexbarOption value", using soft quotes, where '--flexbarOption'
+        is the long parameter name from flexbar and 'value' is the value given to this parameter. 
+        If specified, flexbar options will override default settings.""", nargs='*', type=str)
+
+
+def get_flexbar_options_string(args):
+    """ Extract the flags and options specified for flexbar added with
+    add_flexbar_options.
+
+    Parameters
+    ---------
+    args: argparse.Namespace
+        The parsed arguments
+
+    Returns
+    -------
+    flexbar_options: string
+        a string containing flexbar options suitable to pass to another command
+    """
+    import shlex
+
+    args_dict = vars(args)
+
+    s = ""
+    if args_dict['flexbar_options']:
+        flexbar_option_str = "--flexbar-options {}".format(
+            ' '.join(shlex.quote(flx_op) for flx_op in args_dict['flexbar_options']))
+        s = "{}".format(' '.join([s, flexbar_option_str]))
+
+    return s
+
+
+# Bowtie 2
+
+
+def get_bowtie2_index_files(base_index_name):
+    """ This function returns a list of all of the files necessary for a Bowtie2 index
+        that was created with the given base_index_name.
+
+        Args:
+            base_index_name (string): the path and base name used to create the bowtie2 index
+
+        Returns:
+            list of strings: the paths to all of the files expected for a Bowtie2 index
+                based on the provided index_name
+    """
+    bowtie_extensions = ['.1.bt2', '.2.bt2', '.3.bt2', '.4.bt2', '.rev.1.bt2', '.rev.2.bt2']
+
+    bowtie_files = ['{}{}'.format(base_index_name, bowtie_extension)
+                    for bowtie_extension in bowtie_extensions]
+
+    return bowtie_files
