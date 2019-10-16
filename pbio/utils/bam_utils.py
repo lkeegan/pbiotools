@@ -543,10 +543,12 @@ def get_five_prime_ends(bam, progress_bar=True, count=True, logger=logger):
         Imports:
             numpy
             pandas
+            pysam
             tqdm
     """
     import numpy as np
     import pandas as pd
+    import pysam
     import tqdm
 
     # first, make sure we have an alignment file
