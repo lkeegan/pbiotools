@@ -6,6 +6,7 @@ import pandas as pd
 
 import pbio.utils.mygene_utils as mygene_utils
 import pbio.misc.utils as utils
+import pbio.misc.logging_utils as logging_utils
 import pbio.misc.pandas_utils as pandas_utils
 
 logger = logging.getLogger(__name__)
@@ -49,9 +50,9 @@ def main():
         "is in csv format, then the output will not be compressed. By default, the output "
         "is compressed.", action='store_true')
     
-    utils.add_logging_options(parser)
+    logging_utils.add_logging_options(parser)
     args = parser.parse_args()
-    utils.update_logging(args)
+    logging_utils.update_logging(args)
 
     msg = "Reading the file"
     logger.info(msg)

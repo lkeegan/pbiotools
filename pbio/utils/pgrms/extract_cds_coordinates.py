@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 
 import argparse
-import pbio.misc.gffread_utils as gffread_utils
-import pbio.misc.bio as bio
+import pbio.utils.gffread_utils as gffread_utils
+import pbio.utils.bed_utils as bed_utils
 import pandas as pd     
 
 def main():
@@ -32,7 +32,7 @@ def main():
     cds_only_df['score'] = 0
     cds_only_df['strand'] = headers['strand']
 
-    bio.write_bed(cds_only_df, args.out)
+    bed_utils.write_bed(cds_only_df, args.out)
 
 if __name__ == '__main__':
     main()
