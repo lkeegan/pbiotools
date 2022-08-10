@@ -1,7 +1,8 @@
 import os
 
+
 class suppress_stdout_stderr(object):
-    '''
+    """
     A context manager for doing a "deep suppression" of stdout and stderr in
     Python, i.e. will suppress all print, even if the print originates in a
     compiled C/Fortran sub-function.
@@ -13,7 +14,8 @@ class suppress_stdout_stderr(object):
 
     This code is directly taken from randlet's comment here:
         https://github.com/facebook/prophet/issues/223#issuecomment-326455744
-    '''
+    """
+
     def __init__(self):
         # Open a pair of null files
         self.null_fds = [os.open(os.devnull, os.O_RDWR) for x in range(2)]
@@ -32,4 +34,3 @@ class suppress_stdout_stderr(object):
         # Close the null files
         for fd in self.null_fds + self.save_fds:
             os.close(fd)
-

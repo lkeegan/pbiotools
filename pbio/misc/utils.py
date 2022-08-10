@@ -3,6 +3,7 @@ A hodgepodge of utilities, most of which concern working with basic types.
 """
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 import itertools
@@ -12,9 +13,10 @@ import shutil
 import pbio.misc.shell_utils as shell_utils
 
 
-def raise_deprecation_warning(function, new_module, final_version=None,
-        old_module="misc"):
-    """ Ths function raises a deprecation about a function that has been
+def raise_deprecation_warning(
+    function, new_module, final_version=None, old_module="misc"
+):
+    """Ths function raises a deprecation about a function that has been
     moved to a new module.
 
     Parameters
@@ -37,26 +39,32 @@ def raise_deprecation_warning(function, new_module, final_version=None,
     None, but prints a "warn" message. If final_version is not None, then the
     message will include a bit about when the method will be removed from the
     current module.
-            
+
     """
-    
-    msg = ("[{}]: This function is deprecated. Please use the version in {} "
-        "instead.".format(function, new_module))
+
+    msg = (
+        "[{}]: This function is deprecated. Please use the version in {} "
+        "instead.".format(function, new_module)
+    )
 
     if final_version is not None:
-        msg_2 = (" The function will be removed from the module {} in version "
-        "{}".format(old_module, final_version))
+        msg_2 = (
+            " The function will be removed from the module {} in version "
+            "{}".format(old_module, final_version)
+        )
         msg = msg + msg_2
-        
+
     logger.warn(msg)
 
 
 ### Parsing and writing utilities
 
-trueStrings = ['true', 'yes', 't', 'y', '1']
+trueStrings = ["true", "yes", "t", "y", "1"]
+
 
 def str2bool(string):
-    return (string.lower() in trueStrings)
+    return string.lower() in trueStrings
+
 
 def try_parse_int(string):
     try:
@@ -64,57 +72,60 @@ def try_parse_int(string):
     except ValueError:
         return None
 
+
 def try_parse_float(string):
     try:
         return float(string)
     except ValueError:
         return None
 
+
 def is_int(s):
-    """ This function checks whether the provided string represents and integer.
+    """This function checks whether the provided string represents and integer.
 
-        This code was adapted from: http://stackoverflow.com/questions/1265665/
+    This code was adapted from: http://stackoverflow.com/questions/1265665/
 
-        Args:
-            s (string) : the string
+    Args:
+        s (string) : the string
 
-        Returns:
-            bool : whether the string can be interpretted as an integer
+    Returns:
+        bool : whether the string can be interpretted as an integer
     """
 
-    if s[0] in ('-', '+'):
-    	return s[1:].isdigit()
+    if s[0] in ("-", "+"):
+        return s[1:].isdigit()
     return s.isdigit()
 
+
 def check_keys_exist(d, keys):
-    """ This function ensures the given keys are present in the dictionary. It
-        does not other validate the type, value, etc., of the keys or their
-        values. If a key is not present, a KeyError is raised.
+    """This function ensures the given keys are present in the dictionary. It
+    does not other validate the type, value, etc., of the keys or their
+    values. If a key is not present, a KeyError is raised.
 
-        The motivation behind this function is to verify that a config dictionary
-        read in at the beginning of a program contains all of the required values.
-        Thus, the program will immediately detect when a required config value is
-        not present and quit.
+    The motivation behind this function is to verify that a config dictionary
+    read in at the beginning of a program contains all of the required values.
+    Thus, the program will immediately detect when a required config value is
+    not present and quit.
 
-        Input:
-            d (dict) : the dictionary
+    Input:
+        d (dict) : the dictionary
 
-            keys (list) : a list of keys to check
-        Returns:
-            list of string: a list of all programs which are not found
+        keys (list) : a list of keys to check
+    Returns:
+        list of string: a list of all programs which are not found
 
-        Raises:
-            KeyError: if any of the keys are not in the dictionary
+    Raises:
+        KeyError: if any of the keys are not in the dictionary
     """
     missing_keys = [k for k in keys if k not in d]
 
-    
     if len(missing_keys) > 0:
-        missing_keys = ' '.join(missing_keys)
+        missing_keys = " ".join(missing_keys)
         msg = "The following keys were not found: " + missing_keys
         raise KeyError(msg)
 
     return missing_keys
+
 
 # http://goo.gl/zeJZl
 def bytes2human(n, format="%(value)i%(symbol)s"):
@@ -124,15 +135,16 @@ def bytes2human(n, format="%(value)i%(symbol)s"):
     >>> bytes2human(100001221)
     '95M'
     """
-    symbols = ('B', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
+    symbols = ("B", "K", "M", "G", "T", "P", "E", "Z", "Y")
     prefix = {}
     for i, s in enumerate(symbols[1:]):
-        prefix[s] = 1 << (i+1)*10
+        prefix[s] = 1 << (i + 1) * 10
     for symbol in reversed(symbols[1:]):
         if n >= prefix[symbol]:
             value = float(n) / prefix[symbol]
             return format % locals()
     return format % dict(symbol=symbols[0], value=n)
+
 
 # http://goo.gl/zeJZl
 def human2bytes(s):
@@ -146,53 +158,55 @@ def human2bytes(s):
     if is_int(s):
         return s
 
-    symbols = ('B', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
+    symbols = ("B", "K", "M", "G", "T", "P", "E", "Z", "Y")
     letter = s[-1:].strip().upper()
     num = s[:-1]
     assert num.isdigit() and letter in symbols
     num = float(num)
-    prefix = {symbols[0]:1}
+    prefix = {symbols[0]: 1}
     for i, s in enumerate(symbols[1:]):
-        prefix[s] = 1 << (i+1)*10
+        prefix[s] = 1 << (i + 1) * 10
     return int(num * prefix[letter])
 
+
 def simple_fill(text, width=60):
-    """ This is a simplified version of textwrap.fill. It splits the string
-        into exactly equal-sized chuncks on length <width>. This avoids the
-        pathological case of one long string (e.g., when splitting long DNA
-        sequences).
+    """This is a simplified version of textwrap.fill. It splits the string
+    into exactly equal-sized chuncks on length <width>. This avoids the
+    pathological case of one long string (e.g., when splitting long DNA
+    sequences).
 
-        The code is adapted from: http://stackoverflow.com/questions/11781261
+    The code is adapted from: http://stackoverflow.com/questions/11781261
 
-        Args:
-            text (string) : the text to split
+    Args:
+        text (string) : the text to split
 
-            width (int) : the (exact) length of each line after splitting
+        width (int) : the (exact) length of each line after splitting
 
-        Returns:
-            string : a single string with lines of length width (except 
-                possibly the last line)
+    Returns:
+        string : a single string with lines of length width (except
+            possibly the last line)
     """
-    return '\n'.join(text[i:i+width] 
-                        for i in range(0, len(text), width))
+    return "\n".join(text[i : i + width] for i in range(0, len(text), width))
 
 
 def split(delimiters, string, maxsplit=0):
-    """ This function splits the given string using all delimiters in the list.
-        
-        The code is taken from: http://stackoverflow.com/questions/4998629/
+    """This function splits the given string using all delimiters in the list.
 
-        Args:
-            delimiters (list of strings): the strings to use as delimiters
-            string (string): the string to split
-            maxsplit (int): the maximum number of splits (or 0 for no limit)
+    The code is taken from: http://stackoverflow.com/questions/4998629/
 
-        Returns:
-            list of strings: the split string
+    Args:
+        delimiters (list of strings): the strings to use as delimiters
+        string (string): the string to split
+        maxsplit (int): the maximum number of splits (or 0 for no limit)
+
+    Returns:
+        list of strings: the split string
     """
     import re
-    regex_pattern = '|'.join(map(re.escape, delimiters))
+
+    regex_pattern = "|".join(map(re.escape, delimiters))
     return re.split(regex_pattern, string, maxsplit)
+
 
 def read_commented_file(filename):
     f = open(filename)
@@ -203,18 +217,19 @@ def read_commented_file(filename):
             lines.append(line)
     return lines
 
-def get_vars_to_save(to_save, to_remove=['parser', 'args']):
+
+def get_vars_to_save(to_save, to_remove=["parser", "args"]):
     import types
 
     # remove the system variables, modules and functions
-    for (var_name,value) in to_save.items():
-        if var_name.startswith('__'):
+    for (var_name, value) in to_save.items():
+        if var_name.startswith("__"):
             to_remove.append(var_name)
 
-        elif (
-            isinstance(value, types.FunctionType) or 
-            isinstance(value, types.ModuleType)):
-            
+        elif isinstance(value, types.FunctionType) or isinstance(
+            value, types.ModuleType
+        ):
+
             to_remove.append(var_name)
 
     for var_name in to_remove:
@@ -225,7 +240,7 @@ def get_vars_to_save(to_save, to_remove=['parser', 'args']):
 
 
 def command_line_option_to_keyword(option):
-    """ Convert the command line version of the option to a keyword.
+    """Convert the command line version of the option to a keyword.
 
     Parameters
     ----------
@@ -240,38 +255,39 @@ def command_line_option_to_keyword(option):
     """
     # first, remove the initial "--"
     option = option[2:]
-    
+
     # and replace "-" with "_"
     option = option.replace("-", "_")
-    
+
     return option
 
 
 def get_config_argument(config, var_name, argument_name=None, default=None):
-    """ This function checks to see if the config dictionary contains the given
-        variable. If so, it constructs a command line argument based on the type
-        of the variable. If a default is given, then that value is used if the
-        variable is not present in the config dictionary.
+    """This function checks to see if the config dictionary contains the given
+    variable. If so, it constructs a command line argument based on the type
+    of the variable. If a default is given, then that value is used if the
+    variable is not present in the config dictionary.
 
-        Args:
-            config (dict): a dictionary, presumably containing configuration
-            options
+    Args:
+        config (dict): a dictionary, presumably containing configuration
+        options
 
-            var_name (string): the name of the variable to look up
+        var_name (string): the name of the variable to look up
 
-            argument_name (string): if present, then the command line argument
-            will be "--<argument_name>". Otherwise, the command line switch
-            will be: "--<var_name.replace(_,-)"
+        argument_name (string): if present, then the command line argument
+        will be "--<argument_name>". Otherwise, the command line switch
+        will be: "--<var_name.replace(_,-)"
 
-            default (string or list): if present, then this value is used if 
-                the variable is not in the dictionary
+        default (string or list): if present, then this value is used if
+            the variable is not in the dictionary
 
-        Returns:
-            string: either the empty string if var_name is not in config, or a
-                properly formatted command line switch, based on whether the
-                variable is a string or list
+    Returns:
+        string: either the empty string if var_name is not in config, or a
+            properly formatted command line switch, based on whether the
+            variable is a string or list
     """
     import shlex
+
     argument = ""
 
     if (var_name in config) or (default is not None):
@@ -281,8 +297,8 @@ def get_config_argument(config, var_name, argument_name=None, default=None):
         # we could have included the variable in the config with a 'None' value
         if var is None:
             return argument
-    
-        if isinstance(var, (str, )) and (len(str(var)) > 0):
+
+        if isinstance(var, (str,)) and (len(str(var)) > 0):
             argument = shlex.quote(var)
         elif isinstance(var, (int, float)) and (len(str(var)) > 0):
             argument = shlex.quote(str(var))
@@ -291,31 +307,32 @@ def get_config_argument(config, var_name, argument_name=None, default=None):
             argument = " ".join(shlex.quote(str(v)) for v in var)
 
         if argument_name is None:
-            argument_name = var_name.replace('_', '-')
+            argument_name = var_name.replace("_", "-")
 
         if len(argument) > 0:
             argument = "--{} {}".format(argument_name, argument)
     return argument
 
+
 def get_config_args_value(default_value, config_value, args_value):
-    """ This helper function selects which value to use based on the precedence
-        order: args, config, default (that is, the args value is chosen if
-        present, etc.)
+    """This helper function selects which value to use based on the precedence
+    order: args, config, default (that is, the args value is chosen if
+    present, etc.)
 
-        N.B. This seems like a common pattern; there may be a better way to do
-        this. https://pypi.python.org/pypi/ConfigArgParse, for example.
+    N.B. This seems like a common pattern; there may be a better way to do
+    this. https://pypi.python.org/pypi/ConfigArgParse, for example.
 
-        Args:
-            default_value: the default value to use if neither the config nor
-                the args value is given
+    Args:
+        default_value: the default value to use if neither the config nor
+            the args value is given
 
-            config_value: the value to use (presumably from a config file) to
-                use if args value is not given
+        config_value: the value to use (presumably from a config file) to
+            use if args value is not given
 
-            args_value: the value to use, if present
+        args_value: the value to use, if present
 
-        Returns:
-            obj: the selected value, according to the precedence order
+    Returns:
+        obj: the selected value, according to the precedence order
     """
 
     if args_value is not None:
@@ -326,8 +343,9 @@ def get_config_args_value(default_value, config_value, args_value):
 
     return default_value
 
+
 def concatenate_files(in_files, out_file, call=True):
-    """ Concatenate the input files to the output file.
+    """Concatenate the input files to the output file.
 
     Parameters
     ----------
@@ -342,8 +360,9 @@ def concatenate_files(in_files, out_file, call=True):
         Whether to actually perform the action
     """
     in_files_str = ",".join(in_files)
-    msg = ("Concatenating files. Output file: {}; Input files: {}".format(
-        out_file, in_files_str))
+    msg = "Concatenating files. Output file: {}; Input files: {}".format(
+        out_file, in_files_str
+    )
     logger.info(msg)
 
     if not call:
@@ -352,40 +371,41 @@ def concatenate_files(in_files, out_file, call=True):
 
         return
 
-    with open(out_file, 'wb') as out:
+    with open(out_file, "wb") as out:
         for in_file in in_files:
-            with open(in_file, 'rb') as in_f:
+            with open(in_file, "rb") as in_f:
                 shutil.copyfileobj(in_f, out)
 
+
 def check_gzip_file(filename, has_tar=False, raise_on_error=True, logger=logger):
-    """ This function wraps a call to "gunzip -t". Optionally, it 
-        raises an exception if the return code is not 0. Otherwise, it writes
-        a "critical" warning message.
+    """This function wraps a call to "gunzip -t". Optionally, it
+    raises an exception if the return code is not 0. Otherwise, it writes
+    a "critical" warning message.
 
-        This function can also test that a tar insize the gzipped file is valid.
+    This function can also test that a tar insize the gzipped file is valid.
 
-        This code is adapted from: http://stackoverflow.com/questions/2001709/
+    This code is adapted from: http://stackoverflow.com/questions/2001709/
 
-        Args:
-            filename (str): a path to the bam file
+    Args:
+        filename (str): a path to the bam file
 
-            has_tar (bool): whether to check for a valid tar inside the
-                gzipped file
+        has_tar (bool): whether to check for a valid tar inside the
+            gzipped file
 
-            raise_on_error (bool): whether to raise an OSError (if True) or log
-                a "critical" message (if false)
+        raise_on_error (bool): whether to raise an OSError (if True) or log
+            a "critical" message (if false)
 
-            logger (logging.Logger): a logger for writing the message if an
-                error is not raised
+        logger (logging.Logger): a logger for writing the message if an
+            error is not raised
 
-        Returns:
-            bool: whether the file was valid
+    Returns:
+        bool: whether the file was valid
 
-        Raises:
-            OSError: if gunzip does not return 0 and raise_on_error is True
+    Raises:
+        OSError: if gunzip does not return 0 and raise_on_error is True
     """
-    
-    programs = ['gunzip', 'tar']
+
+    programs = ["gunzip", "tar"]
     shell_utils.check_programs_exist(programs)
 
     if has_tar:
@@ -407,8 +427,9 @@ def check_gzip_file(filename, has_tar=False, raise_on_error=True, logger=logger)
     # then the file was okay
     return True
 
+
 def ensure_path_to_file_exists(f):
-    """ If the base path to f does not exist, create it. """
+    """If the base path to f does not exist, create it."""
 
     out_dir = os.path.dirname(f)
 
@@ -418,39 +439,45 @@ def ensure_path_to_file_exists(f):
         logger.debug(msg)
         os.makedirs(out_dir, exist_ok=True)
 
-def check_files_exist(files, raise_on_error=True, logger=logger, 
-        msg="The following files were missing: ", source=None):
-    """ This function ensures that all of the files in the list exists. If any
-        do not, it will either raise an exception or print a warning, depending
-        on the value of raise_on_error.
 
-        Parameters
-        ----------
-        files: list of strings
-            the file paths to check
+def check_files_exist(
+    files,
+    raise_on_error=True,
+    logger=logger,
+    msg="The following files were missing: ",
+    source=None,
+):
+    """This function ensures that all of the files in the list exists. If any
+    do not, it will either raise an exception or print a warning, depending
+    on the value of raise_on_error.
 
-        raise_on_error: bool
-            whether to raise an error if any of the files are missing
+    Parameters
+    ----------
+    files: list of strings
+        the file paths to check
 
-        logger: logging.Logger
-            a logger to use for writing the warning if an error is not raised
+    raise_on_error: bool
+        whether to raise an error if any of the files are missing
 
-        msg: string
-            a message to write before the list of missing files
+    logger: logging.Logger
+        a logger to use for writing the warning if an error is not raised
 
-        source: string
-            a description of where the check is made, such as a module name. If
-            this is not None, it will be prepended in brackets before msg.
+    msg: string
+        a message to write before the list of missing files
 
-        Returns
-        -------
-        all_exist: bool
-            True if all of the files existed, False otherwise
+    source: string
+        a description of where the check is made, such as a module name. If
+        this is not None, it will be prepended in brackets before msg.
 
-        Raises
-        ------
-        FileNotFoundError, if raise_on_error is True and any of the files
-                do not exist.
+    Returns
+    -------
+    all_exist: bool
+        True if all of the files existed, False otherwise
+
+    Raises
+    ------
+    FileNotFoundError, if raise_on_error is True and any of the files
+            do not exist.
     """
     missing_files = []
 
@@ -473,20 +500,22 @@ def check_files_exist(files, raise_on_error=True, logger=logger,
 
     return False
 
+
 def remove_file(filename):
-    """Remove the file, if it exists. Ignore FileNotFound errors.""" 
+    """Remove the file, if it exists. Ignore FileNotFound errors."""
     import contextlib
     import os
 
     with contextlib.suppress(FileNotFoundError):
         os.remove(filename)
 
+
 def count_lines(filename):
-    """ This function counts the number of lines in filename.
+    """This function counts the number of lines in filename.
 
     Parameters
     ----------
-    filename : string 
+    filename : string
         The path to the file. gzipped files are handled transparently
 
     Returns
@@ -501,30 +530,34 @@ def count_lines(filename):
             pass
     return i + 1
 
+
 ### Path utilities
+
 
 def abspath(*fn):
     return os.path.abspath(os.path.join(os.sep, *fn))
 
+
 def add_home_dir(*fn):
-    return os.path.join(os.path.expanduser('~'), *fn)
+    return os.path.join(os.path.expanduser("~"), *fn)
+
 
 def listdir_full(path):
     return [os.path.join(path, f) for f in os.listdir(path)]
 
+
 def list_subdirs(path):
-    """ List all subdirectories directly under path
-    """
-    subdirs = [
-        d for d in listdir_full(path) if os.path.isdir(d)
-    ]
+    """List all subdirectories directly under path"""
+    subdirs = [d for d in listdir_full(path) if os.path.isdir(d)]
     return subdirs
+
 
 def get_basename(path):
     return os.path.splitext(os.path.basename(path))[0]
 
+
 def create_symlink(src, dst, remove=True, create=False, call=True):
-    """ Creates or updates a symlink at dst which points to src.
+    """Creates or updates a symlink at dst which points to src.
 
     Parameters
     ----------
@@ -561,8 +594,10 @@ def create_symlink(src, dst, remove=True, create=False, call=True):
 
     if os.path.lexists(dst):
         if remove:
-            msg = ("[utils.create_symlink]: file already exists at: '{}'. It "
-                "will be removed".format(dst))
+            msg = (
+                "[utils.create_symlink]: file already exists at: '{}'. It "
+                "will be removed".format(dst)
+            )
             logging.warning(msg)
             os.remove(dst)
         else:
@@ -580,6 +615,7 @@ def create_symlink(src, dst, remove=True, create=False, call=True):
 
 def to_dense(data, row, dtype=float, length=-1):
     import numpy as np
+
     d = data.getrow(row).todense()
     d = np.squeeze(np.asarray(d, dtype=dtype))
 
@@ -592,8 +628,9 @@ def to_dense(data, row, dtype=float, length=-1):
 
     return d
 
-def dict_to_dataframe(dic, key_name='key', value_name='value'):
-    """ Convert a dictionary into a two-column data frame using the given
+
+def dict_to_dataframe(dic, key_name="key", value_name="value"):
+    """Convert a dictionary into a two-column data frame using the given
     column names. Each entry in the data frame corresponds to one row.
 
     Parameters
@@ -612,8 +649,7 @@ def dict_to_dataframe(dic, key_name='key', value_name='value'):
     df: pd.DataFrame
         a data frame in which each row corresponds to one entry in dic
     """
-    raise_deprecation_warning("dict_to_dataframe", "misc.pandas_utils",
-        "0.3.0", "misc")
+    raise_deprecation_warning("dict_to_dataframe", "misc.pandas_utils", "0.3.0", "misc")
     import pandas as pd
 
     df = pd.Series(dic, name=value_name)
@@ -621,138 +657,143 @@ def dict_to_dataframe(dic, key_name='key', value_name='value'):
     df = df.reset_index()
     return df
 
+
 def dataframe_to_dict(df, key_field, value_field):
-    """ This function converts two columns of a data frame into a dictionary.
+    """This function converts two columns of a data frame into a dictionary.
 
-        Args:
-            df (pd.DataFrame): the data frame
+    Args:
+        df (pd.DataFrame): the data frame
 
-            key_field (string): the field to use as the keys in the dictionary
+        key_field (string): the field to use as the keys in the dictionary
 
-            value_field (string): the field to use as the values
+        value_field (string): the field to use as the values
 
-        Returns:
-            dict: a dictionary which has one entry for each row in the data
-                frame, with the keys and values as indicated by the fields
-        
+    Returns:
+        dict: a dictionary which has one entry for each row in the data
+            frame, with the keys and values as indicated by the fields
+
     """
-    raise_deprecation_warning("dataframe_to_dict", "misc.pandas_utils",
-        "0.3.0", "misc")
+    raise_deprecation_warning("dataframe_to_dict", "misc.pandas_utils", "0.3.0", "misc")
     dic = dict(zip(df[key_field], df[value_field]))
     return dic
 
-def pandas_join_string_list(row, field, sep=";"):
-    """ This function checks if the value for field in the row is a list. If so,
-        it is replaced by a string in which each value is separated by the
-        given separator.
 
-        Args:
-            row (pd.Series or similar): the row to check
-            field (string): the name of the field
-            sep (string): the separator to use in joining the values
+def pandas_join_string_list(row, field, sep=";"):
+    """This function checks if the value for field in the row is a list. If so,
+    it is replaced by a string in which each value is separated by the
+    given separator.
+
+    Args:
+        row (pd.Series or similar): the row to check
+        field (string): the name of the field
+        sep (string): the separator to use in joining the values
     """
-    raise_deprecation_warning("pandas_join_string_list", "misc.pandas_utils",
-        "0.3.0", "misc")
+    raise_deprecation_warning(
+        "pandas_join_string_list", "misc.pandas_utils", "0.3.0", "misc"
+    )
     s = wrap_string_in_list(row[field])
     return sep.join(s)
 
-excel_extensions = ('xls', 'xlsx')
-hdf5_extensions = ('hdf', 'hdf5', 'h5', 'he5')
+
+excel_extensions = ("xls", "xlsx")
+hdf5_extensions = ("hdf", "hdf5", "h5", "he5")
+
 
 def _guess_df_filetype(filename):
-    """ This function attempts to guess the filetype given a filename. It is
-        primarily intended for internal use, namely, for reading and writing
-        dataframes. The supported types and extensions used for guessing are:
+    """This function attempts to guess the filetype given a filename. It is
+    primarily intended for internal use, namely, for reading and writing
+    dataframes. The supported types and extensions used for guessing are:
 
-            excel: xls, xlsx
-            hdf5: hdf, hdf5, h5, he5
-            csv: all other extensions
+        excel: xls, xlsx
+        hdf5: hdf, hdf5, h5, he5
+        csv: all other extensions
 
-        Additionally, if filename is a pd.ExcelWriter object, then the guessed
-        filetype will be 'excel_writer'
+    Additionally, if filename is a pd.ExcelWriter object, then the guessed
+    filetype will be 'excel_writer'
 
-        Args:
-            filename (string): the name of the file for which we will guess
+    Args:
+        filename (string): the name of the file for which we will guess
 
-        Returns:
-            string: the guessed file type. See above for the supported types
-                and extensions.
+    Returns:
+        string: the guessed file type. See above for the supported types
+            and extensions.
 
-        Imports:
-            pandas
+    Imports:
+        pandas
     """
-    raise_deprecation_warning("_guess_df_filetype", "misc.pandas_utils",
-        "0.3.0", "misc")
+    raise_deprecation_warning(
+        "_guess_df_filetype", "misc.pandas_utils", "0.3.0", "misc"
+    )
     import pandas as pd
 
     msg = "Attempting to guess the extension. Filename: {}".format(filename)
     logger.debug(msg)
 
     if isinstance(filename, pd.ExcelWriter):
-        filetype = 'excel_writer'
+        filetype = "excel_writer"
     elif filename.endswith(excel_extensions):
-        filetype = 'excel'
+        filetype = "excel"
     elif filename.endswith(hdf5_extensions):
-        filetype= 'hdf5'
+        filetype = "hdf5"
     else:
-        filetype = 'csv'
+        filetype = "csv"
 
     msg = "The guessed filetype was: {}".format(filetype)
     logger.debug(msg)
 
     return filetype
 
-def read_df(filename, filetype='AUTO', sheet=None, **kwargs):
-    """ This function reads a data frame from a file. By default it attempts
-        to guess the type of the file based on its extension. Alternatively,
-        the filetype can be exlicitly specified.  The supported types and
-        extensions used for guessing are:
 
-            excel: xls, xlsx
-            hdf5: hdf, hdf5, h5, he5
-            csv: all other extensions
+def read_df(filename, filetype="AUTO", sheet=None, **kwargs):
+    """This function reads a data frame from a file. By default it attempts
+    to guess the type of the file based on its extension. Alternatively,
+    the filetype can be exlicitly specified.  The supported types and
+    extensions used for guessing are:
 
-        N.B. In principle, matlab data files are hdf5, so this function should
-            be able to read them. This has not been tested, though.
+        excel: xls, xlsx
+        hdf5: hdf, hdf5, h5, he5
+        csv: all other extensions
 
-        Args:
-            filename (string): the input file
+    N.B. In principle, matlab data files are hdf5, so this function should
+        be able to read them. This has not been tested, though.
 
-            filetype (string): the type of file, which determines which pandas
-                read function will be called. If AUTO, the function uses the 
-                extensions mentioned above to guess the filetype.
+    Args:
+        filename (string): the input file
 
-            sheet (string): for excel or hdf5 files, this will be passed
-                to extract the desired information from the file. Please see
-                pandas.read_excel and pandas.read_hdf for more information on
-                how values are interpreted.
+        filetype (string): the type of file, which determines which pandas
+            read function will be called. If AUTO, the function uses the
+            extensions mentioned above to guess the filetype.
 
-            kwards: these will be passed unchanged to the read function
+        sheet (string): for excel or hdf5 files, this will be passed
+            to extract the desired information from the file. Please see
+            pandas.read_excel and pandas.read_hdf for more information on
+            how values are interpreted.
 
-        Returns:
-            pd.DataFrame: a data frame
+        kwards: these will be passed unchanged to the read function
 
-        Raises:
-            ValueError: if the filetype is not 'AUTO' or one of the values
-                mentioned above ('excel', 'hdf5', 'csv')
+    Returns:
+        pd.DataFrame: a data frame
 
-        Imports:
-            pandas
+    Raises:
+        ValueError: if the filetype is not 'AUTO' or one of the values
+            mentioned above ('excel', 'hdf5', 'csv')
+
+    Imports:
+        pandas
     """
-    raise_deprecation_warning("read_df", "misc.pandas_utils",
-        "0.3.0", "misc")
+    raise_deprecation_warning("read_df", "misc.pandas_utils", "0.3.0", "misc")
     import pandas as pd
 
     # first, see if we want to guess the filetype
-    if filetype == 'AUTO':
+    if filetype == "AUTO":
         filetype = _guess_df_filetype(filename)
-        
+
     # now, parse the file
-    if filetype == 'csv':
+    if filetype == "csv":
         df = pd.read_csv(filename, **kwargs)
-    elif filetype == 'excel':
+    elif filetype == "excel":
         df = pd.read_excel(filename, sheetname=sheet, **kwargs)
-    elif filetype == 'hdf5':
+    elif filetype == "hdf5":
         df = pd.read_hdf(filename, key=sheet, **kwargs)
     else:
         msg = "Could not read dataframe. Invalid filetype: {}".format(filetype)
@@ -760,128 +801,135 @@ def read_df(filename, filetype='AUTO', sheet=None, **kwargs):
 
     return df
 
-def write_df(df, out, create_path=False, filetype='AUTO', sheet='Sheet_1',
-        do_not_compress=False, **kwargs):
-    """ This function writes a data frame to a file of the specified type. 
-        Unless otherwise specified, csv files are gzipped when written. By
-        default, the filetype will be guessed based on the extension. The 
-        supported types and  extensions used for guessing are:
 
-            excel: xls, xlsx
-            hdf5: hdf, hdf5, h5, he5
-            csv: all other extensions (e.g., "gz" or "bed")
+def write_df(
+    df,
+    out,
+    create_path=False,
+    filetype="AUTO",
+    sheet="Sheet_1",
+    do_not_compress=False,
+    **kwargs
+):
+    """This function writes a data frame to a file of the specified type.
+    Unless otherwise specified, csv files are gzipped when written. By
+    default, the filetype will be guessed based on the extension. The
+    supported types and  extensions used for guessing are:
 
-        Additionally, the filetype can be specified as 'excel_writer'. In this
-        case, the out object is taken to be a pd.ExcelWriter, and the df is
-        appended to the writer. AUTO will also guess this correctly.
+        excel: xls, xlsx
+        hdf5: hdf, hdf5, h5, he5
+        csv: all other extensions (e.g., "gz" or "bed")
 
-        N.B. The hdf5 filetype has not been tested!!!
+    Additionally, the filetype can be specified as 'excel_writer'. In this
+    case, the out object is taken to be a pd.ExcelWriter, and the df is
+    appended to the writer. AUTO will also guess this correctly.
 
-        Parameters
-        ----------
-        df: pd.DataFrame
-            The data frame
+    N.B. The hdf5 filetype has not been tested!!!
 
-        out: string or pd.ExcelWriter
-            The (complete) path to the file.
+    Parameters
+    ----------
+    df: pd.DataFrame
+        The data frame
 
-            The file name WILL NOT be modified. In particular, ".gz" WILL 
-            NOT be added if the file is to be zipped. As mentioned above,
-            if the filetype is passed as 'excel_writer', then this is taken
-            to be a pd.ExcelWriter object.
+    out: string or pd.ExcelWriter
+        The (complete) path to the file.
 
-        create_path: bool
-            Whether to create the path directory structure to the file if it
-            does not already exist.
+        The file name WILL NOT be modified. In particular, ".gz" WILL
+        NOT be added if the file is to be zipped. As mentioned above,
+        if the filetype is passed as 'excel_writer', then this is taken
+        to be a pd.ExcelWriter object.
 
-            N.B. This will not attempt to create the path to an excel_writer
-            since it is possible that it does not yet have one specified.
+    create_path: bool
+        Whether to create the path directory structure to the file if it
+        does not already exist.
 
-        filetype: string
-            The type of output file to write.  If AUTO, the function uses the
-            extensions mentioned above to guess the filetype.
+        N.B. This will not attempt to create the path to an excel_writer
+        since it is possible that it does not yet have one specified.
 
-        sheet: string
-            The name of the sheet (excel) or key (hdf5) to use when writing the
-            file. This argument is not used for csv. For excel, the sheet is
-            limited to 31 characters. It will be trimmed if necessary.
+    filetype: string
+        The type of output file to write.  If AUTO, the function uses the
+        extensions mentioned above to guess the filetype.
 
-        do_not_compress: bool
-            Whether to compress the output. This is only used for csv files.
+    sheet: string
+        The name of the sheet (excel) or key (hdf5) to use when writing the
+        file. This argument is not used for csv. For excel, the sheet is
+        limited to 31 characters. It will be trimmed if necessary.
 
-        **kwargs : other keyword arguments to pass to the df.to_XXX method
+    do_not_compress: bool
+        Whether to compress the output. This is only used for csv files.
 
-        Returns
-        -------
-        None, but the file is created
+    **kwargs : other keyword arguments to pass to the df.to_XXX method
+
+    Returns
+    -------
+    None, but the file is created
     """
-    raise_deprecation_warning("write_df", "misc.pandas_utils",
-        "0.3.0", "misc")
+    raise_deprecation_warning("write_df", "misc.pandas_utils", "0.3.0", "misc")
     import gzip
     import pandas as pd
-    
+
     # first, see if we want to guess the filetype
-    if filetype == 'AUTO':
+    if filetype == "AUTO":
         filetype = _guess_df_filetype(out)
 
     # check if we want to and can create the path
     if create_path:
-        if filetype != 'excel_writer':
+        if filetype != "excel_writer":
             ensure_path_to_file_exists(out)
         else:
-            msg = ("[utils.write_df]: create_path was passed as True, but the "
+            msg = (
+                "[utils.write_df]: create_path was passed as True, but the "
                 "filetype is 'excel_writer'. This combination does not work. "
-                "The path to the writer will not be created.")
+                "The path to the writer will not be created."
+            )
             logger.warning(msg)
 
-    
-    if filetype == 'csv':
+    if filetype == "csv":
         if do_not_compress:
             df.to_csv(out, **kwargs)
         else:
-            with gzip.open(out, 'wt') as out:
+            with gzip.open(out, "wt") as out:
                 df.to_csv(out, **kwargs)
 
-    elif filetype == 'excel':
+    elif filetype == "excel":
         with pd.ExcelWriter(out) as out:
             df.to_excel(out, sheet[:31], **kwargs)
 
-    elif filetype == 'excel_writer':
+    elif filetype == "excel_writer":
         df.to_excel(out, sheet[:31], **kwargs)
 
-    elif filetype == 'hdf5':
+    elif filetype == "hdf5":
         df.to_hdf(out, sheet, **kwargs)
     else:
-        msg = ("Could not write the dataframe. Invalid filetype: {}".format(
-            filetype))
+        msg = "Could not write the dataframe. Invalid filetype: {}".format(filetype)
         raise ValueError(msg)
 
-def append_to_xlsx(df, xlsx, sheet='Sheet_1', **kwargs):
-    """ This function appends the given dataframe to the excel file if it
-        already exists. If the file does not exist, it will be created.
 
-        N.B. This *will not* work with an open file handle! The xlsx argument
-            *must be* the path to the file.
+def append_to_xlsx(df, xlsx, sheet="Sheet_1", **kwargs):
+    """This function appends the given dataframe to the excel file if it
+    already exists. If the file does not exist, it will be created.
 
-        Args:
-            df (pd.DataFrame): the data frame to write
+    N.B. This *will not* work with an open file handle! The xlsx argument
+        *must be* the path to the file.
 
-            xlsx (string): the path to the excel file.
+    Args:
+        df (pd.DataFrame): the data frame to write
 
-            sheet (string): the name of the sheet, which will be truncated to
-                31 characters
+        xlsx (string): the path to the excel file.
 
-            **kwargs : other keyword arguments to pass to the df.to_XXX method
+        sheet (string): the name of the sheet, which will be truncated to
+            31 characters
 
-        Returns:
-            None
+        **kwargs : other keyword arguments to pass to the df.to_XXX method
 
-        Imports:
-            pandas
-            openpyxl
+    Returns:
+        None
+
+    Imports:
+        pandas
+        openpyxl
     """
-    raise_deprecation_warning("append_to_xlsx", "misc.pandas_utils",
-        "0.3.0", "misc")
+    raise_deprecation_warning("append_to_xlsx", "misc.pandas_utils", "0.3.0", "misc")
     import os
     import pandas as pd
     import openpyxl
@@ -889,7 +937,7 @@ def append_to_xlsx(df, xlsx, sheet='Sheet_1', **kwargs):
     # check if the file already exists
     if os.path.exists(xlsx):
         book = openpyxl.load_workbook(xlsx)
-        with pd.ExcelWriter(xlsx, engine='openpyxl') as writer:
+        with pd.ExcelWriter(xlsx, engine="openpyxl") as writer:
             writer.book = book
             writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
             write_df(df, writer, sheet=sheet, **kwargs)
@@ -897,16 +945,18 @@ def append_to_xlsx(df, xlsx, sheet='Sheet_1', **kwargs):
         # then we can just create it fresh
         write_df(df, xlsx, sheet=sheet, **kwargs)
 
+
 ###
 #   Functions to help with built-in (ish) data structures
 ###
 
+
 def list_to_dict(l, f=None):
-    """ Convert the list to a dictionary in which keys and values are adjacent
+    """Convert the list to a dictionary in which keys and values are adjacent
     in the list. Optionally, a function can be passed to apply to each value
     before adding it to the dictionary.
 
-    Example: 
+    Example:
 
         list = ["key1", "value1", "key2", "value2"]
         dict = {"key1": "value1", "key2": "value2"}
@@ -926,8 +976,7 @@ def list_to_dict(l, f=None):
         The dictionary, defined as described above
     """
     if len(l) % 2 != 0:
-        msg = ("[utils.list_to_dict]: the list must contain an even number"
-            "of elements")
+        msg = "[utils.list_to_dict]: the list must contain an even number" "of elements"
         raise ValueError(msg)
 
     if f is None:
@@ -935,11 +984,12 @@ def list_to_dict(l, f=None):
 
     keys = l[::2]
     values = l[1::2]
-    d = {k:f(v) for k, v in zip(keys, values)}
+    d = {k: f(v) for k, v in zip(keys, values)}
     return d
 
+
 def merge_sets(*set_args):
-    """ Given any number of sets, merge them into a single set
+    """Given any number of sets, merge them into a single set
 
     N.B. This function only performs a "shallow" merge. It does not handle
     nested containers within the "outer" sets.
@@ -957,8 +1007,9 @@ def merge_sets(*set_args):
     ret = {item for s in set_args for item in s}
     return ret
 
+
 def merge_dicts(*dict_args):
-    """ Given any number of dicts, shallow copy and merge into a new dict,
+    """Given any number of dicts, shallow copy and merge into a new dict,
     precedence goes to key value pairs in latter dicts.
 
     This is exactly taken from: http://stackoverflow.com/questions/38987
@@ -968,8 +1019,9 @@ def merge_dicts(*dict_args):
         result.update(dictionary)
     return result
 
+
 def sort_dict_keys_by_value(d):
-    """ Sort the keys in the dictionary by their value and return as a list
+    """Sort the keys in the dictionary by their value and return as a list
 
     This function uses `sorted`, so the values should be able to be sorted
     appropriately by that builtin function.
@@ -977,14 +1029,15 @@ def sort_dict_keys_by_value(d):
     ret = sorted(d, key=d.get)
     return ret
 
+
 def get_type(type_string):
-    """ Find the type object corresponding to the fully qualified class
+    """Find the type object corresponding to the fully qualified class
 
     Parameters
     ----------
     type_string : string
-        A fully qualified class name. 
-        
+        A fully qualified class name.
+
         Example: sklearn.neighbors.regression.KNeighborsRegressor
 
     Returns
@@ -1006,24 +1059,25 @@ def get_type(type_string):
 
     return class_
 
+
 def is_sequence(maybe_sequence):
-    """ This function is a light wrapper around collections.Sequence to check
-        if the provided object is a sequence-like object. It also checks for
-        numpy arrays.
+    """This function is a light wrapper around collections.Sequence to check
+    if the provided object is a sequence-like object. It also checks for
+    numpy arrays.
 
-        The function specifically checks is maybe_sequence is an instance of a
-        string and returns False if it is a string.
+    The function specifically checks is maybe_sequence is an instance of a
+    string and returns False if it is a string.
 
-        Args:
-            maybe_sequence (object) an object which may be a list-like
+    Args:
+        maybe_sequence (object) an object which may be a list-like
 
-        Returns:
-            bool: whether the object is recognized as an instance of
-                collections.Sequence or numpy.ndarray
+    Returns:
+        bool: whether the object is recognized as an instance of
+            collections.Sequence or numpy.ndarray
 
-        Imports:
-            collections
-            numpy
+    Imports:
+        collections
+        numpy
     """
     import collections
     import numpy
@@ -1033,135 +1087,140 @@ def is_sequence(maybe_sequence):
 
     is_sequence = isinstance(maybe_sequence, collections.Sequence)
     is_ndarray = isinstance(maybe_sequence, numpy.ndarray)
-    return  is_sequence or is_ndarray
+    return is_sequence or is_ndarray
+
 
 def wrap_in_list(maybe_list):
-    """ This function checks if maybe_list is a list (or anything derived
-        from list). If not, it wraps it in a list.
+    """This function checks if maybe_list is a list (or anything derived
+    from list). If not, it wraps it in a list.
 
-        The motivation for this function is that some functions return either
-        a single object (e.g., a dictionary) or a list of those objects. The
-        return value of this function can be iterated over safely.
+    The motivation for this function is that some functions return either
+    a single object (e.g., a dictionary) or a list of those objects. The
+    return value of this function can be iterated over safely.
 
-        N.B. This function would not be helpful for ensuring something is a
-        list of lists, for example.
+    N.B. This function would not be helpful for ensuring something is a
+    list of lists, for example.
 
-        Args:
-            maybe_list (obj): an object which may be a list
+    Args:
+        maybe_list (obj): an object which may be a list
 
-        Returns:
-            either maybe_list if it is a list, or maybe_list wrapped in a list
+    Returns:
+        either maybe_list if it is a list, or maybe_list wrapped in a list
     """
     if isinstance(maybe_list, list):
         return maybe_list
     return [maybe_list]
 
+
 def wrap_string_in_list(maybe_string):
-    """ This function checks if maybe_string is a string (or anything derived
-        from str). If so, it wraps it in a list.
+    """This function checks if maybe_string is a string (or anything derived
+    from str). If so, it wraps it in a list.
 
-        The motivation for this function is that some functions return either a
-        single string or multiple strings as a list. The return value of this
-        function can be iterated over safely.
+    The motivation for this function is that some functions return either a
+    single string or multiple strings as a list. The return value of this
+    function can be iterated over safely.
 
-        Args:
-            maybe_string (obj): an object which may be a string
+    Args:
+        maybe_string (obj): an object which may be a string
 
-        Returns:
-            either the original object, or maybe_string wrapped in a list, if
-                it was a string
+    Returns:
+        either the original object, or maybe_string wrapped in a list, if
+            it was a string
     """
     if isinstance(maybe_string, str):
         return [maybe_string]
     return maybe_string
 
+
 def flatten_lists(list_of_lists):
-    """ This function flattens a list of lists into a single list.
+    """This function flattens a list of lists into a single list.
 
-        Args:
-            list_of_lists (list): the list to flatten
+    Args:
+        list_of_lists (list): the list to flatten
 
-        Returns:
-            list: the flattened list
+    Returns:
+        list: the flattened list
     """
     return [item for sublist in list_of_lists for item in sublist]
 
+
 def list_remove_list(l, to_remove):
-    """ This function removes items in to_remove from the list l. Note that 
-        "not in" is used to match items in the list.
+    """This function removes items in to_remove from the list l. Note that
+    "not in" is used to match items in the list.
 
-        Args:
-            l (list): a list
+    Args:
+        l (list): a list
 
-            to_remove (list): a list of things to remove from l
+        to_remove (list): a list of things to remove from l
 
-        Returns:
-            list: a copy of l, excluding items in to_remove
+    Returns:
+        list: a copy of l, excluding items in to_remove
     """
     ret = [i for i in l if i not in to_remove]
     return ret
 
+
 def list_insert_list(l, to_insert, index):
-    """ This function inserts items from one list into another list at the
-        specified index. This function returns a copy; it does not alter the
-        original list.
+    """This function inserts items from one list into another list at the
+    specified index. This function returns a copy; it does not alter the
+    original list.
 
 
-        This function is adapted from: http://stackoverflow.com/questions/7376019/
+    This function is adapted from: http://stackoverflow.com/questions/7376019/
 
-        Example:
+    Example:
 
-        a_list = [ "I", "rad", "list" ]
-        b_list = [ "am", "a" ]
-        c_list = list_insert_list(a_list, b_list, 1)
+    a_list = [ "I", "rad", "list" ]
+    b_list = [ "am", "a" ]
+    c_list = list_insert_list(a_list, b_list, 1)
 
-        print( c_list ) # outputs: ['I', 'am', 'a', 'rad', 'list']
+    print( c_list ) # outputs: ['I', 'am', 'a', 'rad', 'list']
     """
 
     ret = list(l)
     ret[index:index] = list(to_insert)
     return ret
 
+
 def remove_keys(d, to_remove):
-    """ This function removes the given keys from the dictionary d. N.B.,
-        "not in" is used to match the keys.
+    """This function removes the given keys from the dictionary d. N.B.,
+    "not in" is used to match the keys.
 
-        Args:
-            d (dict): a dictionary
+    Args:
+        d (dict): a dictionary
 
-            to_remove (list): a list of keys to remove from d
+        to_remove (list): a list of keys to remove from d
 
-        Returns:
-            dict: a copy of d, excluding keys in to_remove
+    Returns:
+        dict: a copy of d, excluding keys in to_remove
     """
-    ret = {
-        k:v for k,v in d.items() if k not in to_remove
-    }
+    ret = {k: v for k, v in d.items() if k not in to_remove}
     return ret
 
+
 def remove_nones(l, return_np_array=False):
-    """ This function removes "None" values from the given list. Importantly,
-        compared to other single-function tests, this uses "is" and avoids
-        strange behavior with data frames, lists of bools, etc.
+    """This function removes "None" values from the given list. Importantly,
+    compared to other single-function tests, this uses "is" and avoids
+    strange behavior with data frames, lists of bools, etc.
 
-        Optionally, the filtered list can be returned as an np array.
+    Optionally, the filtered list can be returned as an np array.
 
-        This function returns a copy of the list (but not a deep copy).
+    This function returns a copy of the list (but not a deep copy).
 
-        N.B. This does not test nested lists. So, for example, a list of lists
-        of Nones would be unchanged by this function.
+    N.B. This does not test nested lists. So, for example, a list of lists
+    of Nones would be unchanged by this function.
 
-        Args:
-            l (list-like): a list which may contain Nones
+    Args:
+        l (list-like): a list which may contain Nones
 
-            return_np_array (bool): if true, the filtered list will be wrapped
-                in an np.array.
+        return_np_array (bool): if true, the filtered list will be wrapped
+            in an np.array.
 
-        Returns:
-            list: a list or np.array with the Nones removed
+    Returns:
+        list: a list or np.array with the Nones removed
 
-        Imports:
-            numpy
+    Imports:
+        numpy
     """
     import numpy as np
 
@@ -1172,8 +1231,9 @@ def remove_nones(l, return_np_array=False):
 
     return ret
 
+
 def replace_none_with_empty_iter(iterator):
-    """ If it is "None", return an empty iterator; otherwise, return iterator.
+    """If it is "None", return an empty iterator; otherwise, return iterator.
 
     The purpose of this function is to make iterating over results from
     functions which return either an iterator or None cleaner.
@@ -1194,9 +1254,10 @@ def replace_none_with_empty_iter(iterator):
         return []
     return iterator
 
-def open(filename, mode='r', compress=False, is_text=True, *args, **kwargs):
-    """ Return a file handle to the given file. 
-    
+
+def open(filename, mode="r", compress=False, is_text=True, *args, **kwargs):
+    """Return a file handle to the given file.
+
     The only difference between this and the standard open command is that this
     function transparently opens zip files, if specified. If a gzipped file is
     to be opened, the mode is adjusted according to the "is_text" flag.
@@ -1241,11 +1302,11 @@ def open(filename, mode='r', compress=False, is_text=True, *args, **kwargs):
 
 
 def grouper(n, iterable):
-    """ This function returns lists of size n of elements from the iterator. It
-        does not pad the last group.
+    """This function returns lists of size n of elements from the iterator. It
+    does not pad the last group.
 
-        The code was directly take from stackoverflow:
-            http://stackoverflow.com/questions/3992735/
+    The code was directly take from stackoverflow:
+        http://stackoverflow.com/questions/3992735/
 
     """
     iterable = iter(iterable)
@@ -1253,18 +1314,18 @@ def grouper(n, iterable):
 
 
 def nth(iterable, n, default=None):
-    """ Returns the nth item or a default value.
+    """Returns the nth item or a default value.
 
     This code is mildly adapted from the documentation.
 
-    N.B. This returns the *base-0* nth item in the iterator. For example, 
+    N.B. This returns the *base-0* nth item in the iterator. For example,
     nth(range(10), 1) returns 1.
     """
     return next(itertools.islice(iterable, n, None), default)
 
 
 def dict_product(dicts):
-    """ Create an iterator from a GridSearchCV-like dictionary
+    """Create an iterator from a GridSearchCV-like dictionary
 
     This code is directly take from stackoverflow:
         http://stackoverflow.com/a/40623158/621449
@@ -1272,9 +1333,19 @@ def dict_product(dicts):
     return (dict(zip(dicts, x)) for x in itertools.product(*dicts.values()))
 
 
-def call_func_if_not_exists(func, out_files, *args, in_files=[], overwrite=False,
-    call=True, raise_on_error=True, file_checkers=None, to_delete=[],
-    keep_delete_files=False, **kwargs):
+def call_func_if_not_exists(
+    func,
+    out_files,
+    *args,
+    in_files=[],
+    overwrite=False,
+    call=True,
+    raise_on_error=True,
+    file_checkers=None,
+    to_delete=[],
+    keep_delete_files=False,
+    **kwargs
+):
 
     """Call a python function with extra checks on input/output files, etc.
     This is adapted from shell_utils.call_if_not_exists, see this function
@@ -1347,8 +1418,9 @@ def call_func_if_not_exists(func, out_files, *args, in_files=[], overwrite=False
             missing_in_files.append(in_f)
 
     if len(missing_in_files) > 0:
-        msg = "Some input files {} are missing. Skipping call: \n{}:{}".format(missing_in_files,
-                                                                               func_name, all_args)
+        msg = "Some input files {} are missing. Skipping call: \n{}:{}".format(
+            missing_in_files, func_name, all_args
+        )
         logger.warning(msg)
         return
 
@@ -1380,8 +1452,9 @@ def call_func_if_not_exists(func, out_files, *args, in_files=[], overwrite=False
                 msg = "Checking file for validity: {}".format(filename)
                 logger.debug(msg)
 
-                is_valid = checker_function(filename, logger=logger,
-                                        raise_on_error=False)
+                is_valid = checker_function(
+                    filename, logger=logger, raise_on_error=False
+                )
                 if not is_valid:
                     all_valid = False
                     msg = "File {} appears to be corrupted".format(filename)
@@ -1390,8 +1463,9 @@ def call_func_if_not_exists(func, out_files, *args, in_files=[], overwrite=False
                     else:
                         logger.critical(msg)
     else:
-        msg = "All output files {} already exist. Skipping call: \n{}:{}".format(out_files,
-                                                                                 func_name, all_args)
+        msg = "All output files {} already exist. Skipping call: \n{}:{}".format(
+            out_files, func_name, all_args
+        )
         logger.warning(msg)
 
     if (not keep_delete_files) and all_valid:

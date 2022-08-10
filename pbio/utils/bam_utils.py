@@ -10,37 +10,38 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def check_bam_file(filename, check_index=False, raise_on_error=True, logger=logger):
-    """ This function wraps a call to "samtools view" and pipes the output to 
-        /dev/null. Additionally, it optionally checks that the index is present.
-        
-        Optionally, it raises an exception if the return code is 
-        not 0. Otherwise, it writes a "critical" warning message.
+    """This function wraps a call to "samtools view" and pipes the output to
+    /dev/null. Additionally, it optionally checks that the index is present.
 
-        Args:
-            filename (str): a path to the bam file
+    Optionally, it raises an exception if the return code is
+    not 0. Otherwise, it writes a "critical" warning message.
 
-            check_index (bool): check whether the index is present
+    Args:
+        filename (str): a path to the bam file
 
-            raise_on_error (bool): whether to raise an OSError (if True) or log
-                a "critical" message (if false)
+        check_index (bool): check whether the index is present
 
-            logger (logging.Logger): a logger for writing the message if an
-                error is not raised
+        raise_on_error (bool): whether to raise an OSError (if True) or log
+            a "critical" message (if false)
 
-        Returns:
-            bool: whether the file was valid
+        logger (logging.Logger): a logger for writing the message if an
+            error is not raised
 
-        Raises:
-            OSError: if quickcheck does not return 0 and raise_on_error is True
+    Returns:
+        bool: whether the file was valid
 
-        Imports:
-            misc.utils
+    Raises:
+        OSError: if quickcheck does not return 0 and raise_on_error is True
+
+    Imports:
+        misc.utils
     """
     import pbio.misc.utils as utils
     import pbio.misc.shell_utils as shell_utils
-    
-    programs = ['samtools']
+
+    programs = ["samtools"]
     shell_utils.check_programs_exist(programs)
 
     dev_null = utils.abspath("dev", "null")
@@ -67,7 +68,9 @@ def check_bam_file(filename, check_index=False, raise_on_error=True, logger=logg
     ret = shell_utils.check_call_step(cmd, raise_on_error=False)
 
     if ret != 0:
-        msg = "The bam/sam file does not appear to have a valid index: {}".format(filename)
+        msg = "The bam/sam file does not appear to have a valid index: {}".format(
+            filename
+        )
 
         if raise_on_error:
             raise OSError(msg)
@@ -75,13 +78,12 @@ def check_bam_file(filename, check_index=False, raise_on_error=True, logger=logg
         logger.critical(msg)
         return False
 
-
     # then the file and the index was okay
     return True
 
 
 def sort_bam_file(bam, sorted_bam, args):
-    """ Sort bam file, wrapping a call to "samtools sort" via
+    """Sort bam file, wrapping a call to "samtools sort" via
     shell_utils.call_if_not_exists.
 
     Args:
@@ -103,25 +105,27 @@ def sort_bam_file(bam, sorted_bam, args):
         sam_tmp_str = "-T {}".format(sam_tmp_dir)
 
     cmd = "samtools sort {} -@{} -o {} {}".format(
-        bam,
-        args.num_cpus,
-        sorted_bam,
-        sam_tmp_str
+        bam, args.num_cpus, sorted_bam, sam_tmp_str
     )
 
     in_files = [bam]
     out_files = [sorted_bam]
     to_delete = [bam]
-    file_checkers = {
-        sorted_bam: check_bam_file
-    }
-    shell_utils.call_if_not_exists(cmd, out_files, in_files=in_files,
-        file_checkers=file_checkers, overwrite=args.overwrite, call=call,
-        keep_delete_files=keep_delete_files, to_delete=to_delete)
+    file_checkers = {sorted_bam: check_bam_file}
+    shell_utils.call_if_not_exists(
+        cmd,
+        out_files,
+        in_files=in_files,
+        file_checkers=file_checkers,
+        overwrite=args.overwrite,
+        call=call,
+        keep_delete_files=keep_delete_files,
+        to_delete=to_delete,
+    )
 
 
 def index_bam_file(bam, args):
-    """ Index bam file, wrapping a call to "samtools index" via
+    """Index bam file, wrapping a call to "samtools index" via
     shell_utils.call_if_not_exists.
 
     Args:
@@ -137,31 +141,32 @@ def index_bam_file(bam, args):
     cmd = "samtools index -b {} {}".format(bam, bai)
     in_files = [bam]
     out_files = [bai]
-    shell_utils.call_if_not_exists(cmd, out_files, in_files=in_files,
-        overwrite=args.overwrite, call=call)
+    shell_utils.call_if_not_exists(
+        cmd, out_files, in_files=in_files, overwrite=args.overwrite, call=call
+    )
 
 
 def get_pysam_alignment_file(f, mode=None, **kwargs):
-    """ This function checks the type of a given object and returns a pysam
-        AlignmentFile object. If the object is already an AlignmentFile, it
-        is simply returned. If it is a string, then it is treated as a file
-        path and opened as an AlignmentFile. Otherwise, an Exception is raised.
+    """This function checks the type of a given object and returns a pysam
+    AlignmentFile object. If the object is already an AlignmentFile, it
+    is simply returned. If it is a string, then it is treated as a file
+    path and opened as an AlignmentFile. Otherwise, an Exception is raised.
 
-        Args:
-            f (obj): either an existing AlignmentFile or a path to a bam/sam file
+    Args:
+        f (obj): either an existing AlignmentFile or a path to a bam/sam file
 
-            mode (str): the mode for opening the file, if f is a file path
+        mode (str): the mode for opening the file, if f is a file path
 
-            **kwargs : other keyword arguments to pass to the AlignmentFile
-                constructor
+        **kwargs : other keyword arguments to pass to the AlignmentFile
+            constructor
 
-        Returns:
-            pysam.AlignmentFile: the AlignmentFile for f
+    Returns:
+        pysam.AlignmentFile: the AlignmentFile for f
 
-        Raises:
-            TypeError: if f is neither an AlignmentFile nor string
-        Import:
-            pysam
+    Raises:
+        TypeError: if f is neither an AlignmentFile nor string
+    Import:
+        pysam
     """
 
     import pysam
@@ -178,7 +183,7 @@ def get_pysam_alignment_file(f, mode=None, **kwargs):
 
 
 def count_unique_reads(bam, **kwargs):
-    """ Count the number of distinct reads, based on the read names.
+    """Count the number of distinct reads, based on the read names.
 
     Parameters
     ----------
@@ -193,7 +198,7 @@ def count_unique_reads(bam, **kwargs):
     -------
     reads_and_counts: dict of string -> int
         A map from the name of each unique read to the number of times it
-        occurs.The read names are derived from 
+        occurs.The read names are derived from
         pysam.AlignedSegnment.query_name.
     """
     import collections
@@ -206,8 +211,9 @@ def count_unique_reads(bam, **kwargs):
 
     return reads_and_counts
 
+
 def count_aligned_reads(bam, **kwargs):
-    """ Count the number of aligned reads in a bam file.
+    """Count the number of aligned reads in a bam file.
 
     Internally, this function uses get_length_distribution, so please see its
     documentation for more details. In particular, though, it skips secondary
@@ -220,7 +226,7 @@ def count_aligned_reads(bam, **kwargs):
 
     \*\*kwargs: key-value pairs
         Other arguments for the pysam.AlignmentFile constructor. These are
-       
+
     Returns
     -------
     num_aligned_reads: int
@@ -229,11 +235,12 @@ def count_aligned_reads(bam, **kwargs):
     import numpy as np
 
     length_distribution_df = get_length_distribution(bam, **kwargs)
-    num_aligned_reads = np.sum(length_distribution_df['count'])
+    num_aligned_reads = np.sum(length_distribution_df["count"])
     return num_aligned_reads
 
+
 def get_length_distribution(bam, progress_bar=False, **kwargs):
-    """ Count the number of aligned reads of each length is the bam file.
+    """Count the number of aligned reads of each length is the bam file.
 
     This function excludes "unmapped", "secondary", and "supplementary"
     alignments, so each aligned read is only counted once.
@@ -261,7 +268,7 @@ def get_length_distribution(bam, progress_bar=False, **kwargs):
 
     msg = "Opening alignment file"
     logger.debug(msg)
-    
+
     alignment_file = get_pysam_alignment_file(bam, **kwargs)
     length_distribution = collections.defaultdict(int)
 
@@ -276,19 +283,18 @@ def get_length_distribution(bam, progress_bar=False, **kwargs):
 
     if progress_bar:
         alignments = tqdm.tqdm(
-            alignments,
-            leave=True,
-            file=sys.stdout,
-            total=num_alignments
+            alignments, leave=True, file=sys.stdout, total=num_alignments
         )
 
     msg = "Collecting read length distribution"
     logger.debug(msg)
 
     for alignment in alignments:
-        if (alignment.is_unmapped or 
-            alignment.is_secondary or 
-            alignment.is_supplementary):
+        if (
+            alignment.is_unmapped
+            or alignment.is_secondary
+            or alignment.is_supplementary
+        ):
             continue
         length_distribution[alignment.qlen] += 1
 
@@ -296,15 +302,14 @@ def get_length_distribution(bam, progress_bar=False, **kwargs):
     logger.debug(msg)
 
     length_distribution_df = pandas_utils.dict_to_dataframe(
-        length_distribution,
-        key_name='length',
-        value_name='count'
+        length_distribution, key_name="length", value_name="count"
     )
 
     return length_distribution_df
 
+
 def count_uniquely_mapping_reads(bam, logger=logger):
-    """ Count the number of reads in the bam file which map uniquely.
+    """Count the number of reads in the bam file which map uniquely.
 
     Specifically, this function looks for the "NH:i:1" flag in the alignments.
 
@@ -357,11 +362,11 @@ def filter_stranded_by_flag(alignments, strand):
             strand (str): library strandedness (fr or rf)
         Return:
             generator
-        """
+    """
 
     for a in alignments:
         keep = a.is_reverse
-        if strand == 'fr':
+        if strand == "fr":
             keep = not keep
         if keep:
             yield a
@@ -393,7 +398,7 @@ def filter_stranded_library(align_in, align_out, strand, logger=logger):
     msg = "Filter alignments based on library strandedness."
     logger.debug(msg)
 
-    strand_choices = ['fr', 'rf']
+    strand_choices = ["fr", "rf"]
     if strand not in strand_choices:
         msg = "Invalid strand flag, expected one of {}".format(strand_choices)
         raise ValueError(msg)
@@ -404,15 +409,18 @@ def filter_stranded_library(align_in, align_out, strand, logger=logger):
 
     out_bam = get_pysam_alignment_file(align_out, mode="wb", template=bam)
 
-    for a in tqdm.tqdm(filter_stranded_by_flag(alignments, strand),
-                       leave=True, file=sys.stdout, total=num_alignments):
+    for a in tqdm.tqdm(
+        filter_stranded_by_flag(alignments, strand),
+        leave=True,
+        file=sys.stdout,
+        total=num_alignments,
+    ):
         if a is not None:
             out_bam.write(a)
     out_bam.close()
 
 
-def remove_multimappers(align_in, align_out, n_map=1, index=True,
-                        logger=logger):
+def remove_multimappers(align_in, align_out, n_map=1, index=True, logger=logger):
     """Remove multimappers from align_in and write uniquely mapped reads
     to align_out, and index that file. This is solely based on the SAM NH
     attribute, which enumerates multiple alignments of a read starting with 1.
@@ -454,8 +462,12 @@ def remove_multimappers(align_in, align_out, n_map=1, index=True,
 
     out_bam = get_pysam_alignment_file(align_out, mode="wb", template=bam)
 
-    for a in tqdm.tqdm(filter_by_unique_tag_value_pair(alignments, 'NH', n_map),
-                       leave=True, file=sys.stdout, total=num_alignments):
+    for a in tqdm.tqdm(
+        filter_by_unique_tag_value_pair(alignments, "NH", n_map),
+        leave=True,
+        file=sys.stdout,
+        total=num_alignments,
+    ):
         if a is not None:
             out_bam.write(a)
     out_bam.close()
@@ -467,44 +479,44 @@ def remove_multimappers(align_in, align_out, n_map=1, index=True,
             cmd = "samtools index -b {}".format(align_out)
             shell_utils.check_call(cmd, call=True)
         except:
-            msg = ("Failed to index uniquely mapped reads."
-                   "Check if BAM file is sorted!")
+            msg = (
+                "Failed to index uniquely mapped reads." "Check if BAM file is sorted!"
+            )
             logger.debug(msg)
 
 
 # temporary keep this function ** need to adjust calls in Rp-Bp, B-tea
-def remove_multimapping_reads(align_in, align_out, call=True, tmp=None, 
-            logger=logger):
-    """ This functions wraps calls to samtools which remove the multimapping
-        reads from the align_in file and writes them to align_out. It also
-        indexes the output file.
+def remove_multimapping_reads(align_in, align_out, call=True, tmp=None, logger=logger):
+    """This functions wraps calls to samtools which remove the multimapping
+    reads from the align_in file and writes them to align_out. It also
+    indexes the output file.
 
-        N.B. This function *does not* attempt to keep the "best" alignment.
-        Rather, it discards all reads with more than one alignment.
+    N.B. This function *does not* attempt to keep the "best" alignment.
+    Rather, it discards all reads with more than one alignment.
 
-        Args:
-            align_in (string) : the filename of the BAM file which may 
-                contain multimappers
+    Args:
+        align_in (string) : the filename of the BAM file which may
+            contain multimappers
 
-            align_out (string) : the filename of the BAM file which contains
-                only the uniquely mapping reads.
+        align_out (string) : the filename of the BAM file which contains
+            only the uniquely mapping reads.
 
-            call (boolean) : If desired, the function will only print out
-                the calls to samtools, but not actually call them.
+        call (boolean) : If desired, the function will only print out
+            the calls to samtools, but not actually call them.
 
-            tmp (string) : the path where temporary files for samtools sort
-                will be stored. If not given, then the samtools default tmp
-                choice will be used.
+        tmp (string) : the path where temporary files for samtools sort
+            will be stored. If not given, then the samtools default tmp
+            choice will be used.
 
-            logger (logging.Logger): a logger to which status messages will
-                be written
+        logger (logging.Logger): a logger to which status messages will
+            be written
 
-        Returns:
-            None
+    Returns:
+        None
     """
     import pbio.misc.shell_utils as shell_utils
 
-    programs = ['samtools']
+    programs = ["samtools"]
     shell_utils.check_programs_exist(programs)
 
     sam_tmp_str = ""
@@ -514,8 +526,10 @@ def remove_multimapping_reads(align_in, align_out, call=True, tmp=None,
     msg = "Removing multimappers and sorting the remaining reads"
     logger.debug(msg)
 
-    cmd = ("samtools view -h {} | grep '^@\|NH:i:1	' | samtools view -bS  - "
-            "| samtools sort -  -o {} {}".format(align_in, align_out, sam_tmp_str))
+    cmd = (
+        "samtools view -h {} | grep '^@\|NH:i:1	' | samtools view -bS  - "
+        "| samtools sort -  -o {} {}".format(align_in, align_out, sam_tmp_str)
+    )
     shell_utils.check_call(cmd, call=call)
 
     # index
@@ -525,26 +539,27 @@ def remove_multimapping_reads(align_in, align_out, call=True, tmp=None,
     cmd = "samtools index -b {}".format(align_out)
     shell_utils.check_call(cmd, call=call)
 
+
 def get_five_prime_ends(bam, progress_bar=True, count=True, logger=logger):
-    """ This function extracts the 5' ends of all reads in the bam file. It
-        returns the results as a BED6+1 data frame. The additional field is
-        the length of the read of the alignment. A tqdm progress bar is used
-        to show the progress.
+    """This function extracts the 5' ends of all reads in the bam file. It
+    returns the results as a BED6+1 data frame. The additional field is
+    the length of the read of the alignment. A tqdm progress bar is used
+    to show the progress.
 
-        Args:
-            bam (string or pysam.AlignmentFile): either the path to a bam file,
-                or an open pysam.AlignmentFile. See get_pysam_alignment_file
-                for more details about how this is interpreted.
+    Args:
+        bam (string or pysam.AlignmentFile): either the path to a bam file,
+            or an open pysam.AlignmentFile. See get_pysam_alignment_file
+            for more details about how this is interpreted.
 
-            count (bool): if True, then the number of reads in the bam file
-                will first be counted. This allows the progress bar to be more
-                accurate.
+        count (bool): if True, then the number of reads in the bam file
+            will first be counted. This allows the progress bar to be more
+            accurate.
 
-        Imports:
-            numpy
-            pandas
-            pysam
-            tqdm
+    Imports:
+        numpy
+        pandas
+        pysam
+        tqdm
     """
     import numpy as np
     import pandas as pd
@@ -571,7 +586,9 @@ def get_five_prime_ends(bam, progress_bar=True, count=True, logger=logger):
     msg = "Extracting 5' ends of reads from alignments"
     logger.debug(msg)
 
-    for i, a in enumerate(tqdm.tqdm(alignments, leave=True, file=sys.stdout, total=num_alignments)):
+    for i, a in enumerate(
+        tqdm.tqdm(alignments, leave=True, file=sys.stdout, total=num_alignments)
+    ):
         five_prime_ends[i] = a.reference_start
         if a.is_reverse:
             five_prime_ends[i] = a.reference_end
@@ -579,7 +596,7 @@ def get_five_prime_ends(bam, progress_bar=True, count=True, logger=logger):
         lengths[i] = a.qlen
         seqnames[i] = a.reference_name
         strands[i] = "+"
-        
+
         if a.is_reverse:
             strands[i] = "-"
 
@@ -587,18 +604,19 @@ def get_five_prime_ends(bam, progress_bar=True, count=True, logger=logger):
     logger.debug(msg)
 
     alignment_df = pd.DataFrame()
-    alignment_df['seqname'] = seqnames
-    alignment_df['start'] = five_prime_ends
-    alignment_df['end'] = five_prime_ends + 1
-    alignment_df['id'] = "."
-    alignment_df['score'] = 0
-    alignment_df['strand'] = strands
-    alignment_df['length'] = lengths
+    alignment_df["seqname"] = seqnames
+    alignment_df["start"] = five_prime_ends
+    alignment_df["end"] = five_prime_ends + 1
+    alignment_df["id"] = "."
+    alignment_df["score"] = 0
+    alignment_df["strand"] = strands
+    alignment_df["length"] = lengths
 
     return alignment_df
 
+
 def get_read_identifiers(bam):
-    """ Collect the read identifiers from the bam file in a set.
+    """Collect the read identifiers from the bam file in a set.
 
     Parameters
     ----------
@@ -613,10 +631,6 @@ def get_read_identifiers(bam):
     """
     bam = get_pysam_alignment_file(bam)
 
-    ids = {
-        alignment.query_name for alignment in bam
-    }
+    ids = {alignment.query_name for alignment in bam}
 
     return ids
-
-

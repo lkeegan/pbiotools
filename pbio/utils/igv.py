@@ -6,6 +6,7 @@ import os.path as op
 import os
 import sys
 
+
 class IGV(object):
     r"""
     Simple wrapper to the IGV (http://www.broadinstitute.org/software/igv/home)
@@ -64,7 +65,8 @@ class IGV(object):
     """
     _socket = None
     _path = None
-    def __init__(self, host='127.0.0.1', port=60151, snapshot_dir='/tmp/igv'):
+
+    def __init__(self, host="127.0.0.1", port=60151, snapshot_dir="/tmp/igv"):
         self.host = host
         self.port = port
         self.commands = []
@@ -72,21 +74,27 @@ class IGV(object):
         self.set_path(snapshot_dir)
 
     @classmethod
-    def start(cls, jnlp="igv.jnlp", url="http://www.broadinstitute.org/igv/projects/current/"):
+    def start(
+        cls, jnlp="igv.jnlp", url="http://www.broadinstitute.org/igv/projects/current/"
+    ):
         import subprocess
         from threading import Thread
         import time
 
         def readit(ffrom, fto, wait):
-            for line in iter(ffrom.readline, b''):
+            for line in iter(ffrom.readline, b""):
                 line = line.decode()
                 if "Listening on port" in line:
                     wait[0] = False
-                fto.write(line + '\n')
+                fto.write(line + "\n")
             ffrom.close()
 
-        p = subprocess.Popen("/usr/bin/javaws -Xnosplash %s%s" % (url, jnlp),
-                shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(
+            "/usr/bin/javaws -Xnosplash %s%s" % (url, jnlp),
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
 
         wait = [True]
         _tout = Thread(target=readit, args=(p.stdout, sys.stdout, wait))
@@ -96,60 +104,67 @@ class IGV(object):
         _terr.start()
         while p.poll() is None and wait[0]:
             time.sleep(10)
-            print ("waiting", wait)
-
+            print("waiting", wait)
 
     def connect(self):
-        if self._socket: self._socket.close()
+        if self._socket:
+            self._socket.close()
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.connect((self.host, self.port))
 
     def go(self, position):
-        return self.send('goto ' + position)
+        return self.send("goto " + position)
+
     goto = go
 
     def genome(self, name):
-        return self.send('genome ' + name)
+        return self.send("genome " + name)
 
     def load(self, url):
-        return self.send('load ' + url)
+        return self.send("load " + url)
 
-    def sort(self, option='base'):
+    def sort(self, option="base"):
         """
         options is one of: base, position, strand, quality, sample, and
         readGroup.
         """
-        assert option in ("base", "position", "strand", "quality", "sample",
-                         "readGroup")
-        return self.send('sort ' + option)
-
+        assert option in (
+            "base",
+            "position",
+            "strand",
+            "quality",
+            "sample",
+            "readGroup",
+        )
+        return self.send("sort " + option)
 
     def set_path(self, snapshot_dir):
-        if snapshot_dir == self._path: return
+        if snapshot_dir == self._path:
+            return
         if not op.exists(snapshot_dir):
             os.makedirs(snapshot_dir)
 
-        self.send('snapshotDirectory %s' % snapshot_dir)
+        self.send("snapshotDirectory %s" % snapshot_dir)
         self._path = snapshot_dir
 
     def expand(self, track):
-        self.send('expand %s' % track)
+        self.send("expand %s" % track)
 
     def collapse(self, track):
-        self.send('collapse %s' % track)
+        self.send("collapse %s" % track)
 
     def clear(self):
-        self.send('clear')
+        self.send("clear")
 
     def send(self, cmd):
         self.commands.append(cmd)
-        cmd = cmd + '\n'
+        cmd = cmd + "\n"
         cmd = cmd.encode()
         self._socket.send(cmd)
 
         print(cmd)
         ret = self._socket.recv(4096).decode()
-        ret = ret.rstrip('\n')
+        ret = ret.rstrip("\n")
         print("ret:", ret)
         return ret
 
@@ -160,11 +175,14 @@ class IGV(object):
             dirname = op.dirname(path)
             if dirname:
                 self.set_path(dirname)
-            return self.send('snapshot ' + op.basename(path))
+            return self.send("snapshot " + op.basename(path))
         else:
-            return self.send('snapshot')
+            return self.send("snapshot")
+
     snapshot = save
+
 
 if __name__ == "__main__":
     import doctest
+
     doctest.testmod()
