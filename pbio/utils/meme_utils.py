@@ -5,51 +5,53 @@
 import collections
 
 meme_motifs = collections.namedtuple(
-    "meme_motifs",
-    "version,alphabet,strands,background_frequencies,motifs"
+    "meme_motifs", "version,alphabet,strands,background_frequencies,motifs"
 )
 
 motif = collections.namedtuple(
     "motif",
-    ("identifier,alternate_name,probability_matrix_attributes,"
-     "probability_matrix,url")
+    (
+        "identifier,alternate_name,probability_matrix_attributes,"
+        "probability_matrix,url"
+    ),
 )
 
+
 def parse_meme_motifs(meme_motifs_file):
-    """ Parse a meme motifs file into a list of motifs (and some metadata).
-    
-    The file format is described here: 
+    """Parse a meme motifs file into a list of motifs (and some metadata).
+
+    The file format is described here:
         http://meme-suite.org/doc/meme-format.html
-    
+
     N.B. This implementation is likely quite fragile; it has only been tested
     with a few of the files distributed in the official release, version 4.
-    
+
     In general, the field names, etc., follow directly from the official
     documentation, so please refer to it for more details.
-    
+
     Parameters
     ----------
     meme_motifs_file: string
         The path to the meme motifs file
-        
+
     Returns
     -------
     meme_motifs: a meme_motifs namedtuple.
         The fields of the named tuple are:
         - version. float. the version of the meme file
-        
+
         - alphabet. string. the alphabet, as a single string
-        
+
         - strands. list of strings. the specified strands,
             or both strands if none are specified
-        
+
         - background_frequencies. dict. a map from each
             alphabet character to its frequency, or None if
             the background frequencies were not specified.
-        
-        - motifs. dict of motif identifiers to motif 
+
+        - motifs. dict of motif identifiers to motif
             namedtuples. the tuples have these fields.
-            
+
             - identifier
             - alternate_name
             - probability_matrix_attributes
@@ -63,7 +65,7 @@ def parse_meme_motifs(meme_motifs_file):
     strands = ["+", "-"]
     background_frequencies = None
     motifs = {}
-    
+
     read_background = False
 
     with open(meme_motifs_file) as f:
@@ -113,13 +115,14 @@ def parse_meme_motifs(meme_motifs_file):
         alphabet=alphabet,
         strands=strands,
         background_frequencies=background_frequencies,
-        motifs=motifs
+        motifs=motifs,
     )
 
     return mm
 
+
 def _parse_meme_motif(motif_line, f):
-    """ Parse the next meme motif from the file.
+    """Parse the next meme motif from the file.
 
     Parameters
     ----------
@@ -143,17 +146,17 @@ def _parse_meme_motif(motif_line, f):
     import pbio.misc.utils as utils
 
     s = motif_line.split()
-    
+
     if len(s) == 2:
         motif_kw, identifier = s
     if len(s) == 3:
         motif_kw, identifier, alternate_name = s
-    
+
     probability_matrix_attributes = None
     read_letter_probability = False
     all_letter_probabilities = []
     url = None
-    
+
     for line in f:
         ll = line.strip().lower()
 
@@ -172,27 +175,27 @@ def _parse_meme_motif(motif_line, f):
             s = ll.split()
             letter_probabilities = [float(f) for f in s]
             all_letter_probabilities.append(letter_probabilities)
-            
+
         elif ll.startswith("motif"):
             break
-            
+
     letter_probability_matrix = np.array(all_letter_probabilities)
-    
+
     m = motif(
         identifier=identifier,
         alternate_name=alternate_name,
         probability_matrix_attributes=probability_matrix_attributes,
         probability_matrix=letter_probability_matrix,
-        url=url
+        url=url,
     )
-    
+
     return m, line.strip()
-    
+
 
 def read_fimo(fimo_file):
-    """ This function reads the output of fimo into a data frame.
+    """This function reads the output of fimo into a data frame.
 
-    Please see the documentation for more about fimo: 
+    Please see the documentation for more about fimo:
         http://meme-suite.org/doc/fimo.html
 
     Parameters
@@ -215,14 +218,16 @@ def read_fimo(fimo_file):
             matched sequence : the sequence which matched the motif
     """
     import pandas as pd
-    df = pd.read_csv(fimo_file, sep='\t')
+
+    df = pd.read_csv(fimo_file, sep="\t")
     df.columns = [c.replace("#", "") for c in df.columns]
     return df
+
 
 def _parse_ame_ranksum_line(line):
     if line.find("Ranksum p-values") == -1:
         return None
-        
+
     # manually parse out the lines... ugg...
     s = line.strip().split()
     res = {
@@ -234,7 +239,7 @@ def _parse_ame_ranksum_line(line):
         "u_value": float(s[14]),
         "corrected_left_pvalue": float(s[17]),
         "corrected_right_pvalue": float(s[18]),
-        "corrected_twotailed_pvalue": s[19]
+        "corrected_twotailed_pvalue": s[19],
     }
 
     # remove the final ")" from the corrected_twotailed_pvalue
@@ -243,9 +248,10 @@ def _parse_ame_ranksum_line(line):
 
     return res
 
+
 def _parse_ame_fisher_line(line):
-    # example line (split on spaces): 
-    #   
+    # example line (split on spaces):
+    #
     # [0] 1.
     # [1] Fisher's
     # [2] exact
@@ -282,18 +288,16 @@ def _parse_ame_fisher_line(line):
         "u_value": -1,
         "corrected_left_pvalue": corrected_pvalue,
         "corrected_right_pvalue": corrected_pvalue,
-        "corrected_twotailed_pvalue": corrected_pvalue
+        "corrected_twotailed_pvalue": corrected_pvalue,
     }
     return res
 
 
-AME_METHODS = [
-    'fisher',
-    'ranksum'
-]
+AME_METHODS = ["fisher", "ranksum"]
 
-def read_ame(ame_file, method='ranksum'):
-    """ Parse the text output of AME into a data frame.
+
+def read_ame(ame_file, method="ranksum"):
+    """Parse the text output of AME into a data frame.
 
     Please see the documentation for more about AME:
         http://meme-suite.org/doc/ame.html
@@ -305,8 +309,8 @@ def read_ame(ame_file, method='ranksum'):
     The was written based on output from ame version 4.11.2.
 
     The options to ame which may affect the output were:
-        --scoring avg 
-        --method ranksum 
+        --scoring avg
+        --method ranksum
 
     Parameters
     ----------
@@ -314,7 +318,7 @@ def read_ame(ame_file, method='ranksum'):
         The path to the txt output of AME
 
     method: string. see meme_utils.AME_METHODS for allowed methods
-        The method used when running AME. 
+        The method used when running AME.
 
     Returns
     -------
@@ -338,20 +342,22 @@ def read_ame(ame_file, method='ranksum'):
 
     with open(ame_file) as f:
         for line in f:
-            if method == 'ranksum':
+            if method == "ranksum":
                 res = _parse_ame_ranksum_line(line)
-            elif method == 'fisher':
+            elif method == "fisher":
                 res = _parse_ame_fisher_line(line)
-                        
+
             ame_df.append(res)
-            
+
     ame_df = utils.remove_nones(ame_df)
     ame_df = pd.DataFrame(ame_df)
     return ame_df
 
-def get_motif_logo(probability_matrix, prior=None, alphabet=None, 
-        formatter='pdf', **kwargs):
-    """ Create a motif logo based on the probability matrix for a motif.
+
+def get_motif_logo(
+    probability_matrix, prior=None, alphabet=None, formatter="pdf", **kwargs
+):
+    """Create a motif logo based on the probability matrix for a motif.
 
     Parameters
     ----------
@@ -366,7 +372,7 @@ def get_motif_logo(probability_matrix, prior=None, alphabet=None,
         DNA alphabet (ACTG) is used.
 
     formatter: string
-        The format of the image. It must be present in the 
+        The format of the image. It must be present in the
         weblogolib.formatters dictionary.
 
     kwargs: key=value pairs
@@ -389,15 +395,15 @@ def get_motif_logo(probability_matrix, prior=None, alphabet=None,
 
     import corebio.seq
     import weblogolib
-    
+
     alphabet = corebio.seq.unambiguous_dna_alphabet
-    
+
     data = weblogolib.LogoData.from_counts(alphabet, probability_matrix, prior)
     options = weblogolib.LogoOptions(**kwargs)
     logo_format = weblogolib.LogoFormat(data, options)
 
     formatter = weblogolib.formatters[formatter]
-        
+
     logo = formatter(data, logo_format)
-    
+
     return logo

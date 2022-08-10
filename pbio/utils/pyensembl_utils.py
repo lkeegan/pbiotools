@@ -6,8 +6,11 @@ import pyensembl
 
 logger = logging.getLogger(__name__)
 
-def get_transcript_ids_of_gene_id_df(gene_id:str, ensembl:pyensembl.Genome, raise_on_error:bool=False):
-    """ Extract all transcript ids associated with the given gene.
+
+def get_transcript_ids_of_gene_id_df(
+    gene_id: str, ensembl: pyensembl.Genome, raise_on_error: bool = False
+):
+    """Extract all transcript ids associated with the given gene.
 
     Parameters
     ----------
@@ -33,23 +36,23 @@ def get_transcript_ids_of_gene_id_df(gene_id:str, ensembl:pyensembl.Genome, rais
     try:
         transcripts = ensembl.transcript_ids_of_gene_id(gene_id)
     except ValueError as ve:
-        msg = ("['pyensembl_utils.get_transcript_ids_of_gene_id_df]: could not "
-            "find gene id in database: {}".format(gene_id))
+        msg = (
+            "['pyensembl_utils.get_transcript_ids_of_gene_id_df]: could not "
+            "find gene id in database: {}".format(gene_id)
+        )
         if raise_on_error:
             raise ValueError(msg) from ve
         else:
             logger.warning(msg)
             return None
-    
-    ret = [
-        {'transcript_id': t, 'gene_id': gene_id}
-            for t in transcripts
-    ]
-    
+
+    ret = [{"transcript_id": t, "gene_id": gene_id} for t in transcripts]
+
     return ret
 
+
 def get_transcript_ids_of_gene_ids(gene_ids, ensembl):
-    """ Extract the transcript ids to which the given gene ids match.
+    """Extract the transcript ids to which the given gene ids match.
 
     N.B. It is possible for a single transcript id to match to multiple genes.
 
@@ -74,16 +77,19 @@ def get_transcript_ids_of_gene_ids(gene_ids, ensembl):
     import pbio.misc.utils as utils
     import pandas as pd
 
-    id_mapping = parallel.apply_iter_simple(gene_ids, 
-        get_transcript_ids_of_gene_id_df, ensembl)
+    id_mapping = parallel.apply_iter_simple(
+        gene_ids, get_transcript_ids_of_gene_id_df, ensembl
+    )
     id_mapping = utils.flatten_lists(id_mapping)
     id_mapping = utils.remove_nones(id_mapping)
     id_mapping = pd.DataFrame(id_mapping)
     return id_mapping
 
-def get_gene_ids_of_transcript_id(transcript_id:str, ensembl:pyensembl.Genome,
-        raise_on_error:bool=False):
-    """ Extract all gene ids associated with the given transcript.
+
+def get_gene_ids_of_transcript_id(
+    transcript_id: str, ensembl: pyensembl.Genome, raise_on_error: bool = False
+):
+    """Extract all gene ids associated with the given transcript.
 
     Parameters
     ----------
@@ -110,24 +116,23 @@ def get_gene_ids_of_transcript_id(transcript_id:str, ensembl:pyensembl.Genome,
         gene_name = ensembl.gene_name_of_transcript_id(transcript_id)
         gene_ids = ensembl.gene_ids_of_gene_name(gene_name)
     except ValueError as ve:
-        msg = ("['pyensembl_utils.get_gene_ids_of_transcript_id]: could not "
-            "find transcript id in database: {}".format(transcript_id))
+        msg = (
+            "['pyensembl_utils.get_gene_ids_of_transcript_id]: could not "
+            "find transcript id in database: {}".format(transcript_id)
+        )
         if raise_on_error:
             raise ValueError(msg) from ve
         else:
             logger.warning(msg)
             return None
 
-    
-    ret = [
-        {'transcript_id': transcript_id, 'gene_id': g} 
-            for g in gene_ids
-    ]
-    
+    ret = [{"transcript_id": transcript_id, "gene_id": g} for g in gene_ids]
+
     return ret
 
+
 def get_gene_ids_of_transcript_ids(transcript_ids, ensembl):
-    """ Extract the gene ids to which the given transcript ids match.
+    """Extract the gene ids to which the given transcript ids match.
 
     N.B. It is possible for a single transcript id to match to multiple genes.
 
@@ -151,17 +156,20 @@ def get_gene_ids_of_transcript_ids(transcript_ids, ensembl):
     import pbio.misc.parallel as parallel
     import pbio.misc.utils as utils
     import pandas as pd
-    
-    id_mapping = parallel.apply_iter_simple(transcript_ids, 
-        get_gene_ids_of_transcript_id, ensembl)
+
+    id_mapping = parallel.apply_iter_simple(
+        transcript_ids, get_gene_ids_of_transcript_id, ensembl
+    )
     id_mapping = utils.flatten_lists(id_mapping)
     id_mapping = utils.remove_nones(id_mapping)
     id_mapping = pd.DataFrame(id_mapping)
     return id_mapping
 
-def get_gene_name_of_transcript_id(transcript_id:str, ensembl:pyensembl.Genome,
-        raise_on_error:bool=False):
-    """ Extract the gene name (symbol) for this transcript id.
+
+def get_gene_name_of_transcript_id(
+    transcript_id: str, ensembl: pyensembl.Genome, raise_on_error: bool = False
+):
+    """Extract the gene name (symbol) for this transcript id.
 
     The difference between this function and gene_name_of_transcript_id is that
     this function will (optionally) issue a warning rather than raise an
@@ -193,8 +201,10 @@ def get_gene_name_of_transcript_id(transcript_id:str, ensembl:pyensembl.Genome,
     try:
         gene_name = ensembl.gene_name_of_transcript_id(transcript_id)
     except ValueError as ve:
-        msg = ("[pyensembl_utils.get_gene_name_of_transcript_id]: could not "
-            "find match for transcript id: {}".format(transcript_id))
+        msg = (
+            "[pyensembl_utils.get_gene_name_of_transcript_id]: could not "
+            "find match for transcript id: {}".format(transcript_id)
+        )
 
         if raise_on_error:
             raise ValueError(msg) from ve
@@ -203,9 +213,16 @@ def get_gene_name_of_transcript_id(transcript_id:str, ensembl:pyensembl.Genome,
 
     return gene_name
 
-def get_genome(reference_name, gtf, transcript_fasta=None, logging_args=None,
-        annotation_name='ensembl', **kwargs):
-    """ Retrieve the pyensembl annotations associated with the given reference.
+
+def get_genome(
+    reference_name,
+    gtf,
+    transcript_fasta=None,
+    logging_args=None,
+    annotation_name="ensembl",
+    **kwargs
+):
+    """Retrieve the pyensembl annotations associated with the given reference.
 
     The script also creates the database (with the "index" method) if it does
     not already exist.
@@ -229,7 +246,7 @@ def get_genome(reference_name, gtf, transcript_fasta=None, logging_args=None,
         pyensembl appears to change several logging levels while opening the
         annotation database (sometimes?). If the logging arguments are given,
         then they will be restored after opening the database.
-        
+
     annotation_name, kwargs:
         Other options to pass to the pyensembl constructor
     """
@@ -243,7 +260,7 @@ def get_genome(reference_name, gtf, transcript_fasta=None, logging_args=None,
         annotation_name=annotation_name,
         **kwargs
     )
-    
+
     # this will create the database if needed
     ensembl.index()
 

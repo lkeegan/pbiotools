@@ -10,23 +10,26 @@ import pbio.misc.pandas_utils as pandas_utils
 
 import logging
 import pbio.misc.logging_utils as logging_utils
+
 logger = logging.getLogger(__name__)
 
+
 def main():
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         description="This script counts the number of uniquely- and multi-mapping "
-        "reads in a list of bam files.")
+        "reads in a list of bam files.",
+    )
 
-    parser.add_argument('files', help="A glob-style re giving the filenames", 
-        nargs='+')
+    parser.add_argument("files", help="A glob-style re giving the filenames", nargs="+")
 
-    parser.add_argument('-o', '--out', help="A (csv.gz) output file", required=True)
-    
+    parser.add_argument("-o", "--out", help="A (csv.gz) output file", required=True)
+
     logging_utils.add_logging_options(parser)
     args = parser.parse_args()
     logging_utils.update_logging(args)
 
-    datasets= []
+    datasets = []
     aligned_reads = []
     uniquely_aligned_reads = []
 
@@ -45,15 +48,16 @@ def main():
     logger.info(msg)
 
     df = pd.DataFrame()
-    df['dataset'] = datasets
-    df['aligned_reads'] = aligned_reads
-    df['uniquely_aligned_reads'] = uniquely_aligned_reads
-    df['multimapping_reads'] = df['aligned_reads'] - df['uniquely_aligned_reads']
+    df["dataset"] = datasets
+    df["aligned_reads"] = aligned_reads
+    df["uniquely_aligned_reads"] = uniquely_aligned_reads
+    df["multimapping_reads"] = df["aligned_reads"] - df["uniquely_aligned_reads"]
 
     msg = "Writing data frame to disk"
     logger.info(msg)
 
     pandas_utils.write_df(df, args.out, index=False)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

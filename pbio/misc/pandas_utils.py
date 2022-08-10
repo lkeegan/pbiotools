@@ -1,6 +1,6 @@
 """
-This module contains utilities for data frame manipulation. 
- 
+This module contains utilities for data frame manipulation.
+
 This module differs from math_utils because that module treats pandas
 data frames as data matrices (in a statistical/machine learning sense),
 while this module considers data frames more like database tables which
@@ -22,10 +22,12 @@ import pbio.misc.utils as utils
 import typing
 
 import logging
+
 logger = logging.getLogger(__name__)
 
-def dict_to_dataframe(dic, key_name='key', value_name='value'):
-    """ Convert a dictionary into a two-column data frame using the given
+
+def dict_to_dataframe(dic, key_name="key", value_name="value"):
+    """Convert a dictionary into a two-column data frame using the given
     column names. Each entry in the data frame corresponds to one row.
 
     Parameters
@@ -49,119 +51,124 @@ def dict_to_dataframe(dic, key_name='key', value_name='value'):
     df = df.reset_index()
     return df
 
+
 def dataframe_to_dict(df, key_field, value_field):
-    """ This function converts two columns of a data frame into a dictionary.
+    """This function converts two columns of a data frame into a dictionary.
 
-        Args:
-            df (pd.DataFrame): the data frame
+    Args:
+        df (pd.DataFrame): the data frame
 
-            key_field (string): the field to use as the keys in the dictionary
+        key_field (string): the field to use as the keys in the dictionary
 
-            value_field (string): the field to use as the values
+        value_field (string): the field to use as the values
 
-        Returns:
-            dict: a dictionary which has one entry for each row in the data
-                frame, with the keys and values as indicated by the fields
-        
+    Returns:
+        dict: a dictionary which has one entry for each row in the data
+            frame, with the keys and values as indicated by the fields
+
     """
     dic = dict(zip(df[key_field], df[value_field]))
     return dic
 
-excel_extensions = ('xls', 'xlsx')
-hdf5_extensions = ('hdf', 'hdf5', 'h5', 'he5')
-parquet_extensions = ('parq', )
+
+excel_extensions = ("xls", "xlsx")
+hdf5_extensions = ("hdf", "hdf5", "h5", "he5")
+parquet_extensions = ("parq",)
+
 
 def _guess_df_filetype(filename):
-    """ This function attempts to guess the filetype given a filename. It is
-        primarily intended for internal use, namely, for reading and writing
-        dataframes. The supported types and extensions used for guessing are:
+    """This function attempts to guess the filetype given a filename. It is
+    primarily intended for internal use, namely, for reading and writing
+    dataframes. The supported types and extensions used for guessing are:
 
-            excel: xls, xlsx
-            hdf5: hdf, hdf5, h5, he5
-            parquet: parq
-            csv: all other extensions
+        excel: xls, xlsx
+        hdf5: hdf, hdf5, h5, he5
+        parquet: parq
+        csv: all other extensions
 
-        Additionally, if filename is a pd.ExcelWriter object, then the guessed
-        filetype will be 'excel_writer'
+    Additionally, if filename is a pd.ExcelWriter object, then the guessed
+    filetype will be 'excel_writer'
 
-        Args:
-            filename (string): the name of the file for which we will guess
+    Args:
+        filename (string): the name of the file for which we will guess
 
-        Returns:
-            string: the guessed file type. See above for the supported types
-                and extensions.
+    Returns:
+        string: the guessed file type. See above for the supported types
+            and extensions.
 
-        Imports:
-            pandas
+    Imports:
+        pandas
     """
     msg = "Attempting to guess the extension. Filename: {}".format(filename)
     logger.debug(msg)
 
     if isinstance(filename, pd.ExcelWriter):
-        filetype = 'excel_writer'
+        filetype = "excel_writer"
     elif filename.endswith(excel_extensions):
-        filetype = 'excel'
+        filetype = "excel"
     elif filename.endswith(hdf5_extensions):
-        filetype= 'hdf5'
+        filetype = "hdf5"
     elif filename.endswith(parquet_extensions):
-        filetype= 'parquet'
+        filetype = "parquet"
     else:
-        filetype = 'csv'
+        filetype = "csv"
 
     msg = "The guessed filetype was: {}".format(filetype)
     logger.debug(msg)
 
     return filetype
 
-def read_df(filename, filetype='AUTO', sheet=None, **kwargs):
-    """ This function reads a data frame from a file. By default it attempts
-        to guess the type of the file based on its extension. Alternatively,
-        the filetype can be exlicitly specified.  The supported types and
-        extensions used for guessing are:
 
-            excel: xls, xlsx
-            hdf5: hdf, hdf5, h5, he5
-            parquet: parq
-            csv: all other extensions
+def read_df(filename, filetype="AUTO", sheet=None, **kwargs):
+    """This function reads a data frame from a file. By default it attempts
+    to guess the type of the file based on its extension. Alternatively,
+    the filetype can be exlicitly specified.  The supported types and
+    extensions used for guessing are:
 
-        N.B. In principle, matlab data files are hdf5, so this function should
-            be able to read them. This has not been tested, though.
+        excel: xls, xlsx
+        hdf5: hdf, hdf5, h5, he5
+        parquet: parq
+        csv: all other extensions
 
-        Args:
-            filename (string): the input file
+    N.B. In principle, matlab data files are hdf5, so this function should
+        be able to read them. This has not been tested, though.
 
-            filetype (string): the type of file, which determines which pandas
-                read function will be called. If AUTO, the function uses the 
-                extensions mentioned above to guess the filetype.
+    Args:
+        filename (string): the input file
 
-            sheet (string): for excel or hdf5 files, this will be passed
-                to extract the desired information from the file. Please see
-                pandas.read_excel and pandas.read_hdf for more information on
-                how values are interpreted.
+        filetype (string): the type of file, which determines which pandas
+            read function will be called. If AUTO, the function uses the
+            extensions mentioned above to guess the filetype.
 
-            kwards: these will be passed unchanged to the read function
+        sheet (string): for excel or hdf5 files, this will be passed
+            to extract the desired information from the file. Please see
+            pandas.read_excel and pandas.read_hdf for more information on
+            how values are interpreted.
 
-        Returns:
-            pd.DataFrame: a data frame
+        kwards: these will be passed unchanged to the read function
 
-        Raises:
-            ValueError: if the filetype is not 'AUTO' or one of the values
-                mentioned above ('excel', 'hdf5', 'csv')
+    Returns:
+        pd.DataFrame: a data frame
+
+    Raises:
+        ValueError: if the filetype is not 'AUTO' or one of the values
+            mentioned above ('excel', 'hdf5', 'csv')
 
     """
     # first, see if we want to guess the filetype
-    if filetype == 'AUTO':
+    if filetype == "AUTO":
         filetype = _guess_df_filetype(filename)
-        
+
     # now, parse the file
-    if filetype == 'csv':
+    if filetype == "csv":
         df = pd.read_csv(filename, **kwargs)
-    elif filetype == 'excel':
+    elif filetype == "excel":
         df = pd.read_excel(filename, sheetname=sheet, **kwargs)
-    elif filetype == 'hdf5':
+    elif filetype == "hdf5":
         df = pd.read_hdf(filename, key=sheet, **kwargs)
     elif filetype == "parquet":
         import fastparquet
+
         pf = fastparquet.ParquetFile(filename, **kwargs)
 
         # multi-indices are not yet supported, so we always have to turn
@@ -173,107 +180,116 @@ def read_df(filename, filetype='AUTO', sheet=None, **kwargs):
 
     return df
 
-def write_df(df, out, create_path=False, filetype='AUTO', sheet='Sheet_1',
-        do_not_compress=False, **kwargs):
-    """ This function writes a data frame to a file of the specified type. 
-        Unless otherwise specified, csv files are gzipped when written. By
-        default, the filetype will be guessed based on the extension. The 
-        supported types and  extensions used for guessing are:
 
-            excel: xls, xlsx
-            hdf5: hdf, hdf5, h5, he5
-            parquet: parq
-            csv: all other extensions (e.g., "gz" or "bed")
+def write_df(
+    df,
+    out,
+    create_path=False,
+    filetype="AUTO",
+    sheet="Sheet_1",
+    do_not_compress=False,
+    **kwargs
+):
+    """This function writes a data frame to a file of the specified type.
+    Unless otherwise specified, csv files are gzipped when written. By
+    default, the filetype will be guessed based on the extension. The
+    supported types and  extensions used for guessing are:
 
-        Additionally, the filetype can be specified as 'excel_writer'. In this
-        case, the out object is taken to be a pd.ExcelWriter, and the df is
-        appended to the writer. AUTO will also guess this correctly.
+        excel: xls, xlsx
+        hdf5: hdf, hdf5, h5, he5
+        parquet: parq
+        csv: all other extensions (e.g., "gz" or "bed")
 
-        N.B. The hdf5 filetype has not been tested!!!
+    Additionally, the filetype can be specified as 'excel_writer'. In this
+    case, the out object is taken to be a pd.ExcelWriter, and the df is
+    appended to the writer. AUTO will also guess this correctly.
 
-        Parameters
-        ----------
-        df: pd.DataFrame
-            The data frame
+    N.B. The hdf5 filetype has not been tested!!!
 
-        out: string or pd.ExcelWriter
-            The (complete) path to the file.
+    Parameters
+    ----------
+    df: pd.DataFrame
+        The data frame
 
-            The file name WILL NOT be modified. In particular, ".gz" WILL 
-            NOT be added if the file is to be zipped. As mentioned above,
-            if the filetype is passed as 'excel_writer', then this is taken
-            to be a pd.ExcelWriter object.
+    out: string or pd.ExcelWriter
+        The (complete) path to the file.
 
-        create_path: bool
-            Whether to create the path directory structure to the file if it
-            does not already exist.
+        The file name WILL NOT be modified. In particular, ".gz" WILL
+        NOT be added if the file is to be zipped. As mentioned above,
+        if the filetype is passed as 'excel_writer', then this is taken
+        to be a pd.ExcelWriter object.
 
-            N.B. This will not attempt to create the path to an excel_writer
-            since it is possible that it does not yet have one specified.
+    create_path: bool
+        Whether to create the path directory structure to the file if it
+        does not already exist.
 
-        filetype: string
-            The type of output file to write.  If AUTO, the function uses the
-            extensions mentioned above to guess the filetype.
+        N.B. This will not attempt to create the path to an excel_writer
+        since it is possible that it does not yet have one specified.
 
-        sheet: string
-            The name of the sheet (excel) or key (hdf5) to use when writing the
-            file. This argument is not used for csv. For excel, the sheet is
-            limited to 31 characters. It will be trimmed if necessary.
+    filetype: string
+        The type of output file to write.  If AUTO, the function uses the
+        extensions mentioned above to guess the filetype.
 
-        do_not_compress: bool
-            Whether to compress the output. This is only used for csv files.
+    sheet: string
+        The name of the sheet (excel) or key (hdf5) to use when writing the
+        file. This argument is not used for csv. For excel, the sheet is
+        limited to 31 characters. It will be trimmed if necessary.
 
-        **kwargs : other keyword arguments to pass to the df.to_XXX method
+    do_not_compress: bool
+        Whether to compress the output. This is only used for csv files.
 
-        Returns
-        -------
-        None, but the file is created
+    **kwargs : other keyword arguments to pass to the df.to_XXX method
+
+    Returns
+    -------
+    None, but the file is created
     """
-    
+
     # first, see if we want to guess the filetype
-    if filetype == 'AUTO':
+    if filetype == "AUTO":
         filetype = _guess_df_filetype(out)
 
     # check if we want to and can create the path
     if create_path:
-        if filetype != 'excel_writer':
+        if filetype != "excel_writer":
             utils.ensure_path_to_file_exists(out)
         else:
-            msg = ("[utils.write_df]: create_path was passed as True, but the "
+            msg = (
+                "[utils.write_df]: create_path was passed as True, but the "
                 "filetype is 'excel_writer'. This combination does not work. "
-                "The path to the writer will not be created.")
+                "The path to the writer will not be created."
+            )
             logger.warning(msg)
 
-    
-    if filetype == 'csv':
+    if filetype == "csv":
         if do_not_compress:
             df.to_csv(out, **kwargs)
         else:
-            with gzip.open(out, 'wt') as out:
+            with gzip.open(out, "wt") as out:
                 df.to_csv(out, **kwargs)
 
-    elif filetype == 'excel':
+    elif filetype == "excel":
         with pd.ExcelWriter(out) as out:
             df.to_excel(out, sheet[:31], **kwargs)
 
-    elif filetype == 'excel_writer':
+    elif filetype == "excel_writer":
         df.to_excel(out, sheet[:31], **kwargs)
 
-    elif filetype == 'hdf5':
+    elif filetype == "hdf5":
         df.to_hdf(out, sheet, **kwargs)
 
-    elif filetype == 'parquet':
+    elif filetype == "parquet":
         if not do_not_compress:
-            kwargs['compression'] = 'GZIP'
+            kwargs["compression"] = "GZIP"
 
         # handle "index=False" kwarg
-        if 'index' in kwargs:
-            index = kwargs.pop('index')
+        if "index" in kwargs:
+            index = kwargs.pop("index")
 
             # if index is true, then no need to do anything
             # that is the default
             if not index:
-                kwargs['write_index'] = False
+                kwargs["write_index"] = False
 
         # if a parquet "file" exists, delete it
         if os.path.exists(out):
@@ -284,44 +300,45 @@ def write_df(df, out, create_path=False, filetype='AUTO', sheet='Sheet_1',
             else:
                 # delete directory
                 shutil.rmtree(out)
-        
+
         import fastparquet
+
         fastparquet.write(out, df, **kwargs)
 
     else:
-        msg = ("Could not write the dataframe. Invalid filetype: {}".format(
-            filetype))
+        msg = "Could not write the dataframe. Invalid filetype: {}".format(filetype)
         raise ValueError(msg)
 
-def append_to_xlsx(df, xlsx, sheet='Sheet_1', **kwargs):
-    """ This function appends the given dataframe to the excel file if it
-        already exists. If the file does not exist, it will be created.
 
-        N.B. This *will not* work with an open file handle! The xlsx argument
-            *must be* the path to the file.
+def append_to_xlsx(df, xlsx, sheet="Sheet_1", **kwargs):
+    """This function appends the given dataframe to the excel file if it
+    already exists. If the file does not exist, it will be created.
 
-        Args:
-            df (pd.DataFrame): the data frame to write
+    N.B. This *will not* work with an open file handle! The xlsx argument
+        *must be* the path to the file.
 
-            xlsx (string): the path to the excel file.
+    Args:
+        df (pd.DataFrame): the data frame to write
 
-            sheet (string): the name of the sheet, which will be truncated to
-                31 characters
+        xlsx (string): the path to the excel file.
 
-            **kwargs : other keyword arguments to pass to the df.to_XXX method
+        sheet (string): the name of the sheet, which will be truncated to
+            31 characters
 
-        Returns:
-            None
+        **kwargs : other keyword arguments to pass to the df.to_XXX method
 
-        Imports:
-            pandas
-            openpyxl
+    Returns:
+        None
+
+    Imports:
+        pandas
+        openpyxl
     """
 
     # check if the file already exists
     if os.path.exists(xlsx):
         book = openpyxl.load_workbook(xlsx)
-        with pd.ExcelWriter(xlsx, engine='openpyxl') as writer:
+        with pd.ExcelWriter(xlsx, engine="openpyxl") as writer:
             writer.book = book
             writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
             write_df(df, writer, sheet=sheet, **kwargs)
@@ -330,9 +347,8 @@ def append_to_xlsx(df, xlsx, sheet='Sheet_1', **kwargs):
         write_df(df, xlsx, sheet=sheet, **kwargs)
 
 
-
-def split_df(df:pd.DataFrame, num_groups:int):
-    """ Split the df into num_groups roughly equal-sized groups. The groups are
+def split_df(df: pd.DataFrame, num_groups: int):
+    """Split the df into num_groups roughly equal-sized groups. The groups are
     contiguous rows in the data frame.
 
     Parameters
@@ -341,51 +357,56 @@ def split_df(df:pd.DataFrame, num_groups:int):
         the data frame
 
     num_groups: int
-        the number of groups        
+        the number of groups
     """
     parallel_indices = np.arange(len(df)) // (len(df) / num_groups)
     split_groups = df.groupby(parallel_indices)
     return split_groups
 
+
 def group_and_chunk_df(df, groupby_field, chunk_size):
-    """ Group `df` using then given field, and then create "groups of groups"
+    """Group `df` using then given field, and then create "groups of groups"
     with `chunk_size` groups in each outer group
-    
+
     Parameters
     ----------
     df: pd.DataFrame
         the data frame
-        
+
     groupby_field: string
         the field for creating the initial grouping
 
     chunk_size: int
-        the number of groups in each outer group     
+        the number of groups in each outer group
     """
-    
+
     # first, pull out the unique values for the groupby field
-    df_chunks = pd.DataFrame(columns=[groupby_field],data=df[groupby_field].unique())
-    
+    df_chunks = pd.DataFrame(columns=[groupby_field], data=df[groupby_field].unique())
+
     # now, create a map from each unique groupby value to its chunk
     chunk_indices = np.arange(len(df_chunks)) // chunk_size
-    df_chunks['chunk'] = chunk_indices
+    df_chunks["chunk"] = chunk_indices
     stays_chunk_map = dataframe_to_dict(
-        df_chunks,
-        key_field=groupby_field,
-        value_field='chunk'
+        df_chunks, key_field=groupby_field, value_field="chunk"
     )
-    
+
     # finally, determine the chunk of each row in the original data frame
     group_chunks = df[groupby_field].map(stays_chunk_map)
-    
+
     # and create the group chunks
     group_chunks = df.groupby(group_chunks)
-    
+
     return group_chunks
 
-def get_group_extreme(df:pd.DataFrame, ex_field:str, ex_type:str="max",
-        group_fields=None, groups:pd.core.groupby.GroupBy=None):
-    """ Find the row in each group of df with an extreme value for ex_field.
+
+def get_group_extreme(
+    df: pd.DataFrame,
+    ex_field: str,
+    ex_type: str = "max",
+    group_fields=None,
+    groups: pd.core.groupby.GroupBy = None,
+):
+    """Find the row in each group of df with an extreme value for ex_field.
 
     "ex_type" must be either "max" or "min" and indicated which type of extreme
     to consider. Either the "group_field" or "groups" must be given.
@@ -401,7 +422,7 @@ def get_group_extreme(df:pd.DataFrame, ex_field:str, ex_type:str="max",
 
     ex_type: str {"max" or "min"}, case-insensitive
         The type of extreme to consider.
-    
+
     groups: None or pd.core.groupby.GroupBy
         If not None, then these groups will be used to find the maximum values.
 
@@ -416,17 +437,17 @@ def get_group_extreme(df:pd.DataFrame, ex_field:str, ex_type:str="max",
         A data frame with rows which contain the extreme values for the
         indicated groups.
     """
-    
+
     # make sure we were given something by which to group
     if (group_fields is None) and (groups is None):
-        msg = ("[pandas_utils.get_group_extreme]: No groups or group field "
-            "provided")
+        msg = "[pandas_utils.get_group_extreme]: No groups or group field " "provided"
         raise ValueError(msg)
 
     # we also can't have both
     if (group_fields is not None) and (groups is not None):
-        msg = ("[pandas_utils.get_group_extreme]: Both groups and group field "
-            "provided")
+        msg = (
+            "[pandas_utils.get_group_extreme]: Both groups and group field " "provided"
+        )
         raise ValueError(msg)
 
     # and that we have a valid exteme op
@@ -434,8 +455,10 @@ def get_group_extreme(df:pd.DataFrame, ex_field:str, ex_type:str="max",
     is_min = ex_type.lower() == "min"
 
     if not (is_max or is_min):
-        msg = ("[pandas_utils.get_group_extreme]: Invalid ex_type given. "
-            "Choices: \"max\" or \"min\"")
+        msg = (
+            "[pandas_utils.get_group_extreme]: Invalid ex_type given. "
+            'Choices: "max" or "min"'
+        )
         raise ValueError(msg)
 
     # so we either have groups or group_field
@@ -450,15 +473,20 @@ def get_group_extreme(df:pd.DataFrame, ex_field:str, ex_type:str="max",
     ex_rows = df.loc[ex_vals]
     return ex_rows
 
-def groupby_to_generator(groups:pd.core.groupby.GroupBy):
-    """ Convert the groupby object to a generator of data frames """
+
+def groupby_to_generator(groups: pd.core.groupby.GroupBy):
+    """Convert the groupby object to a generator of data frames"""
     for k, g in groups:
         yield g
 
-StrOrList = typing.Union[str,typing.List[str]]
-def join_df_list(dfs:typing.List[pd.DataFrame], join_col:StrOrList, *args,
-        **kwargs) -> pd.DataFrame:
-    """ Join a list of data frames on a common column
+
+StrOrList = typing.Union[str, typing.List[str]]
+
+
+def join_df_list(
+    dfs: typing.List[pd.DataFrame], join_col: StrOrList, *args, **kwargs
+) -> pd.DataFrame:
+    """Join a list of data frames on a common column
 
     Parameters
     ----------
@@ -481,7 +509,7 @@ def join_df_list(dfs:typing.List[pd.DataFrame], join_col:StrOrList, *args,
         adjusted according to the standard pandas suffix approach.
     """
     joined_df = functools.reduce(
-        lambda left,right: pd.merge(left,right,on=join_col), dfs)
+        lambda left, right: pd.merge(left, right, on=join_col), dfs
+    )
 
     return joined_df
-

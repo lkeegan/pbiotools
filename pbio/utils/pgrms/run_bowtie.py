@@ -9,32 +9,49 @@ import pbio.misc.utils as utils
 
 import logging
 import pbio.misc.logging_utils as logging_utils
+
 logger = logging.getLogger(__name__)
 
+
 def main():
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         description="This script runs bowtie2 on all of the provided input files "
         "using the given index. By default, it does not save the alignments, "
         "aligned reads or unaligned reads. The respective flags must be given "
-        "to retain the desired entities.")
+        "to retain the desired entities.",
+    )
 
-    parser.add_argument('index', help="The bowtie2 index")
-    parser.add_argument('out', help="The output directory")
-    parser.add_argument('fastq', help="The fastq files", nargs='+')
+    parser.add_argument("index", help="The bowtie2 index")
+    parser.add_argument("out", help="The output directory")
+    parser.add_argument("fastq", help="The fastq files", nargs="+")
 
-    parser.add_argument('-a', '--alignments', help="If this flag is present, "
-        "the alignments will be present in the output folder", action='store_true')
-    parser.add_argument('--un-gz', help="If this flag is present, then the "
-        "unaligned reads will be present in the output folder", action='store_true')
-    parser.add_argument('--al-gz', help="If this flag is present, then the "
-        "aligned reads will be present in the output folder", action='store_true')
-    
+    parser.add_argument(
+        "-a",
+        "--alignments",
+        help="If this flag is present, "
+        "the alignments will be present in the output folder",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--un-gz",
+        help="If this flag is present, then the "
+        "unaligned reads will be present in the output folder",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--al-gz",
+        help="If this flag is present, then the "
+        "aligned reads will be present in the output folder",
+        action="store_true",
+    )
+
     slurm.add_sbatch_options(parser)
     logging_utils.add_logging_options(parser)
     args = parser.parse_args()
     logging_utils.update_logging(args)
 
-    programs = ['bowtie2', 'call-program']
+    programs = ["bowtie2", "call-program"]
     shell_utils.check_programs_exist(programs)
 
     if not os.path.exists(args.out):
@@ -49,7 +66,7 @@ def main():
 
         out_files = []
 
-        out = utils.abspath("dev","null") # we do not care about the alignments
+        out = utils.abspath("dev", "null")  # we do not care about the alignments
         out_str = "-S {}".format(out)
         if args.alignments:
             n = "{}.bam".format(basename)
@@ -72,10 +89,12 @@ def main():
             out_files.append(n)
 
         cmd = "call-program bowtie2 -p {} --very-fast -x {} -U {} {} {} {}".format(
-            args.num_cpus, args.index, fastq, out_str, un_gz_str, al_gz_str)
+            args.num_cpus, args.index, fastq, out_str, un_gz_str, al_gz_str
+        )
 
         slurm.check_sbatch(cmd, args=args)
-        #shell_utils.check_call(cmd)
+        # shell_utils.check_call(cmd)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def _split_fasta(args):
-    fasta = list(SeqIO.parse(args.fasta, 'fasta'))
+    fasta = list(SeqIO.parse(args.fasta, "fasta"))
 
     # limit the max number of sequences to pass to TMHMM to ~1000
     fasta_len = len(fasta)
@@ -25,7 +25,7 @@ def _split_fasta(args):
         fasta_chunk_size = 1000
     fasta_chunks = []
     for i in range(0, fasta_len, fasta_chunk_size):
-        seqs = [s for s in fasta[i:i + fasta_chunk_size]]
+        seqs = [s for s in fasta[i : i + fasta_chunk_size]]
         fasta_chunks.append(seqs)
 
     # write each chunk to disk
@@ -36,9 +36,9 @@ def _split_fasta(args):
     base_name = os.path.splitext(base_name)[0]
     fasta_chunk_ids = []
     for idx, seqs in enumerate(fasta_chunks):
-        file_name = os.path.join(args.tmp, '{}.{}.fasta'.format(base_name, idx))
+        file_name = os.path.join(args.tmp, "{}.{}.fasta".format(base_name, idx))
         fasta_chunk_ids.append(file_name)
-        SeqIO.write(seqs, file_name, 'fasta')
+        SeqIO.write(seqs, file_name, "fasta")
 
     return fasta_chunk_ids
 
@@ -50,7 +50,7 @@ def _run_tmhmm(fasta_chunk_ids, args):
     all_in_files = []
     all_out_files = []
     for fasta_in in fasta_chunk_ids:
-        out = os.path.splitext(fasta_in)[0] + '.out'
+        out = os.path.splitext(fasta_in)[0] + ".out"
         all_out_files.append(out)
         cmd = "tmhmm -short -workdir {} {} > {}".format(args.tmp, fasta_in, out)
         all_cmds.append(cmd)
@@ -60,9 +60,14 @@ def _run_tmhmm(fasta_chunk_ids, args):
     logger.info(msg)
 
     pool = multiprocessing.Pool(processes=args.num_cpus)
-    pool_results = [pool.apply_async(shell_utils.call_if_not_exists, args=(cmd, out_files),
-                    kwds={'in_files': [in_files], 'overwrite': args.overwrite})
-                    for cmd, out_files, in_files in zip(all_cmds, all_out_files, all_in_files)]
+    pool_results = [
+        pool.apply_async(
+            shell_utils.call_if_not_exists,
+            args=(cmd, out_files),
+            kwds={"in_files": [in_files], "overwrite": args.overwrite},
+        )
+        for cmd, out_files, in_files in zip(all_cmds, all_out_files, all_in_files)
+    ]
     pool.close()
     pool.join()
 
@@ -79,20 +84,27 @@ def _run_tmhmm(fasta_chunk_ids, args):
 
 
 def main():
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-            description="This script wraps calls to TMHMM v2.0. It handles arbitrary large"
-            "multi-fasta files by splitting them into multiple smaller files. TMHMM is run on"
-            "each file and the results are concatenated in the report file. The program must"
-            "be available on the user's path.")
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description="This script wraps calls to TMHMM v2.0. It handles arbitrary large"
+        "multi-fasta files by splitting them into multiple smaller files. TMHMM is run on"
+        "each file and the results are concatenated in the report file. The program must"
+        "be available on the user's path.",
+    )
 
-    parser.add_argument('fasta', help="The input (fasta) file.")
-    parser.add_argument('out', help="The output file name. This uses "
-                                    "the 'short format' option from TMHMM.")
-    parser.add_argument('tmp', help="A temporary output directory.")
+    parser.add_argument("fasta", help="The input (fasta) file.")
+    parser.add_argument(
+        "out",
+        help="The output file name. This uses " "the 'short format' option from TMHMM.",
+    )
+    parser.add_argument("tmp", help="A temporary output directory.")
 
-    parser.add_argument('--num-cpus', type=int)
-    parser.add_argument('--overwrite', help="If this flag is present, then existing files"
-                                            "will be overwritten.", action='store_true')
+    parser.add_argument("--num-cpus", type=int)
+    parser.add_argument(
+        "--overwrite",
+        help="If this flag is present, then existing files" "will be overwritten.",
+        action="store_true",
+    )
 
     logging_utils.add_logging_options(parser)
     args = parser.parse_args()
@@ -100,7 +112,7 @@ def main():
 
     # create sub-directory for output, fasta files are also re-written in this directory
     if os.path.exists(args.tmp):
-        args.tmp = os.path.join(args.tmp, '') + 'tmhmm/'
+        args.tmp = os.path.join(args.tmp, "") + "tmhmm/"
         if not os.path.isdir(args.tmp):
             os.makedirs(args.tmp)
     else:
@@ -117,9 +129,10 @@ def main():
     # collate the outputs and clean up
     msg = "Collate results and writing to: {}.".format(args.out)
     logger.info(msg)
-    cmd = 'cat {} > {}'.format(' '.join(all_out_files), args.out)
-    shell_utils.call_if_not_exists(cmd, args.out, in_files=all_out_files,
-                                   overwrite=args.overwrite, call=True)
+    cmd = "cat {} > {}".format(" ".join(all_out_files), args.out)
+    shell_utils.call_if_not_exists(
+        cmd, args.out, in_files=all_out_files, overwrite=args.overwrite, call=True
+    )
     msg = "Cleaning tmp."
     logger.info(msg)
     for out_file in all_out_files:
@@ -130,5 +143,5 @@ def main():
             logger.info(msg)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -10,16 +10,19 @@ import matplotlib.patches as patches
 import numpy as np
 
 import logging
+
 logger = logging.getLogger(__name__)
 
-def add_fontsizes_to_args(args,
-        legend_title_fontsize=12,
-        legend_fontsize=10,
-        title_fontsize=20,
-        label_fontsize=15,
-        ticklabels_fontsize=10):
-    """ Add reasonable default fontsize values to the arguments
-    """
+
+def add_fontsizes_to_args(
+    args,
+    legend_title_fontsize=12,
+    legend_fontsize=10,
+    title_fontsize=20,
+    label_fontsize=15,
+    ticklabels_fontsize=10,
+):
+    """Add reasonable default fontsize values to the arguments"""
     args.legend_title_fontsize = legend_title_fontsize
     args.legend_fontsize = legend_fontsize
     args.title_fontsize = title_fontsize
@@ -27,9 +30,8 @@ def add_fontsizes_to_args(args,
     args.ticklabels_fontsize = ticklabels_fontsize
 
 
-
 def set_legend_title_fontsize(ax, fontsize):
-    """ Set the font size of the title of the legend.
+    """Set the font size of the title of the legend.
 
     Parameters
     ----------
@@ -44,10 +46,11 @@ def set_legend_title_fontsize(ax, fontsize):
     None, but the legend title fontsize is updated
     """
     legend = ax.legend_
-    plt.setp(legend.get_title(),fontsize=fontsize)
+    plt.setp(legend.get_title(), fontsize=fontsize)
+
 
 def set_legend_fontsize(ax, fontsize):
-    """ Set the font size of the items of the legend.
+    """Set the font size of the items of the legend.
 
     Parameters
     ----------
@@ -62,11 +65,11 @@ def set_legend_fontsize(ax, fontsize):
     None, but the legend text fontsize is updated
     """
     legend = ax.legend_
-    plt.setp(legend.get_texts(),fontsize=fontsize)
+    plt.setp(legend.get_texts(), fontsize=fontsize)
 
-    
+
 def set_title_fontsize(ax, fontsize):
-    """ Set the font size of the title of the axis.
+    """Set the font size of the title of the axis.
 
     Parameters
     ----------
@@ -75,15 +78,16 @@ def set_title_fontsize(ax, fontsize):
 
     fontsize: int, or string mpl recognizes
         The size of the title font
- 
+
     Returns
     -------
     None, but the  title fontsize is updated
     """
     ax.title.set_fontsize(fontsize=fontsize)
 
-def set_label_fontsize(ax, fontsize, axis='both'):
-    """ Set the font size of the label of the axis.
+
+def set_label_fontsize(ax, fontsize, axis="both"):
+    """Set the font size of the label of the axis.
 
     Parameters
     ----------
@@ -100,48 +104,45 @@ def set_label_fontsize(ax, fontsize, axis='both'):
     -------
     None, but the respective label fontsizes are updated
     """
-    if (axis == 'both') or (axis=='x'):
+    if (axis == "both") or (axis == "x"):
         l = ax.xaxis.label
         l.set_fontsize(fontsize)
 
-    if (axis == 'both') or (axis=='y'):
+    if (axis == "both") or (axis == "y"):
         l = ax.yaxis.label
         l.set_fontsize(fontsize)
 
 
-
-
-
 def center_splines(ax):
-    """ This function places the splines of the given axis in the center of the
-        plot. This is useful for things like scatter plots where (0,0) should be
-        in the center of the plot.
+    """This function places the splines of the given axis in the center of the
+    plot. This is useful for things like scatter plots where (0,0) should be
+    in the center of the plot.
 
-        Parameters
-        ----------
-        ax : mpl.Axis
-            The axis
+    Parameters
+    ----------
+    ax : mpl.Axis
+        The axis
 
-        Returns
-        -------
-        None, but the splines are updated
+    Returns
+    -------
+    None, but the splines are updated
     """
-    
-    ax.spines['left'].set_position('zero')
-    ax.spines['right'].set_color('none')
-    ax.spines['bottom'].set_position('zero')
-    ax.spines['top'].set_color('none')
-    #ax.spines['left'].set_smart_bounds(True)
-    #ax.spines['bottom'].set_smart_bounds(True)
-    ax.xaxis.set_ticks_position('bottom')
-    ax.yaxis.set_ticks_position('left')
 
+    ax.spines["left"].set_position("zero")
+    ax.spines["right"].set_color("none")
+    ax.spines["bottom"].set_position("zero")
+    ax.spines["top"].set_color("none")
+    # ax.spines['left'].set_smart_bounds(True)
+    # ax.spines['bottom'].set_smart_bounds(True)
+    ax.xaxis.set_ticks_position("bottom")
+    ax.yaxis.set_ticks_position("left")
 
     ax.xaxis.set_label_coords(0.5, 0)
     ax.yaxis.set_label_coords(-0.05, 0.5)
 
+
 def hide_first_y_tick_label(ax):
-    """ Hide the first tick label on the y-axis.
+    """Hide the first tick label on the y-axis.
 
     Parameters
     ----------
@@ -155,8 +156,9 @@ def hide_first_y_tick_label(ax):
     yticks = ax.yaxis.get_major_ticks()
     yticks[0].label1.set_visible(False)
 
+
 def hide_tick_labels_by_text(ax, to_remove_x=[], to_remove_y=[]):
-    """ Hide tick labels which match the given values.
+    """Hide tick labels which match the given values.
 
     Parameters
     ----------
@@ -168,18 +170,21 @@ def hide_tick_labels_by_text(ax, to_remove_x=[], to_remove_y=[]):
     """
     xticks = ax.xaxis.get_major_ticks()
     num_xticks = len(xticks)
-    keep_x = [i for i in range(num_xticks) if xticks[i].label1.get_text() not in to_remove_x]
-    
-    
+    keep_x = [
+        i for i in range(num_xticks) if xticks[i].label1.get_text() not in to_remove_x
+    ]
+
     yticks = ax.yaxis.get_major_ticks()
     num_yticks = len(yticks)
-    keep_y = [i for i in range(num_yticks) if yticks[i].label1.get_text() not in to_remove_y]
+    keep_y = [
+        i for i in range(num_yticks) if yticks[i].label1.get_text() not in to_remove_y
+    ]
 
     hide_tick_labels(ax, keep_x=keep_x, keep_y=keep_y)
 
 
 def hide_tick_labels(ax, keep_x=[], keep_y=[]):
-    """ Hide the tick labels on both axes. Optionally, some can be preserved.
+    """Hide the tick labels on both axes. Optionally, some can be preserved.
 
     Parameters
     ----------
@@ -209,8 +214,9 @@ def hide_tick_labels(ax, keep_x=[], keep_y=[]):
     for y in keep_y:
         yticks[y].label1.set_visible(True)
 
-def set_ticklabels_fontsize(ax, fontsize, axis='both', which='major'):
-    """ Set the font size of the tick labels.
+
+def set_ticklabels_fontsize(ax, fontsize, axis="both", which="major"):
+    """Set the font size of the tick labels.
 
     Parameters
     ----------
@@ -230,10 +236,13 @@ def set_ticklabels_fontsize(ax, fontsize, axis='both', which='major'):
     """
     ax.tick_params(axis=axis, which=which, labelsize=fontsize)
 
-VALID_AXIS_VALUES = {'x', 'y', 'both'}
-VALID_WHICH_VALUES = {'major', 'minor', 'both'}
-def set_ticklabel_rotation(ax, rotation, axis='x', which='both'):
-    """ Set the rotation of the tick labels.
+
+VALID_AXIS_VALUES = {"x", "y", "both"}
+VALID_WHICH_VALUES = {"major", "minor", "both"}
+
+
+def set_ticklabel_rotation(ax, rotation, axis="x", which="both"):
+    """Set the rotation of the tick labels.
 
     Parameters
     ----------
@@ -261,11 +270,11 @@ def set_ticklabel_rotation(ax, rotation, axis='x', which='both'):
         msg = "{} is not a valid which value".format(which)
         raise ValueError(msg)
 
-    adjust_xaxis = (axis == 'x') or (axis == 'both')
-    adjust_yaxis = (axis == 'y') or (axis == 'both')
+    adjust_xaxis = (axis == "x") or (axis == "both")
+    adjust_yaxis = (axis == "y") or (axis == "both")
 
-    adjust_major = (which == 'major') or (which == 'both')
-    adjust_minor = (which == 'minor') or (which == 'both')
+    adjust_major = (which == "major") or (which == "both")
+    adjust_minor = (which == "minor") or (which == "both")
 
     if adjust_xaxis:
         xticklabels = []
@@ -273,42 +282,54 @@ def set_ticklabel_rotation(ax, rotation, axis='x', which='both'):
             xticklabels.extend(ax.xaxis.get_majorticklabels())
         if adjust_minor:
             xticklabels.extend(ax.xaxis.get_minorticklabels())
-            
+
         plt.setp(xticklabels, rotation=rotation)
-    
+
     if adjust_yaxis:
         yticklabels = []
         if adjust_major:
             yticklabels.extend(ax.yaxis.get_majorticklabels())
         if adjust_minor:
             yticklabels.extend(ax.yaxis.get_minorticklabels())
-            
+
         plt.setp(yticklabels, rotation=rotation)
 
 
-
 def remove_top_and_right_splines(ax):
-    """ This function removes the spines on the top and right of the axis.
+    """This function removes the spines on the top and right of the axis.
 
-        Parameters
-        ----------
-        ax : mpl.Axis
-            The axis
+    Parameters
+    ----------
+    ax : mpl.Axis
+        The axis
 
-        Returns
-        -------
-        None, but the splines and ticks of the axis are updated
+    Returns
+    -------
+    None, but the splines and ticks of the axis are updated
     """
 
-    ax.spines['top'].set_color('none')
-    ax.spines['right'].set_color('none')
-    ax.xaxis.set_ticks_position('bottom')
-    ax.yaxis.set_ticks_position('left')
+    ax.spines["top"].set_color("none")
+    ax.spines["right"].set_color("none")
+    ax.xaxis.set_ticks_position("bottom")
+    ax.yaxis.set_ticks_position("left")
 
-def plot_roc_curve(tpr, fpr, auc=None, field_names=None, out=None, cmaps=None, alphas=None, 
-    title="Receiver operating characteristic curves", font_size=20, legend_font_size=15, 
-    top_adjustment=0.9, xlabel="False positive rate", ylabel="True positive rate"):
-    
+
+def plot_roc_curve(
+    tpr,
+    fpr,
+    auc=None,
+    field_names=None,
+    out=None,
+    cmaps=None,
+    alphas=None,
+    title="Receiver operating characteristic curves",
+    font_size=20,
+    legend_font_size=15,
+    top_adjustment=0.9,
+    xlabel="False positive rate",
+    ylabel="True positive rate",
+):
+
     import numpy as np
     import matplotlib.pyplot as plt
     import matplotlib.colors
@@ -332,23 +353,30 @@ def plot_roc_curve(tpr, fpr, auc=None, field_names=None, out=None, cmaps=None, a
         if auc is not None:
             l += " "
             l += "AUC: {:.2f}".format(auc[i])
-                
-        color = 'k' # cmap(i/len(tpr))
+
+        color = "k"  # cmap(i/len(tpr))
         for j in range(1, len(fpr[i])):
-            points_y = [tpr[i][j-1], tpr[i][j]]
-            points_x = [fpr[i][j-1], fpr[i][j]]
+            points_y = [tpr[i][j - 1], tpr[i][j]]
+            points_x = [fpr[i][j - 1], fpr[i][j]]
             # this plots the lines connecting each point
-            ax.plot( points_x, points_y, color=color, zorder=1 )
+            ax.plot(points_x, points_y, color=color, zorder=1)
 
+        ax.scatter(
+            fpr[i],
+            tpr[i],
+            label=l,
+            linewidths=0.1,
+            c=alphas[i],
+            cmap=cmaps[i],
+            zorder=2,
+        )
 
-        ax.scatter(fpr[i], tpr[i], label=l, linewidths=0.1, c=alphas[i], cmap=cmaps[i], zorder=2)
+    ax.plot([0, 1], [0, 1])
+    ax.set_aspect("equal")
+    ax.set_xlim((0, 1))
+    ax.set_ylim((0, 1))
 
-    ax.plot([0,1], [0,1])
-    ax.set_aspect('equal')
-    ax.set_xlim((0,1))
-    ax.set_ylim((0,1))
-
-    ax.legend(loc='lower right', fontsize=legend_font_size)
+    ax.legend(loc="lower right", fontsize=legend_font_size)
 
     if title != None and len(title) > 0:
         fig.suptitle(title, fontsize=font_size)
@@ -359,27 +387,28 @@ def plot_roc_curve(tpr, fpr, auc=None, field_names=None, out=None, cmaps=None, a
     fig.subplots_adjust(top=top_adjustment)
 
     if out is not None:
-        plt.savefig(out, bbox_inches='tight')
+        plt.savefig(out, bbox_inches="tight")
+
 
 def plot_confusion_matrix(
-        confusion_matrix,
-        ax=None,
-        show_cell_labels=True,
-        show_colorbar=True,
-        title="Confusion matrix", 
-        cmap=None, 
-        true_tick_labels = None, 
-        predicted_tick_labels = None, 
-        ylabel="True labels", 
-        xlabel="Predicted labels", 
-        title_font_size=20, 
-        label_font_size=15,
-        true_tick_rotation=None,
-        predicted_tick_rotation=None,
-        out=None):
+    confusion_matrix,
+    ax=None,
+    show_cell_labels=True,
+    show_colorbar=True,
+    title="Confusion matrix",
+    cmap=None,
+    true_tick_labels=None,
+    predicted_tick_labels=None,
+    ylabel="True labels",
+    xlabel="Predicted labels",
+    title_font_size=20,
+    label_font_size=15,
+    true_tick_rotation=None,
+    predicted_tick_rotation=None,
+    out=None,
+):
 
-    """ Plot the given confusion matrix
-    """
+    """Plot the given confusion matrix"""
     if ax is None:
         fig, ax = plt.subplots()
     else:
@@ -389,12 +418,12 @@ def plot_confusion_matrix(
     if cmap == None:
         cmap = plt.cm.Blues
 
-    mappable = ax.imshow(confusion_matrix, interpolation='nearest', cmap=cmap)
-    
+    mappable = ax.imshow(confusion_matrix, interpolation="nearest", cmap=cmap)
+
     if show_colorbar:
         fig.colorbar(mappable)
     ax.grid(False)
-    
+
     true_tick_marks = np.arange(confusion_matrix.shape[0])
     ax.set_ylabel(ylabel, fontsize=label_font_size)
     ax.set_yticks(true_tick_marks)
@@ -403,11 +432,9 @@ def plot_confusion_matrix(
         true_tick_labels = list(true_tick_marks)
 
     ax.set_yticklabels(
-        true_tick_labels,
-        fontsize=label_font_size,
-        rotation=true_tick_rotation
+        true_tick_labels, fontsize=label_font_size, rotation=true_tick_rotation
     )
-    
+
     predicted_tick_marks = np.arange(confusion_matrix.shape[1])
     ax.set_xlabel(xlabel, fontsize=label_font_size)
     ax.set_xticks(predicted_tick_marks)
@@ -418,7 +445,7 @@ def plot_confusion_matrix(
     ax.set_xticklabels(
         predicted_tick_labels,
         fontsize=label_font_size,
-        rotation=predicted_tick_rotation
+        rotation=predicted_tick_rotation,
     )
 
     if show_cell_labels:
@@ -428,76 +455,89 @@ def plot_confusion_matrix(
 
         s = confusion_matrix.shape
         it = itertools.product(range(s[0]), range(s[1]))
-        for i,j in it:
-            
-            val = confusion_matrix[i,j]
+        for i, j in it:
+
+            val = confusion_matrix[i, j]
             cell_color = cmap(mappable.norm(val))
 
             # see the SO thread mentioned above
             color_intensity = (
-                (255*cell_color[0] * 299) +
-                (255*cell_color[1] * 587) +
-                (255*cell_color[2] * 114)
+                (255 * cell_color[0] * 299)
+                + (255 * cell_color[1] * 587)
+                + (255 * cell_color[2] * 114)
             ) / 1000
 
-            
             font_color = "white"
             if color_intensity > color_threshold:
                 font_color = "black"
             text = val
-            ax.text(j, i, text, ha='center', va='center', color=font_color,
-                size=label_font_size)
-    
+            ax.text(
+                j,
+                i,
+                text,
+                ha="center",
+                va="center",
+                color=font_color,
+                size=label_font_size,
+            )
+
     ax.set_title(title, fontsize=title_font_size)
     fig.tight_layout()
 
     if out is not None:
-        plt.savefig(out, bbox_inches='tight')
+        plt.savefig(out, bbox_inches="tight")
 
-def plot_venn_diagram(sets, ax=None, set_labels=None, weighted=False, use_sci_notation=False,
-                               labels_fontsize=14, counts_fontsize=12, sci_notation_limit=999):
 
-    """ This function is a wrapper around matplotlib_venn. It most just makes
-        setting the fonts and and label formatting a bit easier.
+def plot_venn_diagram(
+    sets,
+    ax=None,
+    set_labels=None,
+    weighted=False,
+    use_sci_notation=False,
+    labels_fontsize=14,
+    counts_fontsize=12,
+    sci_notation_limit=999,
+):
 
-        Args:
-            sets: either a dictionary, a list-like of two sets or a list-like of
-                three sets. If a dictionary, it must follow the conventions of
-                matplotlib_venn. If a dictionary is given, the number of sets
-                will be guessed based on the length of a random key.
+    """This function is a wrapper around matplotlib_venn. It most just makes
+    setting the fonts and and label formatting a bit easier.
 
-            ax (mpl.axis): an axis for drawing
+    Args:
+        sets: either a dictionary, a list-like of two sets or a list-like of
+            three sets. If a dictionary, it must follow the conventions of
+            matplotlib_venn. If a dictionary is given, the number of sets
+            will be guessed based on the length of a random key.
 
-            set_labels (list of strings): the label for each set. The order
-                of the labels must match the order of the sets
+        ax (mpl.axis): an axis for drawing
 
-            weighted (bool): whether to draw a weighted or unweighted diagram
+        set_labels (list of strings): the label for each set. The order
+            of the labels must match the order of the sets
 
-            use_sci_notation (bool): whether to convert numbers to scientific
-                notation
+        weighted (bool): whether to draw a weighted or unweighted diagram
 
-            sci_notation_limit (float): the maximum number to show before
-                switching to scientific notation
+        use_sci_notation (bool): whether to convert numbers to scientific
+            notation
 
-            labels_fontsize, counts_fontsize (int): the respective fontsizes
+        sci_notation_limit (float): the maximum number to show before
+            switching to scientific notation
 
-        Returns:
-            matplotlib_venn.VennDiagram: the diagram
+        labels_fontsize, counts_fontsize (int): the respective fontsizes
 
-        Imports:
-            matplotlib_venn
+    Returns:
+        matplotlib_venn.VennDiagram: the diagram
+
+    Imports:
+        matplotlib_venn
 
     """
 
-
     import matplotlib_venn
 
-    
     key_len = 0
     if isinstance(sets, dict):
         random_key = list(sets.keys())[0]
         key_len = len(random_key)
-    
+
     if (len(sets) == 2) or (key_len == 2):
         if weighted:
             v = matplotlib_venn.venn2(sets, ax=ax, set_labels=set_labels)
@@ -511,18 +551,17 @@ def plot_venn_diagram(sets, ax=None, set_labels=None, weighted=False, use_sci_no
     else:
         msg = "Only two or three sets are supported"
         raise ValueError(msg)
-    
-    
+
     for l in v.set_labels:
         if l is not None:
             l.set_fontsize(labels_fontsize)
-        
+
     for l in v.subset_labels:
         if l is None:
             continue
 
         l.set_fontsize(counts_fontsize)
-        
+
         if use_sci_notation:
             val = int(l.get_text())
             if val > sci_notation_limit:
@@ -531,42 +570,44 @@ def plot_venn_diagram(sets, ax=None, set_labels=None, weighted=False, use_sci_no
 
     return v
 
-def create_simple_bar_chart(ax,
-                            bars,
-                            labels=None,
-                            colors=None, # this will not accept an (rgba list-like specification)
-                            xticklabels='default',
-                            xticklabels_rotation='vertical',
-                            xlabel=None,
-                            spacing=0,
-                            ymin=None,
-                            ymax=None,
-                            ylabel=None,
-                            use_log_scale=False,
-                            hide_first_ytick=True,
-                            show_legend=False,
-                            title=None,
-                            fontsize=12,
-                            label_fontsize=12,
-                            legend_fontsize=12,
-                            title_fontsize=12
-                           ):
+
+def create_simple_bar_chart(
+    ax,
+    bars,
+    labels=None,
+    colors=None,  # this will not accept an (rgba list-like specification)
+    xticklabels="default",
+    xticklabels_rotation="vertical",
+    xlabel=None,
+    spacing=0,
+    ymin=None,
+    ymax=None,
+    ylabel=None,
+    use_log_scale=False,
+    hide_first_ytick=True,
+    show_legend=False,
+    title=None,
+    fontsize=12,
+    label_fontsize=12,
+    legend_fontsize=12,
+    title_fontsize=12,
+):
 
     import numpy as np
     import matplotlib.colors
     import matplotlib.pyplot as plt
     import pbio.misc.utils as utils
-    
+
     mpl_bars = []
 
     # first, handle the bars
-    
+
     # TODO: check that the bar arrays are all the same length
     xticks = np.arange(len(bars[0]))
-    
-    width = 1 - 2*spacing
+
+    width = 1 - 2 * spacing
     width /= len(bars)
-    
+
     # figure out what to do with "colors"
     if colors is None:
         colors = plt.cm.Blues
@@ -576,68 +617,67 @@ def create_simple_bar_chart(ax,
         ls = np.linspace(0, 1, len(bars))
         color_vals = [colors(c) for c in ls]
         colors = color_vals
-        
+
     elif utils.is_sequence(colors):
         # make sure this is the correct size
         if len(colors) != len(bars):
-            msg = ("The number of colors ({}) and the number of bars({}) does "
-                "not match.".format(len(colors), len(bars)))
+            msg = (
+                "The number of colors ({}) and the number of bars({}) does "
+                "not match.".format(len(colors), len(bars))
+            )
             raise ValueError(msg)
     else:
         # we assume color is a scalar, and we will use the same color
         # for all bars
         colors = [colors] * len(bars)
-        
+
     if labels is None:
         labels = np.full(len(bars), "", dtype=object)
 
     for i, bar in enumerate(bars):
-        xpos = xticks + i*width
+        xpos = xticks + i * width
         if len(bar) < len(xpos):
-            xpos = xpos[:len(bar)]
+            xpos = xpos[: len(bar)]
         mpl_bar = ax.bar(xpos, bar, width=width, color=colors[i], label=labels[i])
         mpl_bars.append(mpl_bar)
-        
-    
+
     # now the x-axis
     if xticklabels == "default":
         xticklabels = xticks
-       
 
     tick_offset = 0.5 - spacing
 
     if xticklabels is not None:
-        ax.set_xticks(xticks+tick_offset)
-        ax.set_xticklabels(xticklabels, fontsize=fontsize, 
-                        rotation=xticklabels_rotation)
+        ax.set_xticks(xticks + tick_offset)
+        ax.set_xticklabels(
+            xticklabels, fontsize=fontsize, rotation=xticklabels_rotation
+        )
     else:
-        ax.tick_params(axis='x', 
-                        which='both', 
-                        bottom='off',
-                        top='off',
-                        labelbottom='off')
+        ax.tick_params(
+            axis="x", which="both", bottom="off", top="off", labelbottom="off"
+        )
 
-    ax.set_xlim((-width, len(xticks)+width/2))
-    
+    ax.set_xlim((-width, len(xticks) + width / 2))
+
     if xlabel is not None:
         ax.set_xlabel(xlabel, fontsize=label_fontsize)
-    
+
     # and the y-axis
     if use_log_scale:
-        ax.set_yscale('log')
+        ax.set_yscale("log")
 
     if ymin is None:
         ymin = 0
         if use_log_scale:
-            ymin=1
+            ymin = 1
 
     if ymax is None:
-        ymax = 2*max(max(x) for x in bars)
-    
+        ymax = 2 * max(max(x) for x in bars)
+
     ax.set_ylim((ymin, ymax))
     if ylabel is not None:
         ax.set_ylabel(ylabel, fontsize=label_fontsize)
-    
+
     if hide_first_ytick:
         yticks = ax.yaxis.get_major_ticks()
         yticks[0].label1.set_visible(False)
@@ -649,72 +689,72 @@ def create_simple_bar_chart(ax,
     # and the title
     if title is not None:
         ax.set_title(title, fontsize=title_fontsize)
-    
+
     return mpl_bars
 
 
 def get_diff_counts(data_np):
-    """ This function extracts the differential counts necessary for visualization
-        with stacked_bar_graph. It assumes the counts for each bar are given as a
-        separate row in the numpy 2-d array. Within the rows, the counts are ordered
-        in ascending order. That is, the first column contains the smallest count, the
-        second column contains the next-smallest count, etc.
-        
-        For example, if the columns represnt some sort of filtering approach, then the
-        last column would contain the unfiltered count, the next-to-last column 
-        would give the count after the first round of filtering, etc.
+    """This function extracts the differential counts necessary for visualization
+    with stacked_bar_graph. It assumes the counts for each bar are given as a
+    separate row in the numpy 2-d array. Within the rows, the counts are ordered
+    in ascending order. That is, the first column contains the smallest count, the
+    second column contains the next-smallest count, etc.
+
+    For example, if the columns represnt some sort of filtering approach, then the
+    last column would contain the unfiltered count, the next-to-last column
+    would give the count after the first round of filtering, etc.
     """
-    
+
     # add an extra column so the diff counts will work
     zeros = np.zeros((data_np.shape[0], 1))
     data_np = np.append(zeros, data_np, axis=1)
-    
+
     # get the diffs so the stacks work correctly
     diff = np.diff(data_np)
     return diff
 
 
 def create_stacked_bar_graph(
-                   ax,                                 # axes to plot onto
-                   data,                               # data to plot
-                   colors=plt.cm.Blues,                # color map for each level or list of colors
-                   x_tick_labels = None,                     # bar specific labels
-                   stack_labels=None,                        # the text for the legend
-                   y_ticks = None,                        # information used for making y ticks
-                   y_tick_labels=None,
-                   hide_first_ytick=True,
-                   edge_colors=None,                      # colors for edges
-                   showFirst=-1,                       # only plot the first <showFirst> bars
-                   scale=False,                        # scale bars to same height
-                   widths=None,                        # set widths for each bar
-                   heights=None,                       # set heights for each bar
-                   y_title=None,                          # label for x axis
-                   x_title=None,                          # label for y axis
-                   gap=0.,                             # gap between bars
-                   end_gaps=False,                      # allow gaps at end of bar chart (only used if gaps != 0.)
-                   show_legend=True,                   # whether to show the legend
-                   legend_loc="best",                  # if using a legend, its location
-                   legend_bbox_to_anchor=None,         # for the legend
-                   legend_ncol=-1,                     # for the legend
-                   log=False,                          # whether to use a log scale
-                   font_size=8,                        # the font size to use for the tick labels
-                   label_font_size=12,                 # the font size for the labels
-                   legend_font_size=8
-                   ):
-    """ Create a stacked bar plot with the given characteristics. 
-    
+    ax,  # axes to plot onto
+    data,  # data to plot
+    colors=plt.cm.Blues,  # color map for each level or list of colors
+    x_tick_labels=None,  # bar specific labels
+    stack_labels=None,  # the text for the legend
+    y_ticks=None,  # information used for making y ticks
+    y_tick_labels=None,
+    hide_first_ytick=True,
+    edge_colors=None,  # colors for edges
+    showFirst=-1,  # only plot the first <showFirst> bars
+    scale=False,  # scale bars to same height
+    widths=None,  # set widths for each bar
+    heights=None,  # set heights for each bar
+    y_title=None,  # label for x axis
+    x_title=None,  # label for y axis
+    gap=0.0,  # gap between bars
+    end_gaps=False,  # allow gaps at end of bar chart (only used if gaps != 0.)
+    show_legend=True,  # whether to show the legend
+    legend_loc="best",  # if using a legend, its location
+    legend_bbox_to_anchor=None,  # for the legend
+    legend_ncol=-1,  # for the legend
+    log=False,  # whether to use a log scale
+    font_size=8,  # the font size to use for the tick labels
+    label_font_size=12,  # the font size for the labels
+    legend_font_size=8,
+):
+    """Create a stacked bar plot with the given characteristics.
+
     This code is adapted from code by Michael Imelfort.
     """
 
     import pbio.misc.utils as utils
 
-#------------------------------------------------------------------------------
-# data fixeratering
+    # ------------------------------------------------------------------------------
+    # data fixeratering
 
     # make sure this makes sense
     if showFirst != -1:
         showFirst = np.min([showFirst, np.shape(data)[0]])
-        data_copy = np.copy(data[:showFirst]).transpose().astype('float')
+        data_copy = np.copy(data[:showFirst]).transpose().astype("float")
         data_shape = np.shape(data_copy)
         if heights is not None:
             heights = heights[:showFirst]
@@ -738,33 +778,34 @@ def create_stacked_bar_graph(
             print("widths: ", widths)
         x = [0]
         for i in range(1, len(widths)):
-            #x.append(x[i-1] + (widths[i-1] + widths[i])/2)
-            x.append(x[i-1] + widths[i])
+            # x.append(x[i-1] + (widths[i-1] + widths[i])/2)
+            x.append(x[i - 1] + widths[i])
 
     # stack the data --
     # replace the value in each level by the cumulative sum of all preceding levels
-    data_stack = np.reshape([float(i) for i in np.ravel(np.cumsum(data_copy, axis=0))], data_shape)
+    data_stack = np.reshape(
+        [float(i) for i in np.ravel(np.cumsum(data_copy, axis=0))], data_shape
+    )
 
     # scale the data is needed
     if scale:
-        data_copy /= data_stack[levels-1]
-        data_stack /= data_stack[levels-1]
+        data_copy /= data_stack[levels - 1]
+        data_stack /= data_stack[levels - 1]
         if heights is not None:
             print("WARNING: setting scale and heights does not make sense.")
             heights = None
     elif heights is not None:
-        data_copy /= data_stack[levels-1]
-        data_stack /= data_stack[levels-1]
+        data_copy /= data_stack[levels - 1]
+        data_stack /= data_stack[levels - 1]
         for i in np.arange(num_bars):
-            data_copy[:,i] *= heights[i]
-            data_stack[:,i] *= heights[i]
-# plot
-
+            data_copy[:, i] *= heights[i]
+            data_stack[:, i] *= heights[i]
+    # plot
 
     # if we were given a color map, convert it to a list of colors
     if isinstance(colors, matplotlib.colors.Colormap):
-        colors = [ colors(i/levels) for i in range(levels)]
-    
+        colors = [colors(i / levels) for i in range(levels)]
+
     if edge_colors is None:
         edge_colors = colors
     elif not utils.is_sequence(edge_colors):
@@ -777,40 +818,42 @@ def create_stacked_bar_graph(
     gapd_widths = [i - gap for i in widths]
 
     if stack_labels is None:
-        stack_labels = np.full(levels, '', dtype=object)
+        stack_labels = np.full(levels, "", dtype=object)
 
     # bars
     bars = []
-    bar = ax.bar(x,
-           data_stack[0],
-           color=colors[0],
-           edgecolor=edge_colors[0],
-           width=gapd_widths,
-           linewidth=0.5,
-           align='center',
-           label=stack_labels[0],
-           log=log
-           )
+    bar = ax.bar(
+        x,
+        data_stack[0],
+        color=colors[0],
+        edgecolor=edge_colors[0],
+        width=gapd_widths,
+        linewidth=0.5,
+        align="center",
+        label=stack_labels[0],
+        log=log,
+    )
     bars.append(bar)
 
-    for i in np.arange(1,levels):
-        bar = ax.bar(x,
-               data_copy[i],
-               bottom=data_stack[i-1],
-               color=colors[i],
-               edgecolor=edge_colors[i],
-               width=gapd_widths,
-               linewidth=0.5,
-               align='center',
-               label=stack_labels[i],
-               log=log
-               )
+    for i in np.arange(1, levels):
+        bar = ax.bar(
+            x,
+            data_copy[i],
+            bottom=data_stack[i - 1],
+            color=colors[i],
+            edgecolor=edge_colors[i],
+            width=gapd_widths,
+            linewidth=0.5,
+            align="center",
+            label=stack_labels[i],
+            log=log,
+        )
         bars.append(bar)
 
     # borders
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
-    #ax.spines["bottom"].set_visible(False)
+    # ax.spines["bottom"].set_visible(False)
     ax.spines["left"].set_visible(False)
 
     # make ticks if necessary
@@ -819,39 +862,46 @@ def create_stacked_bar_graph(
 
         if y_tick_labels is not None:
             ax.set_yticklabels(y_tick_labels, fontsize=font_size)
-            
+
         if hide_first_ytick:
             yticks = ax.yaxis.get_major_ticks()
             yticks[0].label1.set_visible(False)
 
     else:
         ax.tick_params(
-            axis='y',
-            which='both',
-            left='off',
-            right='off',
-            labelright='off',
-            labelleft='off')
+            axis="y",
+            which="both",
+            left="off",
+            right="off",
+            labelright="off",
+            labelleft="off",
+        )
 
     if x_tick_labels is not None:
-        ax.tick_params(axis='x', which='both', labelsize=font_size, direction="out")
+        ax.tick_params(axis="x", which="both", labelsize=font_size, direction="out")
         ax.xaxis.tick_bottom()
         ax.set_xticks(x)
-        ax.set_xticklabels(x_tick_labels, rotation='vertical')
+        ax.set_xticklabels(x_tick_labels, rotation="vertical")
     else:
         ax.set_xticks([])
         ax.set_xticklabels([])
 
     # limits
     if end_gaps:
-        ax.set_xlim(-1.*widths[0]/2. - gap/2., np.sum(widths)-widths[0]/2. + gap/2.)
+        ax.set_xlim(
+            -1.0 * widths[0] / 2.0 - gap / 2.0,
+            np.sum(widths) - widths[0] / 2.0 + gap / 2.0,
+        )
     else:
-        ax.set_xlim(-1.*widths[0]/2. + gap/2., np.sum(widths)-widths[0]/2. - gap/2.)
-    
+        ax.set_xlim(
+            -1.0 * widths[0] / 2.0 + gap / 2.0,
+            np.sum(widths) - widths[0] / 2.0 - gap / 2.0,
+        )
+
     ymin = 0
     if log:
         ymin = 1
-    
+
     # labels
     if x_title is not None:
         ax.set_xlabel(x_title, fontsize=label_font_size)
@@ -862,14 +912,18 @@ def create_stacked_bar_graph(
     if show_legend:
         if legend_ncol < 1:
             legend_ncol = len(stack_labels)
-        lgd = ax.legend(loc=legend_loc, bbox_to_anchor=legend_bbox_to_anchor, ncol=legend_ncol,
-                fontsize=legend_font_size)
+        lgd = ax.legend(
+            loc=legend_loc,
+            bbox_to_anchor=legend_bbox_to_anchor,
+            ncol=legend_ncol,
+            fontsize=legend_font_size,
+        )
 
     return bars
 
 
 def plot_trend_line(ax, x, intercept, slope, power, **kwargs):
-    """ Draw the trend line implied by the given coefficients.
+    """Draw the trend line implied by the given coefficients.
 
     Parameters
     ----------
@@ -890,14 +944,16 @@ def plot_trend_line(ax, x, intercept, slope, power, **kwargs):
     None, but the line will be drawn on the axis
     """
     x = np.sort(x)
-    y = power * x ** 2 + slope * x + intercept
+    y = power * x**2 + slope * x + intercept
 
-    #Plot trendline
+    # Plot trendline
     ax.plot(x, y, **kwargs)
 
-def draw_rectangle(ax, base_x, base_y, width, height, center_x=False, 
-        center_y=False, **kwargs):
-    """ Draw a rectangle at the given x and y coordinates. Optionally, these
+
+def draw_rectangle(
+    ax, base_x, base_y, width, height, center_x=False, center_y=False, **kwargs
+):
+    """Draw a rectangle at the given x and y coordinates. Optionally, these
     can be adjusted such that they are the respective centers rather than edge
     values.
 
@@ -925,13 +981,12 @@ def draw_rectangle(ax, base_x, base_y, width, height, center_x=False,
     """
     y_offset = 0
     if center_y:
-        y_offset = height/2
-        
+        y_offset = height / 2
+
     x_offset = 0
     if center_x:
-        x_offset = width/2
-        
+        x_offset = width / 2
+
     y = base_y - y_offset
     x = base_x - x_offset
-    ax.add_patch(patches.Rectangle((x,y), width, height, **kwargs))
-    
+    ax.add_patch(patches.Rectangle((x, y), width, height, **kwargs))

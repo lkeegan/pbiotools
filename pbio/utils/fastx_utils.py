@@ -8,37 +8,37 @@ logger = logging.getLogger(__name__)
 
 
 def get_read_iterator(fastx_file, is_fasta=True):
-    """ This function returns an iterator (technically, a generator) for the
-        reads in the specified file. The function does not attempt to guess 
-        the type of the file should be specified correctly.
+    """This function returns an iterator (technically, a generator) for the
+    reads in the specified file. The function does not attempt to guess
+    the type of the file should be specified correctly.
 
-        The function *does* guess if a file is gzipped or not. In particular,
-        if the name of the file ends in "gz", it is treated as a gzipped file.
-        Otherwise, it is treated as plain text.
+    The function *does* guess if a file is gzipped or not. In particular,
+    if the name of the file ends in "gz", it is treated as a gzipped file.
+    Otherwise, it is treated as plain text.
 
-        Finally, if the passed file is an instantiation of io.IOBase (such as
-        an already-open file), then the function just uses the file handle.
+    Finally, if the passed file is an instantiation of io.IOBase (such as
+    an already-open file), then the function just uses the file handle.
 
-        Args:
-            fastx_file (string or file-like): the path to the fasta or fastq 
-                file. Alternatively, this can be an open file handle.
+    Args:
+        fastx_file (string or file-like): the path to the fasta or fastq
+            file. Alternatively, this can be an open file handle.
 
-            is_fasta (bool): whether the file is a fasta file or not. If this
-                value is false, then the file is treated as a fastq file.
+        is_fasta (bool): whether the file is a fasta file or not. If this
+            value is false, then the file is treated as a fastq file.
 
-        Returns:
-            generator: which (lazily) iterates over the reads in the file.
-                In particular, for fasta files, a generator from the class
-                Bio.SeqIO.FastaIO.SimpleFastaParser is returned, while for
-                fastq files, a Bio.SeqIO.QualityIO.FastqGeneralIterator is
-                returned. Please see the relevant documentation from biopython
-                for exact details of these semantics.
+    Returns:
+        generator: which (lazily) iterates over the reads in the file.
+            In particular, for fasta files, a generator from the class
+            Bio.SeqIO.FastaIO.SimpleFastaParser is returned, while for
+            fastq files, a Bio.SeqIO.QualityIO.FastqGeneralIterator is
+            returned. Please see the relevant documentation from biopython
+            for exact details of these semantics.
 
-        Imports:
-            io
-            gzip, if the file is a gzipped file
-            Bio.SeqIO.FastaIO (from biopython), if the file is a fasta file
-            Bio.SeqIO.QualityIO (from biopython), if the file is a fastq file
+    Imports:
+        io
+        gzip, if the file is a gzipped file
+        Bio.SeqIO.FastaIO (from biopython), if the file is a fasta file
+        Bio.SeqIO.QualityIO (from biopython), if the file is a fastq file
     """
     import io
 
@@ -47,32 +47,35 @@ def get_read_iterator(fastx_file, is_fasta=True):
         logger.debug(msg)
 
         file_handle = fastx_file
-        
+
     elif fastx_file.endswith("gz"):
         import gzip
 
         msg = "Guessing that fastx_file is a gzipped file"
         logger.debug(msg)
 
-        file_handle = gzip.open(fastx_file, 'rt')
+        file_handle = gzip.open(fastx_file, "rt")
 
     else:
         msg = "Guessing that fastx_file is a plain text file"
         logger.debug(msg)
 
-        file_handle = open(fastx_file, 'rU')
+        file_handle = open(fastx_file, "rU")
 
     if is_fasta:
         import Bio.SeqIO.FastaIO
+
         read_iterator = Bio.SeqIO.FastaIO.SimpleFastaParser(file_handle)
     else:
         import Bio.SeqIO.QualityIO
+
         read_iterator = Bio.SeqIO.QualityIO.FastqGeneralIterator(file_handle)
 
     return read_iterator
 
+
 def get_length_distribution(fastx_file, is_fasta=True):
-    """ Count the reads of each length in the given fasta file.
+    """Count the reads of each length in the given fasta file.
 
     Parameters
     ----------
@@ -101,54 +104,52 @@ def get_length_distribution(fastx_file, is_fasta=True):
         length_distribution[read_len] += 1
 
     length_distribution_df = pandas_utils.dict_to_dataframe(
-        length_distribution,
-        key_name='length',
-        value_name='count'
+        length_distribution, key_name="length", value_name="count"
     )
 
     return length_distribution_df
 
+
 def get_read_count(filename, is_fasta=True):
-    """ This function counts the number of reads in the specified file. The 
-        function does not attempt to guess the type of the file should be 
-        specified correctly.
+    """This function counts the number of reads in the specified file. The
+    function does not attempt to guess the type of the file should be
+    specified correctly.
 
-        The function *does* guess if a file is gzipped or not. In particular,
-        if the name of the file ends in "gz", it is treated as a gzipped file.
-        Otherwise, it is treated as plain text.
+    The function *does* guess if a file is gzipped or not. In particular,
+    if the name of the file ends in "gz", it is treated as a gzipped file.
+    Otherwise, it is treated as plain text.
 
-        Finally, if the passed file is an instantiation of io.IOBase (such as
-        an already-open file), then the function just uses the file handle.
+    Finally, if the passed file is an instantiation of io.IOBase (such as
+    an already-open file), then the function just uses the file handle.
 
-        N.B. If a file handle is passed in, it will be "consumed" by this
-            function, so the file handle would likely need to be reset.
+    N.B. If a file handle is passed in, it will be "consumed" by this
+        function, so the file handle would likely need to be reset.
 
-        Args:
-            filename (string): the path to the fasta or fastq file.
+    Args:
+        filename (string): the path to the fasta or fastq file.
 
-            is_fasta (bool): whether the file is a fasta file or not. If this
-                value is false, then the file is treated as a fastq file.
+        is_fasta (bool): whether the file is a fasta file or not. If this
+            value is false, then the file is treated as a fastq file.
 
-        Returns:
-            int: the number of reads in the file
+    Returns:
+        int: the number of reads in the file
 
-        Imports:
-            gzip, if the file is a gzipped file
-            Bio.SeqIO.FastaIO (from biopython), if the file is a fasta file
-            Bio.SeqIO.QualityIO (from biopython), if the file is a fastq file
+    Imports:
+        gzip, if the file is a gzipped file
+        Bio.SeqIO.FastaIO (from biopython), if the file is a fasta file
+        Bio.SeqIO.QualityIO (from biopython), if the file is a fastq file
     """
     read_iterator = get_read_iterator(filename, is_fasta)
     num_reads = sum(1 for read in read_iterator)
     return num_reads
+
 
 def get_fasta_dict(filename, is_fasta=True, key_fn=None):
     if key_fn is None:
         key_fn = lambda x: x
 
     read_iterator = get_read_iterator(filename, is_fasta)
-    read_dict = {
-        key_fn(r[0]): r[1] for r in read_iterator
-    }
+    read_dict = {key_fn(r[0]): r[1] for r in read_iterator}
     return read_dict
 
 
@@ -157,46 +158,45 @@ def get_fastq_qual_dict(filename, key_fn=None):
         key_fn = lambda x: x
 
     read_iterator = get_read_iterator(filename, is_fasta=False)
-    qual_dict = {
-        key_fn(r[0]): r[2] for r in read_iterator
-    }
+    qual_dict = {key_fn(r[0]): r[2] for r in read_iterator}
     return qual_dict
 
 
-def remove_duplicate_sequences(fastas_in, fasta_out, compress=True, 
-        lower_precedence_re=None, progress_bar=False):
-    """ This function removes all duplicate sequences from a list of fasta 
-        files and writes the remaining sequences back out as a fasta file.
+def remove_duplicate_sequences(
+    fastas_in, fasta_out, compress=True, lower_precedence_re=None, progress_bar=False
+):
+    """This function removes all duplicate sequences from a list of fasta
+    files and writes the remaining sequences back out as a fasta file.
 
-        If desired, a regular expression can be given for "lower precedence"
-        sequence identifiers. An example of using this precedence operator
-        is in removing duplicate sequences from a fasta file which combines
-        de novo assembled transcripts and annotated ones. In case a de novo
-        transcript matches an annotated one, we would prefer to keep only
-        the annotated transcript and identifier. Thus, we would pass an RE
-        matching the de novo assembled identifiers (which have a lower
-        precedence).
+    If desired, a regular expression can be given for "lower precedence"
+    sequence identifiers. An example of using this precedence operator
+    is in removing duplicate sequences from a fasta file which combines
+    de novo assembled transcripts and annotated ones. In case a de novo
+    transcript matches an annotated one, we would prefer to keep only
+    the annotated transcript and identifier. Thus, we would pass an RE
+    matching the de novo assembled identifiers (which have a lower
+    precedence).
 
-        If a precedence re is not given, or two identifiers have the same
-        precedence, the first identifier encountered will be kept.
+    If a precedence re is not given, or two identifiers have the same
+    precedence, the first identifier encountered will be kept.
 
-        This function is not implemented particularly efficiently.
+    This function is not implemented particularly efficiently.
 
-        Args:
-            fasta_in (list of string) : paths to fasta files which contains duplicates
-            fasta_out (string) : path to the output file
-            compress (bool) : whether to gzip the output
-            lower_precendence_re (string) : a regular expression that matches
-                the identifiers of lower precendence transcripts. (See the
-                description for more details)
-            progress_bar (bool) : whether to show a progress bar for reading
-                the sequences and removing duplicates.
+    Args:
+        fasta_in (list of string) : paths to fasta files which contains duplicates
+        fasta_out (string) : path to the output file
+        compress (bool) : whether to gzip the output
+        lower_precendence_re (string) : a regular expression that matches
+            the identifiers of lower precendence transcripts. (See the
+            description for more details)
+        progress_bar (bool) : whether to show a progress bar for reading
+            the sequences and removing duplicates.
 
-        Returns:
-            None, but the output file is written
+    Returns:
+        None, but the output file is written
 
-        Imports:
-            tqdm, if progress_bar is shown
+    Imports:
+        tqdm, if progress_bar is shown
     """
 
     import re
@@ -217,9 +217,10 @@ def remove_duplicate_sequences(fastas_in, fasta_out, compress=True,
 
         if progress_bar:
             import tqdm
+
             total = get_read_count(fasta_in, is_fasta=True)
             iter_ = tqdm.tqdm(seqs, leave=True, file=sys.stdout, total=total)
-       
+
         for seq_id, seq in iter_:
             # if we have not seen this sequence before, just add it to the dictionary
             existing_id = seq_dict.get(seq, None)
@@ -229,8 +230,8 @@ def remove_duplicate_sequences(fastas_in, fasta_out, compress=True,
                 # check if one of the id's is of lower precedence
 
                 # "match" returns None when there is no match
-                new_is_low = (lp_re.match(seq_id) is None)
-                existing_is_low = (lp_re.match(existing_id) is None)
+                new_is_low = lp_re.match(seq_id) is None
+                existing_is_low = lp_re.match(existing_id) is None
 
                 # we only care in the case that the new id is of higher precedence
                 if existing_is_low and not new_is_low:
@@ -239,12 +240,12 @@ def remove_duplicate_sequences(fastas_in, fasta_out, compress=True,
                 # otherwise, skip the duplicate
                 continue
 
-    id_dict = [(v,k) for k,v in seq_dict.items()]
+    id_dict = [(v, k) for k, v in seq_dict.items()]
     write_fasta(id_dict, fasta_out, compress=compress, wrap=True)
 
+
 def _write_fasta_entry(out, header, seq, wrap=False):
-    """ This helper function writes a single fasta entry to the given file.
-    """
+    """This helper function writes a single fasta entry to the given file."""
     import pbio.misc.utils as utils
 
     out.write(">")
@@ -257,53 +258,56 @@ def _write_fasta_entry(out, header, seq, wrap=False):
     out.write(seq)
     out.write("\n")
 
+
 def write_fasta(seqs, filename, compress=True, wrap=True, progress_bar=False):
-    """ This function writes the provided sequences to a fasta file. The input
-        is given as a list of tuples in which the first item is the fasta header 
-        and the second is the sequence. The contents of the sequences are not 
-        validated, so nucleotide, amino acid, nonstandard, etc., sequences are 
-        all handled.
+    """This function writes the provided sequences to a fasta file. The input
+    is given as a list of tuples in which the first item is the fasta header
+    and the second is the sequence. The contents of the sequences are not
+    validated, so nucleotide, amino acid, nonstandard, etc., sequences are
+    all handled.
 
-        Args:
-            seqs (list of tuples) : a list of headers and sequences
+    Args:
+        seqs (list of tuples) : a list of headers and sequences
 
-            filename (string) : the name of the output file
+        filename (string) : the name of the output file
 
-            compress (boolean) : whether to gzip the output
+        compress (boolean) : whether to gzip the output
 
-            wrap (bool): whether to wrap the sequence to 80 characters
+        wrap (bool): whether to wrap the sequence to 80 characters
 
-            progress_bar (boolean) : whether to show a progress bar
+        progress_bar (boolean) : whether to show a progress bar
 
-        Returns:
-            None
+    Returns:
+        None
 
-        Imports:
-            misc.utils
-            gzip (if compression is used)
-            tqdm (if progress bar is used)
+    Imports:
+        misc.utils
+        gzip (if compression is used)
+        tqdm (if progress bar is used)
     """
 
     if compress:
         import gzip
-        out = gzip.open(filename, 'wt')
+
+        out = gzip.open(filename, "wt")
     else:
-        out = open(filename, 'w')
+        out = open(filename, "w")
 
     if progress_bar:
         import tqdm
+
         seq_iter = tqdm.tqdm(seqs, leave=True, file=sys.stdout)
     else:
         seq_iter = seqs
 
     for header, seq in seq_iter:
         _write_fasta_entry(out, header, seq, wrap)
-        
+
     out.close()
 
+
 def _write_fastq_entry(out, header, seq, qual_scores, wrap=False):
-    """ This helper function writes a single fastq entry to the given file.
-    """
+    """This helper function writes a single fastq entry to the given file."""
     out.write("@")
     out.write(header)
     out.write("\n")
@@ -324,44 +328,46 @@ def _write_fastq_entry(out, header, seq, qual_scores, wrap=False):
     out.write(qual_scores)
     out.write("\n")
 
+
 def write_fastq(seqs, quals, filename, compress=True, wrap=False, progress_bar=False):
-    """ This function writes the provided sequences and qualities to a fastq file. The input
-        is given as two dictionaries in which the keys in both are the fasta headers. The
-        seqs dictionary should map from the header to the sequence, and the quals dictionary
-        should map from the header to the quality scores. The contents of the sequences are 
-        not validated, so nucleotide, amino acid, nonstandard, etc., sequences are all handled.
-        
-        N.B. All sequences in the seqs dictionary are written to the file; the quals dictionary
-             must contain at least these headers. Other headers in the quals dictionary are
-             just ignore (so the headers of quals can be a superset of seqs).
+    """This function writes the provided sequences and qualities to a fastq file. The input
+    is given as two dictionaries in which the keys in both are the fasta headers. The
+    seqs dictionary should map from the header to the sequence, and the quals dictionary
+    should map from the header to the quality scores. The contents of the sequences are
+    not validated, so nucleotide, amino acid, nonstandard, etc., sequences are all handled.
 
-        Args:
-            seqs (dictionary) : a mapping from the header to the sequences
+    N.B. All sequences in the seqs dictionary are written to the file; the quals dictionary
+         must contain at least these headers. Other headers in the quals dictionary are
+         just ignore (so the headers of quals can be a superset of seqs).
 
-            quals (dictionary) : a mapping from the header to the quality scores
+    Args:
+        seqs (dictionary) : a mapping from the header to the sequences
 
-            filename (string) : the name of the output file
+        quals (dictionary) : a mapping from the header to the quality scores
 
-            compress (boolean) : whether to gzip the output
+        filename (string) : the name of the output file
 
-            wrap (bool): whether to wrap the sequence and quality scores to 80 chars
+        compress (boolean) : whether to gzip the output
 
-            progress_bar (boolean) : whether to show a progress bar
+        wrap (bool): whether to wrap the sequence and quality scores to 80 chars
 
-        Returns:
-            None
+        progress_bar (boolean) : whether to show a progress bar
 
-        Imports:
-            misc.utils
-            gzip (if compression is used)
-            tqdm (if progress bar is used)
+    Returns:
+        None
+
+    Imports:
+        misc.utils
+        gzip (if compression is used)
+        tqdm (if progress bar is used)
     """
     import pbio.misc.utils as utils
 
-    out = utils.open(filename, 'w', compress=compress)
+    out = utils.open(filename, "w", compress=compress)
 
     if progress_bar:
         import tqdm
+
         seq_iter = tqdm.tqdm(seqs.items(), leave=True, file=sys.stdout)
     else:
         seq_iter = seqs.items()
@@ -369,12 +375,13 @@ def write_fastq(seqs, quals, filename, compress=True, wrap=False, progress_bar=F
     for header, seq in seq_iter:
         qual_scores = quals[header]
         _write_fastq_entry(out, header, seq, qual_scores)
-        
+
     out.close()
 
+
 def _check_fastq_read(read, read_index):
-    """ This is a helper function for validing a single fastq read. It returns
-        a list of all errors for this read. It is not intended for external use.
+    """This is a helper function for validing a single fastq read. It returns
+    a list of all errors for this read. It is not intended for external use.
     """
     errors = []
 
@@ -383,112 +390,116 @@ def _check_fastq_read(read, read_index):
 
     # the biopython iterator we use internally already takes care of
     # the sequence identifier
-    #if len(read[0]) < 2:
+    # if len(read[0]) < 2:
     #    msg = ("ERROR on Line {}: The sequence identifier line was too "
     #        "short.".format(identifier_line_number))
     #    errors.append(msg)
 
-    #if read[0][0] != "@":
+    # if read[0][0] != "@":
     #    msg = ("ERROR on Line {}: First line of a sequence does not begin "
     #        "wtih @".format(identifier_line_number))
     #    errors.append(msg)
 
-    #if read[0][1] != " ":
+    # if read[0][1] != " ":
     #    msg = ("ERROR on Line {}: No Sequence Identifier specified before "
     #        "the comment.".format(identifier_line_number))
     #    errors.append(msg)
 
     # the raw sequence line
-    sequence_line_number = read_index*4 + 1
+    sequence_line_number = read_index * 4 + 1
     sequence_len = len(read[1])
 
     if sequence_len == 0:
-        msg = ("ERROR on Line {}: Raw Sequence is shorter than the min read "
-            "length: 0".format(sequence_line_number))
+        msg = (
+            "ERROR on Line {}: Raw Sequence is shorter than the min read "
+            "length: 0".format(sequence_line_number)
+        )
         errors.append(msg)
 
     # the plus line
-    plus_line_number = read_index*4 + 2
+    plus_line_number = read_index * 4 + 2
 
     # the biopython iterator does not include the plus line
     # so skip this
-    #if read[2][0] != '+':
+    # if read[2][0] != '+':
     #    msg = ("ERROR on Line {}: Third line of a sequence does not begin "
     #        "with +".format(plus_line_number))
     #    errors.append(msg)
 
     # the quality string line
-    quality_line_number = read_index*4 + 3
+    quality_line_number = read_index * 4 + 3
 
     # the quality string is at position 2 in the tuple (not 3 because the plus
     # line is omitted)
     quality_len = len(read[2])
 
     if quality_len != sequence_len:
-        msg = ("ERROR on Line {}: Quality string length ({}) does not equal "
-            "raw sequence length ({})".format(quality_line_number, quality_len, 
-            sequence_len))
+        msg = (
+            "ERROR on Line {}: Quality string length ({}) does not equal "
+            "raw sequence length ({})".format(
+                quality_line_number, quality_len, sequence_len
+            )
+        )
         errors.append(msg)
 
     return errors
 
 
-def check_fastq_file(filename, break_on_error=True, raise_on_error=True, 
-            logger=logger):
+def check_fastq_file(filename, break_on_error=True, raise_on_error=True, logger=logger):
 
-    """ This function checks that a fastq file is valid. Optionally, it 
-        raises an exception if the file is invalid. Otherwise, it writes
-        a "critical" warning message.
+    """This function checks that a fastq file is valid. Optionally, it
+    raises an exception if the file is invalid. Otherwise, it writes
+    a "critical" warning message.
 
-        The following criteria are used to determine if the fastq file is
-        valid. They are a subset copied from: http://genome.sph.umich.edu/wiki/FastQ_Validation_Criteria
+    The following criteria are used to determine if the fastq file is
+    valid. They are a subset copied from: http://genome.sph.umich.edu/wiki/FastQ_Validation_Criteria
 
-        Sequence Identifier Line:
-            * Line is at least 2 characters long ('@' and at least 1 for the 
-                sequence identifier)
+    Sequence Identifier Line:
+        * Line is at least 2 characters long ('@' and at least 1 for the
+            sequence identifier)
 
-            * Line starts with an '@'
+        * Line starts with an '@'
 
-            * Line does not contain a space between the '@' and the first 
-                sequence identifier (which must be at least 1 character).
+        * Line does not contain a space between the '@' and the first
+            sequence identifier (which must be at least 1 character).
 
-        Raw Sequence Line
+    Raw Sequence Line
 
-            * A base sequence should have non-zero length.
+        * A base sequence should have non-zero length.
 
-        Plus Line
+    Plus Line
 
-            * Must exist for every sequence.
+        * Must exist for every sequence.
 
-            * Must start with a '+'
+        * Must start with a '+'
 
-        Quality String Line
+    Quality String Line
 
-            * A quality string should be present for every base sequence.
+        * A quality string should be present for every base sequence.
 
-            * Paired quality and base sequences should be of the same length.
+        * Paired quality and base sequences should be of the same length.
 
 
-        Args:
-            filename (str): a path to the fastq file
+    Args:
+        filename (str): a path to the fastq file
 
-            break_on_error (bool): whether to break on the first error found.
-                This flag is only relevant if raise_on_error is False.
+        break_on_error (bool): whether to break on the first error found.
+            This flag is only relevant if raise_on_error is False.
 
-            raise_on_error (bool): whether to raise an OSError (if True) or log
-                a "critical" message (if false)
+        raise_on_error (bool): whether to raise an OSError (if True) or log
+            a "critical" message (if false)
 
-            logger (logging.Logger): a logger for writing the message if an
-                error is not raised
+        logger (logging.Logger): a logger for writing the message if an
+            error is not raised
 
-        Returns:
-            bool: whether the file was valid
+    Returns:
+        bool: whether the file was valid
 
-        Raises:
-            OSError: if the file is not a valid fastq and raise_on_error is True
+    Raises:
+        OSError: if the file is not a valid fastq and raise_on_error is True
 
-        Imports:
-            misc.utils
+    Imports:
+        misc.utils
     """
     read_iterator = get_read_iterator(filename, is_fasta=False)
 
@@ -505,7 +516,7 @@ def check_fastq_file(filename, break_on_error=True, raise_on_error=True,
 
                 msg = "The fastq file does not appear to be valid: {}".format(filename)
                 errors.insert(0, msg)
-                msg = '\n'.join(errors)
+                msg = "\n".join(errors)
 
                 if raise_on_error:
                     raise OSError(msg)
@@ -533,35 +544,34 @@ def check_fastq_file(filename, break_on_error=True, raise_on_error=True,
     return is_valid
 
 
-def check_fasta_file(filename, break_on_error=True, raise_on_error=True, 
-            logger=logger):
+def check_fasta_file(filename, break_on_error=True, raise_on_error=True, logger=logger):
 
-    """ This function checks the validity of a fasta file. This is somewhat
-        difficult because the format is so loose; in contrast, for example,
-        the length of the sequence and quality must match in fastq.
+    """This function checks the validity of a fasta file. This is somewhat
+    difficult because the format is so loose; in contrast, for example,
+    the length of the sequence and quality must match in fastq.
 
-        This function just counts the sequences in the file.
-        
-        Args:
-            filename (str): a path to the fasta file
+    This function just counts the sequences in the file.
 
-            break_on_error (bool): whether to break on the first error found.
-                This flag is only relevant if raise_on_error is False.
+    Args:
+        filename (str): a path to the fasta file
 
-            raise_on_error (bool): whether to raise an OSError (if True) or log
-                a "critical" message (if false)
+        break_on_error (bool): whether to break on the first error found.
+            This flag is only relevant if raise_on_error is False.
 
-            logger (logging.Logger): a logger for writing the message if an
-                error is not raised
+        raise_on_error (bool): whether to raise an OSError (if True) or log
+            a "critical" message (if false)
 
-        Returns:
-            bool: whether the file was valid
+        logger (logging.Logger): a logger for writing the message if an
+            error is not raised
 
-        Raises:
-            OSError: if the file is not a valid fasta and raise_on_error is True
+    Returns:
+        bool: whether the file was valid
 
-        Imports:
-            misc.utils
+    Raises:
+        OSError: if the file is not a valid fasta and raise_on_error is True
+
+    Imports:
+        misc.utils
     """
 
     is_valid = True
@@ -584,4 +594,3 @@ def check_fasta_file(filename, break_on_error=True, raise_on_error=True,
     # we have looked at either all the reads and found no errors, or found some
     # errors and quit as specified by the arguments
     return is_valid
-

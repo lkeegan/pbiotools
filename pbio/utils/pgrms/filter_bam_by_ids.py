@@ -7,17 +7,21 @@ import pbio.utils.bam_utils as bam_utils
 
 import logging
 import pbio.misc.logging_utils as logging_utils
+
 logger = logging.getLogger(__name__)
 
-def main():
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        description="This script filters bam A by the read ids in bam B. In "
-        "particular, only the reads in A with ids *which appear* in B are kept.")
 
-    parser.add_argument('bam_a', help="The bam file to filter")
-    parser.add_argument('bam_b', help="The bam file whose ids will be kept in A")
-    parser.add_argument('bam_out', help="The output (bam) file")
-    
+def main():
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description="This script filters bam A by the read ids in bam B. In "
+        "particular, only the reads in A with ids *which appear* in B are kept.",
+    )
+
+    parser.add_argument("bam_a", help="The bam file to filter")
+    parser.add_argument("bam_b", help="The bam file whose ids will be kept in A")
+    parser.add_argument("bam_out", help="The output (bam) file")
+
     logging_utils.add_logging_options(parser)
     args = parser.parse_args()
     logging_utils.update_logging(args)
@@ -31,12 +35,14 @@ def main():
 
     with ExitStack() as stack:
         bam_a = stack.enter_context(bam_utils.get_pysam_alignment_file(args.bam_a))
-        bam_out = stack.enter_context(bam_utils.get_pysam_alignment_file(
-            args.bam_out, "wb", template=bam_a))
+        bam_out = stack.enter_context(
+            bam_utils.get_pysam_alignment_file(args.bam_out, "wb", template=bam_a)
+        )
 
         for read in bam_a.fetch():
             if read.query_name in ids_to_keep:
                 bam_out.write(read)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

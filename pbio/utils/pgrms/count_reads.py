@@ -10,18 +10,21 @@ import pbio.misc.pandas_utils as pandas_utils
 
 import logging
 import pbio.misc.logging_utils as logging_utils
+
 logger = logging.getLogger(__name__)
 
+
 def main():
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         description="This script counts the number of reads in the given fastq "
-        "(possibly gzipped) files.")
+        "(possibly gzipped) files.",
+    )
 
-    parser.add_argument('files', help="A glob-style re giving the filenames", 
-        nargs='+')
+    parser.add_argument("files", help="A glob-style re giving the filenames", nargs="+")
 
-    parser.add_argument('-o', '--out', help="A (csv.gz) output file", required=True)
-    
+    parser.add_argument("-o", "--out", help="A (csv.gz) output file", required=True)
+
     logging_utils.add_logging_options(parser)
     args = parser.parse_args()
     logging_utils.update_logging(args)
@@ -39,8 +42,8 @@ def main():
         read_counts.append(read_count)
 
     df = pd.DataFrame()
-    df['dataset'] = datasets
-    df['reads'] = read_counts
+    df["dataset"] = datasets
+    df["reads"] = read_counts
 
     msg = "Writing data frame to disk"
     logger.info(msg)
@@ -48,5 +51,5 @@ def main():
     pandas_utils.write_df(df, args.out, index=False)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

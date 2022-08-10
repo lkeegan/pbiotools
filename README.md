@@ -1,19 +1,19 @@
-The `pbio` package provides miscellaneous bioinformatics and other supporting utilities for Python 3, including 
-programs used for Ribo-seq periodicity estimation. It is required for the installation of [Rp-Bp](https://github.com/dieterich-lab/rp-bp). 
+The `pbio` package provides miscellaneous bioinformatics and other supporting utilities for Python 3, including
+programs used for Ribo-seq periodicity estimation. It is required for the installation of [Rp-Bp](https://github.com/dieterich-lab/rp-bp).
 It combines utilities and programs from the defunct pymisc-utils (see [pyllars](https://github.com/bmmalone/pyllars))
 and [riboseq-utils](https://github.com/dieterich-lab/riboseq-utils).
 
 ## Installation
 
 To install the local VCS project in development mode, use the `--editable` or `-e` option, otherwise
-this flag can be ignored. 
+this flag can be ignored.
 
 Pinned version of selected dependencies are listed in the `requirements.txt` file for reproducible installation.
 
 ## Installation (virtual environment)
 
 To install `pbio` and dependencies, first create a virtual environment:
- 
+
 ```
 python3 -m venv /path/to/virtual/environment
 ```
@@ -39,7 +39,7 @@ pip --verbose install -r requirements.txt [-e] . 2>&1 | tee install.log
 
 ## Anaconda installation
 
-The package can also be installed within an [anaconda](https://www.continuum.io/) environment. 
+The package can also be installed within an [anaconda](https://www.continuum.io/) environment.
 
 ```
 # Create the anaconda environment.

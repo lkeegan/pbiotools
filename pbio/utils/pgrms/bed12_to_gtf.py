@@ -4,6 +4,7 @@ import argparse
 
 import logging
 import pbio.misc.logging_utils as logging_utils
+
 logger = logging.getLogger(__name__)
 
 import pandas as pd
@@ -16,29 +17,50 @@ import pbio.misc.parallel as parallel
 default_source = None
 default_num_cpus = 1
 
+
 def main():
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         description="Convert a bed12 file into an equivalent gtf file. In "
-        "particular, it uses the \"thick_start\" and \"thick_end\" fields to "
-        "determine the CDS gtf entries. It only creates \"exon\" and \"CDS\" "
+        'particular, it uses the "thick_start" and "thick_end" fields to '
+        'determine the CDS gtf entries. It only creates "exon" and "CDS" '
         "gtf entries. The bed columns after the standard 12 are included as "
-        "attributes in the gtf file.")
+        "attributes in the gtf file.",
+    )
 
-    parser.add_argument('bed', help="The bed12 file. It must conform to the "
-        "style expected by bio_utils.bed_utils.")
-    parser.add_argument('out', help="The (output) gtf file. It will conform "
-        "to the style dictated by bio_utils.gtf_utils.")
+    parser.add_argument(
+        "bed",
+        help="The bed12 file. It must conform to the "
+        "style expected by bio_utils.bed_utils.",
+    )
+    parser.add_argument(
+        "out",
+        help="The (output) gtf file. It will conform "
+        "to the style dictated by bio_utils.gtf_utils.",
+    )
 
-    parser.add_argument('-s', '--source', help="The name to use for the "
-        "\"source\" column in the gtf file", default=default_source)
+    parser.add_argument(
+        "-s",
+        "--source",
+        help="The name to use for the " '"source" column in the gtf file',
+        default=default_source,
+    )
 
-    parser.add_argument('-p', '--num-cpus', help="The number of CPUs to use "
-        "for conversion", type=int, default=default_num_cpus)
+    parser.add_argument(
+        "-p",
+        "--num-cpus",
+        help="The number of CPUs to use " "for conversion",
+        type=int,
+        default=default_num_cpus,
+    )
 
-    parser.add_argument('--add-gene-id', help="If this flag is present, then "
-        "the \"id\" field will also be used as the \"gene_id\"",
-        action='store_true')
-    
+    parser.add_argument(
+        "--add-gene-id",
+        help="If this flag is present, then "
+        'the "id" field will also be used as the "gene_id"',
+        action="store_true",
+    )
+
     logging_utils.add_logging_options(parser)
     args = parser.parse_args()
     logging_utils.update_logging(args)
@@ -50,17 +72,13 @@ def main():
     if args.add_gene_id:
         msg = "Adding gene_id"
         logger.info(msg)
-        bed['gene_id'] = bed['id']
+        bed["gene_id"] = bed["id"]
 
     msg = "Expanding bed entries to gtf entries"
     logger.info(msg)
 
     gtf_entries = parallel.apply_parallel(
-        bed,
-        args.num_cpus,
-        gtf_utils.get_gtf_entries,
-        args.source,
-        progress_bar = True
+        bed, args.num_cpus, gtf_utils.get_gtf_entries, args.source, progress_bar=True
     )
 
     msg = "Joining gtf entries into large data frame"
@@ -71,7 +89,7 @@ def main():
     msg = "Sorting gtf entries"
     logger.info(msg)
 
-    gtf_entries = gtf_entries.sort_values(['seqname', 'start', 'end'])
+    gtf_entries = gtf_entries.sort_values(["seqname", "start", "end"])
     gtf_entries = gtf_entries.reset_index(drop=True)
 
     msg = "Writing gtf to disk"
@@ -79,5 +97,5 @@ def main():
     gtf_utils.write_gtf(gtf_entries, args.out, compress=False)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
