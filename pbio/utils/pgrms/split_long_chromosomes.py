@@ -9,7 +9,7 @@ import pandas as pd
 
 import pbio.utils.bio as bio
 import pbio.utils.gtf_utils as gtf_utils
-import pbio.misc.utils as utils
+import pbio.misc.logging_utils as logging_utils
 
 import argparse
 
@@ -29,9 +29,9 @@ def main():
     parser.add_argument('--max-size', help="The largest allowed size (in bp) for a "
         "chromosome", type=int, default=default_max_size)
     
-    utils.add_logging_options(parser)
+    logging_utils.add_logging_options(parser)
     args = parser.parse_args()
-    utils.update_logging(args)
+    logging_utils.update_logging(args)
 
     msg = "Splitting fasta sequences"
     logging.info(msg)

@@ -6,7 +6,7 @@ import textwrap
 
 import tqdm
 
-import pbio.utils.star_utils as star_utils
+import pbio.utils.pgrm_utils as pgrm_utils
 import pbio.utils.fastx_utils as fastx_utils
 import pbio.misc.logging_utils as logging_utils
 
@@ -29,7 +29,7 @@ def main():
 
     msg = "Reading STAR transcript file"
     logging.info(msg)
-    transcript_info = star_utils.read_star_tr_file(args.transcript_info)
+    transcript_info = pgrm_utils.read_star_tr_file(args.transcript_info)
 
     msg = "Reading transcript fasta file"
     logging.info(msg)

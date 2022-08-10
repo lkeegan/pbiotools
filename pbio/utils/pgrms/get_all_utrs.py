@@ -3,7 +3,7 @@
 import argparse
 
 import pbio.utils.gffread_utils as gffread_utils
-import pbio.misc.utils as utils
+import pbio.misc.logging_utils as logging_utils
 import pbio.misc.pandas_utils as pandas_utils
 
 def main():
@@ -16,9 +16,9 @@ def main():
     parser.add_argument('out', help="The (csv.gz) output file")
 
 
-    utils.add_logging_options(parser)
+    logging_utils.add_logging_options(parser)
     args = parser.parse_args()
-    utils.update_logging(args)
+    logging_utils.update_logging(args)
 
     utr_info = gffread_utils.get_all_utrs(args.transcripts)
 

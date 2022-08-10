@@ -6,7 +6,7 @@ import pandas as pd
 
 import pbio.utils.bed_utils as bed_utils
 import pbio.misc.parallel as parallel
-import pbio.misc.utils as utils
+import pbio.misc.logging_utils as logging_utils
 
 default_max_size = 500e6
 default_num_procs = 1
@@ -51,9 +51,9 @@ def main():
     parser.add_argument('--num-procs', help="The number of processors to use", type=int,
         default=default_num_procs)
     
-    utils.add_logging_options(parser)
+    logging_utils.add_logging_options(parser)
     args = parser.parse_args()
-    utils.update_logging(args)
+    logging_utils.update_logging(args)
    
     msg = "Reading BED"
     logging.info(msg)
