@@ -1,13 +1,20 @@
 # Change Log
 
-All notable changes to the `pbio` package will be documented in this file.
+All notable changes to the `pbiotools` package will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] - started 2019-10-26
+## [Unreleased] - - started 2022-07
 
-_More changes are expected to happen, upgrade packages version, deprecation of some functions/scripts, PyPI support?_
+We are working on a major version upgrade. 
+
+### Changed
+- `pbio` to `pbiotools`
+
+### Added
+- GitHub CI workflow
+
 
 ## [1.0.0] - 2019-10-26
 

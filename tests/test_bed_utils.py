@@ -10,12 +10,12 @@ import numpy as np
 import pandas as pd
 import pytest
 
-import pbio.utils.bed_utils as bed_utils
-import pbio.misc.logging_utils as logging_utils
-import pbio.misc.math_utils as math_utils
+import pbiotools.utils.bed_utils as bed_utils
+import pbiotools.misc.logging_utils as logging_utils
+import pbiotools.misc.math_utils as math_utils
 
-from pbio.utils.bed_utils import interval_overlap
-from pbio.utils.bed_utils import transcript_overlap
+from pbiotools.utils.bed_utils import interval_overlap
+from pbiotools.utils.bed_utils import transcript_overlap
 
 
 class BedTestData:

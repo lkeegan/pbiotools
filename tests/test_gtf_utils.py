@@ -7,8 +7,8 @@
 import numpy as np
 import pandas as pd
 
-import pbio.utils.bed_utils as bed_utils
-import pbio.utils.gtf_utils as gtf_utils
+import pbiotools.utils.bed_utils as bed_utils
+import pbiotools.utils.gtf_utils as gtf_utils
 
 import pandas.util.testing
 import pytest
