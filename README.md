@@ -1,4 +1,4 @@
-The `pbio` package provides miscellaneous bioinformatics and other supporting utilities for Python 3, including
+The `pbiotools` package provides miscellaneous bioinformatics and other supporting utilities for Python 3, including
 programs used for Ribo-seq periodicity estimation. It is required for the installation of [Rp-Bp](https://github.com/dieterich-lab/rp-bp).
 It combines utilities and programs from the defunct pymisc-utils (see [pyllars](https://github.com/bmmalone/pyllars))
 and [riboseq-utils](https://github.com/dieterich-lab/riboseq-utils).
@@ -12,14 +12,14 @@ Pinned version of selected dependencies are listed in the `requirements.txt` fil
 
 ## Installation (virtual environment)
 
-To install `pbio` and dependencies, first create a virtual environment:
+To install `pbiotools` and dependencies, first create a virtual environment:
 
 ```
 python3 -m venv /path/to/virtual/environment
 ```
 
 For information about Python virtual environments, see the [venv](https://docs.python.org/3/library/venv.html) documentation.
-To activate the new virtual environment and install `pbio`:
+To activate the new virtual environment and install `pbiotools`:
 
 ```
 # Activate the new virtual environment.
@@ -29,10 +29,10 @@ source /path/to/virtual/environment/bin/activate
 pip install --upgrade pip setuptools wheel
 
 # Clone the git repository
-git clone https://github.com/dieterich-lab/pybio-utils.git
-cd pybio-utils
+git clone https://github.com/dieterich-lab/pbiotools.git
+cd pbiotools
 
-# The period is required, it is the local project path (pybio-utils)
+# The period is required, it is the local project path (pbiotools)
 pip --verbose install -r requirements.txt [-e] . 2>&1 | tee install.log
 
 ```
@@ -49,8 +49,8 @@ conda create -n my_new_environment python=3.6 anaconda
 source activate my_new_environment
 
 # Clone the git repository
-git clone https://github.com/dieterich-lab/pybio-utils.git
-cd pybio-utils
+git clone https://github.com/dieterich-lab/pbiotools.git
+cd pbiotools
 
 pip --verbose install -r requirements.txt [-e] . 2>&1 | tee install.log
 ```
@@ -61,10 +61,10 @@ There is currently limited documentation, see [docs](docs/bio.md).
 
 ## Uninstallation
 
-To remove the `pbio` package:
+To remove the `pbiotools` package:
 
 ```
-pip uninstall pbio
+pip uninstall pbiotools
 ```
 
 If the package is installed in a dedicated virtual environment, this environment can also be cleared or removed.
