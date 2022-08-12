@@ -7,14 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased] - - started 2022-07
 
-We are working on a major version upgrade. 
+We are working on a major version upgrade.
 
 ### Changed
+
 - `pbio` to `pbiotools`
 
 ### Added
-- GitHub CI workflow
 
+- GitHub CI workflow
 
 ## [1.0.0] - 2019-10-26
 
