@@ -15,7 +15,7 @@ We are working on a major version upgrade.
 
 ### Added
 
-- GitHub CI workflow
+- GitHub CI workflow, pre-commit
 
 ## [1.0.0] - 2019-10-26
 

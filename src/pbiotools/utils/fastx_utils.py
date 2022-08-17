@@ -60,7 +60,7 @@ def get_read_iterator(fastx_file, is_fasta=True):
         msg = "Guessing that fastx_file is a plain text file"
         logger.debug(msg)
 
-        file_handle = open(fastx_file, "rU")
+        file_handle = open(fastx_file, "r")
 
     if is_fasta:
         import Bio.SeqIO.FastaIO
