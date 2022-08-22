@@ -5,7 +5,11 @@ All notable changes to the `pbiotools` package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+<<<<<<< HEAD
 ## [Unreleased] - - started 2022-07
+=======
+## [2.0.0] - - started 2022-07
+>>>>>>> f162189 (MNT bump to major version 2.0.0)
 
 We are working on a major version upgrade.
 
