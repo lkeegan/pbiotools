@@ -5,6 +5,18 @@ and [riboseq-utils](https://github.com/dieterich-lab/riboseq-utils).
 
 ## Installation
 
+To install from [PyPI](https://pypi.org/project/pbiotools/) using pip:
+
+```
+pip install pbiotools
+```
+
+To install from bioconda using conda, set up [bioconda](https://bioconda.github.io/#usage) if not already done, then:
+
+```
+conda install pbiotools
+```
+
 To install the local VCS project in development mode, use the `--editable` or `-e` option, otherwise
 this flag can be ignored.
 
@@ -61,10 +73,16 @@ There is currently limited documentation, see [docs](docs/bio.md).
 
 ## Uninstallation
 
-To remove the `pbiotools` package:
+To remove the `pbiotools` package if installed with pip:
 
 ```
 pip uninstall pbiotools
+```
+
+To remove if installed with conda:
+
+```
+conda uninstall pbiotools
 ```
 
 If the package is installed in a dedicated virtual environment, this environment can also be cleared or removed.
