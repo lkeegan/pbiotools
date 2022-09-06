@@ -1,3 +1,5 @@
+# pbiotools [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/pbiotools/README.html) [![pypi releases](https://img.shields.io/pypi/v/pbiotools.svg)](https://pypi.org/project/pbiotools) [![CI](https://github.com/dieterich-lab/pbiotools/actions/workflows/ci.yml/badge.svg)](https://github.com/dieterich-lab/pbiotools/actions/workflows/ci.yml)
+
 The `pbiotools` package provides miscellaneous bioinformatics and other supporting utilities for Python 3, including
 programs used for Ribo-seq periodicity estimation. It is required for the installation of [Rp-Bp](https://github.com/dieterich-lab/rp-bp).
 It combines utilities and programs from the defunct pymisc-utils (see [pyllars](https://github.com/bmmalone/pyllars))
