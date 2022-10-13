@@ -19,6 +19,12 @@ To install from bioconda using conda, set up [bioconda](https://bioconda.github.
 conda install pbiotools
 ```
 
+To get a docker container from biocontainers with pbiotools pre-installed:
+
+```
+docker pull quay.io/biocontainers/pbiotools:2.0.0--pyhdfd78af_0
+```
+
 To install the local VCS project in development mode, use the `--editable` or `-e` option, otherwise
 this flag can be ignored.
 
