@@ -4,22 +4,23 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - python
-  - pip
+  - python=3.10.6
+  - cmdstanpy # 1.0.8
   - dask
   - scikit-learn
-  - appdirs
+  - appdirs # ???
   - tqdm
-  - mygene
-  - openpyxl
+  - mygene # ???
+  - openpyxl # ???
   - fastparquet
   - more-itertools
   - matplotlib-base
   - matplotlib-venn
   - seaborn
-  - pysam
-  - pybedtools
+  - pybedtools # ???
   - biopython
-  - pyensembl
-  - pystan <3
+  - pyensembl # ???
   - pytest
+  - pip
+  - pip:
+      - pysam==0.20.0 # with Samtools-1.16.1

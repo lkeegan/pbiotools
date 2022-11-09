@@ -5,9 +5,28 @@ All notable changes to the `pbiotools` package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.0.0] - - started 2022-07
+## [Unreleased] 
 
 We are working on a major version upgrade.
+
+### Changed
+
+- Environment installation for Python 3.10
+- Upgrade all dependencies/required packages, install via Conda (except pysam==0.20.0 via pip)
+- PyStan 2 to CmdStanPy API
+- Location of (compiled) Stan models for Conda environment
+
+### Removed
+
+- PyStan dependency
+- Pickling of Stan models
+- Periodic offsets with the best Bayes factor mean `largest_bf_`
+
+### Fixed
+
+- Variance estimates `bayes_factor_var` (metagene profiles)
+
+## [2.0.0] - - started 2022-07
 
 ### Changed
 

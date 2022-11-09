@@ -43,8 +43,7 @@ def list_commands():
         "subtract-bed",
         "extract-metagene-profiles",
         "estimate-metagene-profile-bayes-factors",
-        "select-periodic-offsets",
-        "pickle-stan",
+        "select-periodic-offsets"
     ]
 
 

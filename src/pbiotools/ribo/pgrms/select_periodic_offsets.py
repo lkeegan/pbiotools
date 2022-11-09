@@ -25,18 +25,6 @@ def get_most_periodic_offset(profile_df):
     highest_peak_bf_mean = highest_peak_row["bayes_factor_mean"]
     highest_peak_bf_var = highest_peak_row["bayes_factor_var"]
 
-    # and now the offset with the best bayes factor mean
-    mask_largest_bf = (
-        profile_df["bayes_factor_mean"] == profile_df["bayes_factor_mean"].max()
-    )
-    largest_bf_row = profile_df[mask_largest_bf].iloc[0]
-
-    largest_bf_peak = largest_bf_row["profile_peak"]
-    largest_bf_profile_sum = largest_bf_row["profile_sum"]
-    largest_bf_offset = int(largest_bf_row["offset"])
-    largest_bf_mean = largest_bf_row["bayes_factor_mean"]
-    largest_bf_var = largest_bf_row["bayes_factor_var"]
-
     # and construct the output
     ret = {
         "length": length,
@@ -44,12 +32,7 @@ def get_most_periodic_offset(profile_df):
         "highest_peak_profile_sum": highest_peak_profile_sum,
         "highest_peak_offset": highest_peak_offset,
         "highest_peak_bf_mean": highest_peak_bf_mean,
-        "highest_peak_bf_var": highest_peak_bf_var,
-        "largest_bf_peak": largest_bf_peak,
-        "largest_bf_profile_sum": largest_bf_profile_sum,
-        "largest_bf_offset": largest_bf_offset,
-        "largest_bf_mean": largest_bf_mean,
-        "largest_bf_var": largest_bf_var,
+        "highest_peak_bf_var": highest_peak_bf_var
     }
 
     return pd.Series(ret)

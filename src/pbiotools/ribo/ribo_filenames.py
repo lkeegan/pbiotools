@@ -414,15 +414,25 @@ def get_default_models_base(project="rpbp_models"):
 
     appname = "rpbp"
     appauthor = "dieterich-lab"
-    models_base = appdirs.user_data_dir(appname, appauthor)
-    models_base = os.path.join(models_base, project)
+    # preferred location is CONDA_PREFIX if installed
+    # via conda, otherwise fall back to user_data_dir
+    try:
+        
+        models_base = os.path.join(os.environ["CONDA_PREFIX"], 
+                                   "share",
+                                   appname,
+                                   project)
+    except:
+        models_base = appdirs.user_data_dir(appname, appauthor)
+        models_base = os.path.join(models_base, project)
     return models_base
 
 
 def get_models(models_base, model_type):
     import shlex
-
-    path_ex = os.path.join(models_base, model_type, "*pkl")
+    
+    # query via stan_file
+    path_ex = os.path.join(models_base, model_type, "*stan")
     models = glob.glob(path_ex)
     models = [shlex.quote(m) for m in models]
     return models

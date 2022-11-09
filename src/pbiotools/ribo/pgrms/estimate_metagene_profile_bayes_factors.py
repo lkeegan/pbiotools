@@ -2,17 +2,17 @@
 
 import argparse
 import logging
-import pickle
 
 import numpy as np
 import pandas as pd
+
+from cmdstanpy import CmdStanModel
+from pbiotools.misc.suppress_stdout_stderr import suppress_stdout_stderr
 
 import pbiotools.misc.logging_utils as logging_utils
 import pbiotools.misc.parallel as parallel
 import pbiotools.misc.utils as utils
 import pbiotools.misc.pandas_utils as pandas_utils
-
-from pbiotools.misc.suppress_stdout_stderr import suppress_stdout_stderr
 
 logger = logging.getLogger(__name__)
 
@@ -54,32 +54,53 @@ def estimate_marginal_likelihoods(
         "T": T,
         "very_high_prior_location": very_high_prior_location,
     }
-
+    
+    iter_warmup = int(iterations // 2)
+    
     # get the likelihood for each of the models
     bft_periodic = [
-        pm.sampling(
-            data=data, iter=iterations, chains=chains, n_jobs=1, seed=seed, refresh=-1
+        pm.sample(
+            data=data, 
+            iter_warmup=iter_warmup, 
+            iter_sampling=iter_warmup, 
+            chains=chains, 
+            parallel_chains=chains, 
+            seed=seed, 
+            show_progress=False,
+            show_console=False
         )
         for pm in periodic_models
     ]
-
+    
     bft_nonperiodic = [
-        nm.sampling(
-            data=data, iter=iterations, chains=chains, n_jobs=1, seed=seed, refresh=-1
+        nm.sample(
+            data=data, 
+            iter_warmup=iter_warmup, 
+            iter_sampling=iter_warmup, 
+            chains=chains, 
+            parallel_chains=chains, 
+            seed=seed, 
+            show_progress=False,
+            show_console=False
         )
         for nm in nonperiodic_models
     ]
-
+        
     return (bft_periodic, bft_nonperiodic)
 
 
-def estimate_profile_bayes_factors(profile, args):
+def estimate_profile_bayes_factors(profile, args, cpp_options):
     length = profile["length"].iloc[0]
 
     # read in the relevant models
-    periodic_models = [pickle.load(open(pm, "rb")) for pm in args.periodic_models]
+    # setting compile=False results in exe_file=None?
+    periodic_models = [
+        CmdStanModel(stan_file=pm, cpp_options=cpp_options) 
+            for pm in args.periodic_models
+    ]
     nonperiodic_models = [
-        pickle.load(open(npm, "rb")) for npm in args.nonperiodic_models
+        CmdStanModel(stan_file=npm, cpp_options=cpp_options) 
+            for npm in args.nonperiodic_models
     ]
 
     # pull out the start offsets ("position" field) and counts
@@ -126,12 +147,12 @@ def estimate_profile_bayes_factors(profile, args):
         )
 
         # extract the parameters of interest
-        m_periodic_ex = [m.extract(pars=["lp__"]) for m in bft_periodic]
-        m_nonperiodic_ex = [m.extract(pars=["lp__"]) for m in bft_nonperiodic]
+        m_periodic_ex = [m.draws_pd()["lp__"].values for m in bft_periodic]
+        m_nonperiodic_ex = [m.draws_pd()["lp__"].values for m in bft_nonperiodic]
 
         # now, choose the best model of each class,  based on mean likelihood
-        m_periodic_means = [np.mean(m_ex["lp__"]) for m_ex in m_periodic_ex]
-        m_nonperiodic_means = [np.mean(m_ex["lp__"]) for m_ex in m_nonperiodic_ex]
+        m_periodic_means = [np.mean(m_ex) for m_ex in m_periodic_ex]
+        m_nonperiodic_means = [np.mean(m_ex) for m_ex in m_nonperiodic_ex]
 
         max_periodic_mean = np.argmax(m_periodic_means)
         max_nonperiodic_mean = np.argmax(m_nonperiodic_means)
@@ -145,16 +166,16 @@ def estimate_profile_bayes_factors(profile, args):
 
         v = {
             "offset": offset,
-            "p_periodic_mean": np.mean(m_periodic_ex["lp__"]),
-            "p_periodic_var": np.var(m_periodic_ex["lp__"]),
-            "p_nonperiodic_mean": np.mean(m_nonperiodic_ex["lp__"]),
-            "p_nonperiodic_var": np.var(m_nonperiodic_ex["lp__"]),
+            "p_periodic_mean": np.mean(m_periodic_ex),
+            "p_periodic_var": np.var(m_periodic_ex),
+            "p_nonperiodic_mean": np.mean(m_nonperiodic_ex),
+            "p_nonperiodic_var": np.var(m_nonperiodic_ex),
             "profile_sum": profile_sum,
             "profile_peak": profile_peak,
         }
 
         v["bayes_factor_mean"] = v["p_periodic_mean"] - v["p_nonperiodic_mean"]
-        v["bayes_factor_var"] = v["p_periodic_var"] + v["p_periodic_var"]
+        v["bayes_factor_var"] = v["p_periodic_var"] + v["p_nonperiodic_var"]
 
         ret.append(pd.Series(v))
 
@@ -245,7 +266,13 @@ def main():
         type=int,
         default=default_iterations,
     )
-
+    
+    parser.add_argument(
+        "--use-stan-threads",
+        help="""If this flag is present, instantiate models using options for C++ compiler.""",
+        action="store_true",
+    )
+    
     parser.add_argument(
         "-p",
         "--num-cpus",
@@ -265,6 +292,11 @@ def main():
     logging_utils.add_logging_options(parser)
     args = parser.parse_args()
     logging_utils.update_logging(args)
+    
+    # Stan model instantiation option
+    cpp_options = None
+    if args.use_stan_threads:
+        cpp_options = {'STAN_THREADS': 'TRUE'}
 
     # we will parallelize based on the lengths. So we need to know which lengths
     # are present in the metagene profiles file
@@ -284,6 +316,7 @@ def main():
             args.num_cpus,
             estimate_profile_bayes_factors,
             args,
+            cpp_options,
             progress_bar=True,
         )
 
