@@ -88,8 +88,9 @@ def main():
 
     msg = "Creating the plots"
     logger.info(msg)
-
-    g = sns.factorplot(
+    
+    # change call to FacetGrid? 
+    g = sns.catplot(
         x="length",
         y="count",
         col="basename",
@@ -97,10 +98,11 @@ def main():
         kind="bar",
         color="steelblue",
         col_wrap=3,
-        size=5,
+       # size=5,
         aspect=1.5,
-        log=True,
+        #log=True,
     )
+    g.set(yscale="log")
 
     g.set_xlabels("Length", fontsize=args.fontsize)
     g.set_ylabels("Count", fontsize=args.fontsize)
