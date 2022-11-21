@@ -5,22 +5,28 @@ channels:
   - bioconda
 dependencies:
   - python
-  - cmdstanpy # 1.0.8
-  - dask
-  - scikit-learn
-  - appdirs # ???
-  - tqdm
-  - mygene # ???
-  - openpyxl # ???
-  - fastparquet
-  - more-itertools
-  - matplotlib-base
-  - matplotlib-venn
-  - seaborn
-  - pybedtools # ???
+  - appdirs # ?
   - biopython
-  - pyensembl # ???
-  - pytest
+  - cmdstanpy
+  - dask # ?
+  - fastparquet # ?
+  - joblib
+  - matplotlib-base
+  - matplotlib-venn # ?
+  - more-itertools
+  - mygene # ?
+  - numpy
+  - openpyxl # ?
+  - pandas
   - pip
+  - pybedtools # ?
+  - pyensembl # ?
+  - pytest
+  - pyyaml
+  - seaborn
+  - scikit-learn
+  - scipy
+  - statsmodels
+  - tqdm
   - pip:
       - pysam==0.20.0 # with Samtools-1.16.1
