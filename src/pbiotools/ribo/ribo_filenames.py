@@ -660,8 +660,9 @@ def get_peptide_coverage_line_graph(
 
 # used
 def get_periodic_offsets(riboseq_base, name, **kwargs):
-
-    s = get_riboseq_base(riboseq_base, name, "metagene-profiles", **kwargs)
+    
+    sub_folder = kwargs.pop("sub_folder", "metagene-profiles")
+    s = get_riboseq_base(riboseq_base, name, sub_folder, **kwargs)
     s = s + ".periodic-offsets.csv.gz"
     return s
 
@@ -1030,13 +1031,23 @@ def get_riboseq_profiles(riboseq_base, name, **kwargs):
 
 # r
 
+def get_riboseq_frame_counts(riboseq_base, name, **kwargs):
+    sub_folder = kwargs.pop("sub_folder", "")
+    base = get_riboseq_base(riboseq_base, name, sub_folder, **kwargs)
+    loc = f"{base}.frame-counts.csv.gz"
+    return loc
 
-def get_riboseq_read_filtering_counts(riboseq_base, note=None):
-    note_str = get_note_string(note)
-    fn = "read-filtering-counts{}.csv.gz".format(note_str)
-    s = os.path.join(riboseq_base, fn)
-    return s
+#def get_riboseq_read_filtering_counts(riboseq_base, note=None):
+    #note_str = get_note_string(note)
+    #fn = "read-filtering-counts{}.csv.gz".format(note_str)
+    #s = os.path.join(riboseq_base, fn)
+    #return s
 
+def get_riboseq_read_filtering_counts(riboseq_base, name, **kwargs):
+    sub_folder = kwargs.pop("sub_folder", "")
+    base = get_riboseq_base(riboseq_base, name, sub_folder, **kwargs)
+    loc = f"{base}.read-filtering-counts.csv.gz"
+    return loc
 
 def get_riboseq_read_filtering_counts_image(riboseq_base, note="", image_type="eps"):
     note_str = get_note_string(note)
@@ -1045,12 +1056,17 @@ def get_riboseq_read_filtering_counts_image(riboseq_base, note="", image_type="e
     return s
 
 
+#def get_riboseq_read_length_distribution(riboseq_base, name, **kwargs):
+
+    #s = get_riboseq_base(riboseq_base, name, "without-rrna-mapping", **kwargs)
+    #s = s + ".length-distribution.csv.gz"
+    #return s
+    
 def get_riboseq_read_length_distribution(riboseq_base, name, **kwargs):
-
-    s = get_riboseq_base(riboseq_base, name, "without-rrna-mapping", **kwargs)
-    s = s + ".length-distribution.csv.gz"
-    return s
-
+    sub_folder = kwargs.pop("sub_folder", "without-rrna-mapping")
+    base = get_riboseq_base(riboseq_base, name, sub_folder, **kwargs)
+    loc = f"{base}.length-distribution.csv.gz"
+    return loc
 
 def get_riboseq_read_length_distribution_image(
     riboseq_base, name, image_type="eps", **kwargs
