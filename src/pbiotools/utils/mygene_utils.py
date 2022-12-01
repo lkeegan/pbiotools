@@ -334,12 +334,17 @@ def _parse_transcript_to_gene_query_result(entry):
         ret.append(r)
 
     elif "ensembl" in entry:
-        for ensembl_entry in entry["ensembl"]:
-            if "gene" in ensembl_entry:
-                gene = ensembl_entry["gene"]
-                r = {"transcript_id": transcript, "gene_id": gene}
-                ret.append(r)
-
+        ensembl_entries = entry["ensembl"]
+        if len(ensembl_entries) > 1:
+            for ensembl_entry in ensembl_entries:
+                if "gene" in ensembl_entry:
+                    gene = ensembl_entry["gene"]
+                    r = {"transcript_id": transcript, "gene_id": gene}
+                    ret.append(r)
+        else:
+            r = {"transcript_id": transcript, "gene_id": ensembl_entries["gene"]}
+            ret.append(r)
+            
     return ret
 
 
@@ -381,11 +386,11 @@ def get_transcript_to_gene_mapping(transcript_ids):
     import pbiotools.misc.utils as utils
     import pandas as pd
 
-    msg = (
-        "[mygene_utils.get_transcript_to_gene_mapping]: Use the pyensembl "
-        "package to find this mapping. It works locally and is much faster."
-    )
-    raise DeprecationWarning(msg)
+    #msg = (
+        #"[mygene_utils.get_transcript_to_gene_mapping]: Use the pyensembl "
+        #"package to find this mapping. It works locally and is much faster."
+    #)
+    #raise DeprecationWarning(msg)
 
     MG = mygene.MyGeneInfo()
     res = MG.querymany(
@@ -467,11 +472,11 @@ def get_gene_to_transcript_mapping(gene_ids, mygene_url="http://mygene.info/v3")
     import pbiotools.misc.utils as utils
     import pandas as pd
 
-    msg = (
-        "[mygene_utils.get_gene_to_transcript_mapping]: Use the pyensembl "
-        "package to find this mapping. It works locally and is much faster."
-    )
-    raise DeprecationWarning(msg)
+    #msg = (
+        #"[mygene_utils.get_gene_to_transcript_mapping]: Use the pyensembl "
+        #"package to find this mapping. It works locally and is much faster."
+    #)
+    #raise DeprecationWarning(msg)
 
     MG = mygene.MyGeneInfo()
     MG.url = mygene_url
