@@ -30,7 +30,6 @@ def list_commands():
         "join-long-chromosomes",
         "merge-isoforms",
         "parse-meme-names",
-        "plot-read-length-distribution",
         "remove-duplicate-bed-entries",
         "remove-duplicate-sequences",
         "remove-multimapping-reads",
