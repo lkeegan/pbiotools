@@ -4,6 +4,7 @@
 ###
 
 import logging
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
@@ -16,22 +17,23 @@ MYGENE_COLUMN_MAP = {
 MYGENE_COLUMNS = [
     "gene_id",
     "symbol",
+    "entrezgene",
+    "summary",
     "swiss_prot",
     "trembl",
-    "name",
-    "summary",
     "pdb",
     "pfam",
     "prosite",
 ]
 
 FIELDS = (
-    "name,symbol,entrezgene,pdb,pfam,prosite,summary,uniprot.Swiss-Prot,"
-    "uniprot.TrEMBL,go,interpro,pathway"
+    "symbol,entrezgene,summary,uniprot.Swiss-Prot,uniprot.TrEMBL,"
+    "pdb,pfam,prosite,go,interpro"
 )
 
 
-def parse_go_terms(row, go_hierarchies=["BP", "MF", "CC"]):
+def parse_go_terms(row, ontologies=["BP", "MF", "CC"], term="id"):
+    
     """This function parses all of the gene ontology terms out of the "go"
     field of a record. It assumes the "go" field, if it is present, contains
     a dictionary in which the keys are the high-level GO hierarchies, and
@@ -42,77 +44,46 @@ def parse_go_terms(row, go_hierarchies=["BP", "MF", "CC"]):
         row (pd.Series, or dictionary): presumably, the result of a call
             to mygene.get_genes
 
-        go_hierarchies (list of strings): the top-level GO terms
+        ontologies (list of strings): the top-level GO terms
 
     Returns:
         dictionary: containing the keys:
             'gene_id': which is retrieved from the 'query' field of row
-            'go_terms': a semi-colon delimited list of the GO terms
+            'go_terms': a delimited list of the GO terms in order of 
+            the ontologies
 
     Imports:
         misc.utils
 
     """
+    
     import pbiotools.misc.utils as utils
-
+    
     go_terms = []
+    
+    for ont in ontologies:
+        # there could be different evidences for the same GO term...
+        go_terms_ont = set()
+        col = f"go.{ont}"
+        # if one entry, not a list, but item can be present with a NaN...
+        if (col not in row or (isinstance(row[col], list) and pd.isna(row[col]).all()) 
+            or (isinstance(row[col], float) and pd.isna(row[col]))):
+            col = f"{col}.id"
+            if col in row and not isinstance(row[col], float):
+                go_terms.append(row[col])
+            continue
+        # presumably a list of dict
+        go = utils.wrap_in_list(row[col])
+        if not go:
+            return None
+        for go_entry in go:
+            go_terms_ont.add(go_entry[term])
+        go_terms.append("|".join(go_terms_ont))
 
-    if "go" not in row:
-        return None
-
-    go = row["go"]
-
-    if isinstance(go, dict):
-        for go_hierarchy in go_hierarchies:
-            if go_hierarchy not in go:
-                continue
-
-            gh = utils.wrap_in_list(go[go_hierarchy])
-            for go_term in gh:
-                go_terms.append(go_term["term"])
-
-    return {"gene_id": row["query"], "go_terms": ";".join(go_terms)}
-
-
-def parse_kegg_pathways(row):
-    """This function parses all of the KEGG pathways out of the "kegg"
-    field of a record. It first checks the "pathway" field, which is
-    assumed to be a dictionary, of the row for a field key called
-    "kegg". It assumes the "kegg" field, if it is present,
-    contains a list of dictionaries, and each dictionary contains a
-    key called "name" which gives the name of that KEGG pathway.
-
-    Args:
-        row (pd.Series, or dictionary): presumably, the result of a call
-            to mygene.get_genes
-
-    Returns:
-        dictionary: containing the keys:
-            'gene_id': which is retrieved from the 'query' field of row
-            'kegg_pathways': a semi-colon delimited list of the KEGG pathways
-
-    Imports:
-        misc.utils
-    """
-    import pbiotools.misc.utils as utils
-
-    kps = []
-
-    if "pathway" not in row:
-        return None
-
-    p = row["pathway"]
-
-    if isinstance(p, dict):
-        if "kegg" in p:
-            kegg_pathways = utils.wrap_in_list(p["kegg"])
-            for kp in kegg_pathways:
-                kps.append(kp["name"])
-
-    return {"gene_id": row["query"], "kegg_pathways": ";".join(kps)}
+    return {"gene_id": row["query"], "go_terms": " ".join(go_terms)}
 
 
-def parse_interpro(row):
+def parse_interpro(row, term="id"):
     """This function parses all of the Interpro families out of the "interpro"
     field of a record. It assumes the "interpro" field, if it is present,
     contains a list of dictionaries, and each dictionary contains a key
@@ -125,7 +96,7 @@ def parse_interpro(row):
     Returns:
         dictionary: containing the keys:
             'gene_id': which is retrieved from the 'query' field of row
-            'interpro_families': a semi-colon delimited list of the Interpro families
+            'interpro_families': a delimited list of the Interpro families
     """
     interpro_terms = []
 
@@ -136,9 +107,9 @@ def parse_interpro(row):
 
     if isinstance(ip, list):
         for ip_term in ip:
-            interpro_terms.append(ip_term["desc"])
+            interpro_terms.append(ip_term[term])
 
-    return {"gene_id": row["query"], "interpro_families": ";".join(interpro_terms)}
+    return {"gene_id": row["query"], "interpro_families": "|".join(interpro_terms)}
 
 
 def query_mygene(
@@ -241,14 +212,6 @@ def query_mygene(
     res = res.reset_index()
 
     # parse out the various fields
-
-    msg = "Parsing KEGG pathways"
-    logger.info(msg)
-
-    kps = parallel.apply_df_simple(res, parse_kegg_pathways)
-    kps = [k for k in kps if k is not None]
-    kps_df = pd.DataFrame(kps)
-
     msg = "Parsing GO annotations"
     logger.info(msg)
 
@@ -284,7 +247,7 @@ def query_mygene(
     msg = "Merging results"
     logger.info(msg)
 
-    dfs = [res_df, kps_df, gos_df, interpros_df]
+    dfs = [res_df, gos_df, interpros_df]
     dfs = [df for df in dfs if len(df.columns) > 0]
 
     res_df = functools.reduce(
@@ -299,7 +262,7 @@ def query_mygene(
     res_df = res_df.fillna("")
 
     # fix the string vs. list of string fields
-    sep_join = lambda l: ";".join(l)
+    sep_join = lambda l: "|".join(l)
 
     res_df["trembl"] = res_df["trembl"].apply(utils.wrap_string_in_list)
     res_df["trembl"] = res_df["trembl"].apply(sep_join)
@@ -348,7 +311,7 @@ def _parse_transcript_to_gene_query_result(entry):
     return ret
 
 
-def get_transcript_to_gene_mapping(transcript_ids):
+def get_transcript_to_gene_mapping(transcript_ids, species="all"):
     """This function uses mygene.info to find the Ensembl gene identifers which
     match to the provided list of Ensembl transcript identifers. The result
     is returned as a pandas data frame which is useful for joining data
@@ -398,7 +361,7 @@ def get_transcript_to_gene_mapping(transcript_ids):
         returnall=False,
         scopes="ensembl.transcript",
         fields="ensembl.gene",
-        species="all",
+        species=species,
     )
 
     id_mapping = parallel.apply_iter_simple(
@@ -446,7 +409,7 @@ def _parse_gene_to_transcript_query_result(entry):
     return ret
 
 
-def get_gene_to_transcript_mapping(gene_ids, mygene_url="http://mygene.info/v3"):
+def get_gene_to_transcript_mapping(gene_ids, mygene_url="http://mygene.info/v3", species="all"):
     """This function uses mygene.info to find the Ensembl transcript identifiers
     which match the provided list of Ensembl gene identifiers. The result is
     returned as a pandas data frame.
@@ -485,7 +448,7 @@ def get_gene_to_transcript_mapping(gene_ids, mygene_url="http://mygene.info/v3")
         returnall=False,
         fields="ensembl.transcript",
         scopes="ensembl.gene",
-        species="all",
+        species=species,
     )
 
     id_mapping = parallel.apply_iter_simple(
