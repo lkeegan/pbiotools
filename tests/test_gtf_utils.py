@@ -7,10 +7,8 @@
 import numpy as np
 import pandas as pd
 
-import pbiotools.utils.bed_utils as bed_utils
 import pbiotools.utils.gtf_utils as gtf_utils
 
-import pandas.util.testing
 import pytest
 
 
@@ -93,4 +91,4 @@ def bed_entry():
 def test_get_gtf_entries(expected_gtf_entries, bed_entry):
     source = "my_source"
     gtf_entries = gtf_utils.get_gtf_entries(bed_entry, source)
-    pandas.util.testing.assert_frame_equal(expected_gtf_entries, gtf_entries)
+    pd.testing.assert_frame_equal(expected_gtf_entries, gtf_entries)

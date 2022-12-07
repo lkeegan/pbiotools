@@ -35,65 +35,6 @@ defaults = {
     "smoothing_reweighting_iterations": 0,
 }
 
-
-# Define ORFs labels and categories
-
-orf_type_labels_mapping = {
-    "canonical": ["canonical"],
-    "canonical_variant": ["canonical_variant", "novel_canonical_variant", "within"],
-    "five_prime": ["five_prime", "five_prime_overlap"],
-    "three_prime": ["three_prime", "three_prime_overlap"],
-    "noncoding": ["noncoding", "novel_noncoding"],
-    "novel": ["novel"],
-    "other": [
-        "overlap",
-        "novel_overlap",
-        "suspect",
-        "novel_suspect",
-        "novel_within",  # these 3 are in principle invalid labels
-        "novel_five_prime",
-        "novel_three_prime",
-    ],
-}
-
-orf_type_labels_reverse_mapping = {
-    v: k for k, l in orf_type_labels_mapping.items() for v in l
-}
-
-orf_type_labels_display_name_map = {
-    "canonical": "Canonical",
-    "canonical_variant": "Can. (variant)",
-    "five_prime": "uORF",
-    "three_prime": "dORF",
-    "noncoding": "ncORF",
-    "novel": "Novel",
-    "other": "Other",
-}
-
-orf_type_display_name_map = {
-    "canonical": "Canonical",
-    "canonical_variant": "Can. (variant)",
-    "within": "Can. (within)",
-    "five_prime": "uORF",
-    "three_prime": "dORF",
-    "noncoding": "ncORF",
-    "five_prime_overlap": "uoORF",
-    "three_prime_overlap": "doORF",
-    "suspect": "Suspect",
-    "overlap": "Overlap",
-    "novel": "Novel",
-    "novel_canonical_variant": "Novel can. (variant)",
-    "novel_noncoding": "Novel ncORF",
-    "novel_overlap": "Novel overlap",
-    "novel_suspect": "Novel suspect",
-    "novel_within": "Novel within",  # these 3 are in principle invalid labels
-    "novel_five_prime": "Novel uORF",
-    "novel_three_prime": "Novel dORF",
-}
-
-orf_type_labels = list(orf_type_labels_mapping.keys())
-orf_types = list(orf_type_display_name_map.keys())
-
 ###
 #   The following functions are helpful for parsing information out of the identifiers.
 ###
