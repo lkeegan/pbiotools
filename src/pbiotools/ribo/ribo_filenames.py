@@ -964,11 +964,12 @@ def get_riboseq_peptide_matches(riboseq_base, name, peptide_name, **kwargs):
 
 
 # used
-def get_riboseq_predicted_orfs(riboseq_base, name, **kwargs):
 
-    s = get_riboseq_base(riboseq_base, name, "orf-predictions", **kwargs)
-    s = s + ".predicted-orfs.bed.gz"
-    return s
+def get_riboseq_predicted_orfs(riboseq_base, name, **kwargs):
+    sub_folder = kwargs.pop("sub_folder", "orf-predictions")
+    base = get_riboseq_base(riboseq_base, name, sub_folder, **kwargs)
+    loc = f"{base}.predicted-orfs.bed.gz"
+    return loc
 
 
 # used
