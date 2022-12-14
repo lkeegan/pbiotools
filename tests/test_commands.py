@@ -13,7 +13,6 @@ def list_commands():
         "convert-ccds-to-bed",
         "count-aligned-reads",
         "count-reads",
-        "create-aligned-read-count-bar-chart",
         "create-mygene-report",
         "create-init-ribo-track",
         "dna-to-aa",

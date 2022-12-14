@@ -11,10 +11,10 @@ We are working on a major version upgrade.
 
 ### Changed
 
-- Environment installation for Python 3.10
-- Upgrade all dependencies/required packages, install via Conda (except pysam==0.20.0 via pip)
+- Upgrade all dependencies/required packages, install via Conda
 - PyStan 2 to CmdStanPy API
 - Location of (compiled) Stan models for Conda environment
+- WIP filenames
 
 ### Removed
 

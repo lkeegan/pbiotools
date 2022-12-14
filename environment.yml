@@ -21,6 +21,7 @@ dependencies:
   - pip
   - pybedtools # ?
   - pyensembl # ?
+  - pysam
   - pytest
   - pyyaml
   - seaborn
@@ -28,5 +29,3 @@ dependencies:
   - scipy
   - statsmodels
   - tqdm
-  - pip:
-      - pysam==0.20.0 # with Samtools-1.16.1

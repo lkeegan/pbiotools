@@ -64,7 +64,7 @@ def estimate_marginal_likelihoods(
             iter_warmup=iter_warmup, 
             iter_sampling=iter_warmup, 
             chains=chains, 
-            parallel_chains=chains, 
+            parallel_chains=1, 
             seed=seed, 
             show_progress=False,
             show_console=False
@@ -78,7 +78,7 @@ def estimate_marginal_likelihoods(
             iter_warmup=iter_warmup, 
             iter_sampling=iter_warmup, 
             chains=chains, 
-            parallel_chains=chains, 
+            parallel_chains=1, 
             seed=seed, 
             show_progress=False,
             show_console=False
