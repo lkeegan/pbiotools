@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 
 from cmdstanpy import CmdStanModel
-from pbiotools.misc.suppress_stdout_stderr import suppress_stdout_stderr
 
 import pbiotools.misc.logging_utils as logging_utils
 import pbiotools.misc.parallel as parallel
@@ -15,6 +14,7 @@ import pbiotools.misc.utils as utils
 import pbiotools.misc.pandas_utils as pandas_utils
 
 logger = logging.getLogger(__name__)
+cmdstanpy_logger = logging.getLogger("cmdstanpy")
 
 # When called from the Rp-Bp pipeline (create-orf-profiles), default
 # options (or else specified via the configuration file) are always
@@ -90,6 +90,12 @@ def estimate_marginal_likelihoods(
 
 
 def estimate_profile_bayes_factors(profile, args, cpp_options):
+    
+    # logging
+    cmdstanpy_logger.disabled = True
+    if args.enable_ext_logging:
+        cmdstanpy_logger.disabled = False
+        
     length = profile["length"].iloc[0]
 
     # read in the relevant models
@@ -292,7 +298,7 @@ def main():
     logging_utils.add_logging_options(parser)
     args = parser.parse_args()
     logging_utils.update_logging(args)
-    
+        
     # Stan model instantiation option
     cpp_options = None
     if args.use_stan_threads:
@@ -309,16 +315,14 @@ def main():
 
     length_groups = metagene_profiles.groupby("length")
 
-    with suppress_stdout_stderr():
-
-        all_profile_estimates_df = parallel.apply_parallel_groups(
-            length_groups,
-            args.num_cpus,
-            estimate_profile_bayes_factors,
-            args,
-            cpp_options,
-            progress_bar=True,
-        )
+    all_profile_estimates_df = parallel.apply_parallel_groups(
+        length_groups,
+        args.num_cpus,
+        estimate_profile_bayes_factors,
+        args,
+        cpp_options,
+        progress_bar=True,
+    )
 
     msg = "Combining estimates into one data frame"
     logger.info(msg)

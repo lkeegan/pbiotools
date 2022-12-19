@@ -15,12 +15,14 @@ We are working on a major version upgrade.
 - PyStan 2 to CmdStanPy API
 - Location of (compiled) Stan models for Conda environment
 - WIP filenames
+- CmdStanPy logging
 
 ### Removed
 
 - PyStan dependency
 - Pickling of Stan models
 - Periodic offsets with the best Bayes factor mean `largest_bf_`
+- pbiotools.ribo
 
 ### Fixed
 

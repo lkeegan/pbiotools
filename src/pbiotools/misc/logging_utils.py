@@ -35,6 +35,15 @@ def add_logging_options(parser, default_log_file=""):
         "stderr, if specified)",
         default=default_log_file,
     )
+    
+    logging_options.add_argument(
+        "--enable-ext-logging",
+        help="If this flag is present, "
+        "logging is enabled for external programs that may be disabled by default. "
+        "This is used in particular to send CmdStanPy logging statements to logs.",
+        action="store_true",
+    )
+    
     logging_options.add_argument(
         "--log-stdout",
         help="If this flag is present, then "
@@ -42,6 +51,7 @@ def add_logging_options(parser, default_log_file=""):
         "and stderr, if specified)",
         action="store_true",
     )
+    
     logging_options.add_argument(
         "--no-log-stderr",
         help="Unless this flag is present, then "
@@ -116,6 +126,9 @@ def get_logging_options_string(args):
     s = " ".join("{} {}".format(k, v) for k, v in logging_flags_and_vals.items())
 
     # and check the flags
+    if args.enable_ext_logging:
+        s = "--enable-ext-logging {}".format(s)
+        
     if args.log_stdout:
         s = "--log-stdout {}".format(s)
 
