@@ -169,7 +169,7 @@ def main():
 
     msg = "Reading annotations"
     logger.info(msg)
-    annotations_df = bed_utils.read_bed(args.orfs)
+    annotations_df = bed_utils.read_bed(args.orfs, low_memory=False)
 
     msg = "Constructing canonical translation initiation ORF data frames"
     logger.info(msg)
