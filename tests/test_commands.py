@@ -37,9 +37,6 @@ def list_commands():
         "split-bed12-blocks",
         "split-long-chromosomes",
         "subtract-bed",
-        "extract-metagene-profiles",
-        "estimate-metagene-profile-bayes-factors",
-        "select-periodic-offsets"
     ]
 
 

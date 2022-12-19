@@ -12,10 +12,6 @@ We are working on a major version upgrade.
 ### Changed
 
 - Upgrade all dependencies/required packages, install via Conda
-- PyStan 2 to CmdStanPy API
-- Location of (compiled) Stan models for Conda environment
-- WIP filenames
-- CmdStanPy logging
 
 ### Removed
 
