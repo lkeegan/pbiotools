@@ -8,7 +8,6 @@ def list_commands():
         "bam-to-wiggle",
         "bedx-to-bedy",
         "bed12-to-gtf",
-        "calculate-bed-overlap",
         "convert-ccds-to-bed",
         "count-aligned-reads",
         "count-reads",

@@ -695,10 +695,9 @@ def bayesian_proportion_test(
     x, n, prior=(0.5, 0.5), prior2=None, num_samples=1000, seed=None
 ):
     """Perform a Bayesian test to identify significantly different proportions.
-
     This test is based on a beta-binomial conjugate model. It uses simulations to
     estimate the posterior of the difference between the proportions, as well as
-    the likelihood that \pi_1 > \pi_2 (where \pi_i is the likelihood of success in
+    the likelihood that pi_1 > pi_2 (where pi_i is the likelihood of success in
     sample i).
 
     Parameters
@@ -812,12 +811,11 @@ def bayesian_means_test(
     x1, x2, jeffreys_prior=True, prior1=None, prior2=None, num_samples=1000, seed=None
 ):
     """Perform a Bayesian test to identify significantly different means.
-
     The test is based on a Gaussian conjugate model. (The normal-inverse-chi-square
     distribution is the prior.) It uses simulation to estimate the posterior of the
     difference between the means of the populations, under the (probably dubious)
     assumption that the observations are Gaussian distributed. It also estimates the
-    likelihood that \mu_1 > \mu_2, where \mu_i is the mean of each sample.
+    likelihood that mu_1 > mu_2, where mu_i is the mean of each sample.
 
     Parameters
     ----------
@@ -1031,7 +1029,7 @@ def collect_binary_classification_metrics(
 
 
 def _calc_hand_and_till_a_value(y_true, y_score, i, j):
-    """Calculate the \hat{A} value in Equation (3) of:
+    """Calculate the a_hat value in Equation (3) of:
 
     Hand, D. & Till, R. A Simple Generalisation of the Area Under the ROC Curve
     for Multiple Class Classification Problems Machine Learning, 2001, 45, 171-186.
@@ -1059,7 +1057,7 @@ def _calc_hand_and_till_a_value(y_true, y_score, i, j):
     Returns
     -------
     a_hat: float
-        The \hat{A} value from Equation (3) referenced above. Specifically, this is
+        The a_hat value from Equation (3) referenced above. Specifically, this is
         the probability that a randomly drawn member of class j will have a lower
         estimated score for belonging to class i than a randomly drawn member
         of class i.
