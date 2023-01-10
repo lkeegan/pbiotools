@@ -44,7 +44,6 @@ def list_commands():
         "extract-metagene-profiles",
         "estimate-metagene-profile-bayes-factors",
         "select-periodic-offsets",
-        "pickle-stan",
     ]
 
 
