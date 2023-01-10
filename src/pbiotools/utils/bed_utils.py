@@ -2381,15 +2381,15 @@ def get_bed_overlaps(
     """
     import pbiotools.misc.math_utils as math_utils
 
-    bed_a, bed_b = _get_bed_exons(bed_a, bed_b, exons, exons_a, exons_b)
+    bed_a, bed_b = _get_bed_exons(bed_a.copy(), bed_b.copy(), exons, exons_a, exons_b)
 
     # check the overlap fractions
     math_utils.check_range(min_a_overlap, 0, 1, variable_name="min_a_overlap")
     math_utils.check_range(min_b_overlap, 0, 1, variable_name="min_b_overlap")
 
     # first, get the total lengths of all transcripts
-    bed_a["length"] = bed_a["end"] - bed_a["start"]
-    bed_b["length"] = bed_b["end"] - bed_b["start"]
+    bed_a.loc[:, "length"] = bed_a["end"] - bed_a["start"]
+    bed_b.loc[:, "length"] = bed_b["end"] - bed_b["start"]
 
     a_groups = bed_a.groupby("id")
     a_lengths = a_groups["length"].sum()
@@ -2931,7 +2931,10 @@ def sort(bed, seqname_order=None, transcript_ids=None):
     sort_fields = ["seqname_index", "start", "end", "id_index"]
     bed12_df = bed12_df.sort_values(sort_fields)
 
-    return bed12_df
+    # remove additional fields
+    cols = [c for c in bed12_df.columns if c not in ["id_index", "seqname_index"]]
+
+    return bed12_df[cols]
 
 
 def concatenate(bed_list, sort_bed=False, out=None):

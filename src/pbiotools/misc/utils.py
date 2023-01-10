@@ -556,60 +556,6 @@ def get_basename(path):
     return os.path.splitext(os.path.basename(path))[0]
 
 
-def create_symlink(src, dst, remove=True, create=False, call=True):
-    """Creates or updates a symlink at dst which points to src.
-
-    Parameters
-    ----------
-    src: string
-        the path to the original file
-
-    dst: string
-        the path to the symlink
-
-    remove: bool
-        whether to remove any existing file at dst
-
-    create: bool
-        whether to create the directory structure necessary for dst
-
-    call: bool
-        whether to actually do anything
-
-    Returns
-    -------
-    None, but the symlink is created
-
-    Raises
-    ------
-    FileExistsError, if a file already exists at dst and the remove flag is
-        False
-    """
-    import logging
-
-    raise_deprecation_warning("misc.utils.create_symlink", "misc.shell_utils")
-
-    if not call:
-        return
-
-    if os.path.lexists(dst):
-        if remove:
-            msg = (
-                "[utils.create_symlink]: file already exists at: '{}'. It "
-                "will be removed".format(dst)
-            )
-            logging.warning(msg)
-            os.remove(dst)
-        else:
-            msg = "A file already exists at: '{}'".format(dst)
-            raise FileExistsError(msg)
-
-    if create:
-        os.makedirs(os.path.dirname(dst), exist_ok=True)
-
-    os.symlink(src, dst)
-
-
 ### numpy stack helpers
 
 

@@ -7,15 +7,11 @@ def list_commands():
     return [
         "bam-to-wiggle",
         "bedx-to-bedy",
-        "bed-to-bigBed",
         "bed12-to-gtf",
-        "calculate-bed-overlap",
         "convert-ccds-to-bed",
         "count-aligned-reads",
         "count-reads",
-        "create-aligned-read-count-bar-chart",
         "create-mygene-report",
-        "create-init-ribo-track",
         "dna-to-aa",
         "download-srr-files",
         "extract-bed-sequences",
@@ -30,7 +26,6 @@ def list_commands():
         "join-long-chromosomes",
         "merge-isoforms",
         "parse-meme-names",
-        "plot-read-length-distribution",
         "remove-duplicate-bed-entries",
         "remove-duplicate-sequences",
         "remove-multimapping-reads",
@@ -41,10 +36,6 @@ def list_commands():
         "split-bed12-blocks",
         "split-long-chromosomes",
         "subtract-bed",
-        "extract-metagene-profiles",
-        "estimate-metagene-profile-bayes-factors",
-        "select-periodic-offsets",
-        "pickle-stan",
     ]
 
 

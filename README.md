@@ -1,9 +1,29 @@
+# pbiotools [![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](http://bioconda.github.io/recipes/pbiotools/README.html) [![pypi releases](https://img.shields.io/pypi/v/pbiotools.svg)](https://pypi.org/project/pbiotools) [![CI](https://github.com/dieterich-lab/pbiotools/actions/workflows/ci.yml/badge.svg)](https://github.com/dieterich-lab/pbiotools/actions/workflows/ci.yml)
+
 The `pbiotools` package provides miscellaneous bioinformatics and other supporting utilities for Python 3, including
 programs used for Ribo-seq periodicity estimation. It is required for the installation of [Rp-Bp](https://github.com/dieterich-lab/rp-bp).
 It combines utilities and programs from the defunct pymisc-utils (see [pyllars](https://github.com/bmmalone/pyllars))
 and [riboseq-utils](https://github.com/dieterich-lab/riboseq-utils).
 
 ## Installation
+
+To install from [PyPI](https://pypi.org/project/pbiotools/) using pip:
+
+```
+pip install pbiotools
+```
+
+To install from bioconda using conda, set up [bioconda](https://bioconda.github.io/#usage) if not already done, then:
+
+```
+conda install pbiotools
+```
+
+To get a docker container from biocontainers with pbiotools pre-installed:
+
+```
+docker pull quay.io/biocontainers/pbiotools:2.0.0--pyhdfd78af_0
+```
 
 To install the local VCS project in development mode, use the `--editable` or `-e` option, otherwise
 this flag can be ignored.
@@ -61,10 +81,16 @@ There is currently limited documentation, see [docs](docs/bio.md).
 
 ## Uninstallation
 
-To remove the `pbiotools` package:
+To remove the `pbiotools` package if installed with pip:
 
 ```
 pip uninstall pbiotools
+```
+
+To remove if installed with conda:
+
+```
+conda uninstall pbiotools
 ```
 
 If the package is installed in a dedicated virtual environment, this environment can also be cleared or removed.

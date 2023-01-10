@@ -20,8 +20,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ["ubuntu-latest", "macos-latest"]
-        python-version: ["3.6", "3.7", "3.8", "3.9"]
+        os: ["ubuntu-20.04", "macos-latest"]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -40,7 +40,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest", "macos-latest"]
-        python-version: ["3.6", "3.7", "3.8", "3.9"]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
     steps:
       - uses: actions/checkout@v3
       - name: Create pbiotools conda environment
@@ -59,6 +59,7 @@ jobs:
           conda config --show
           printenv | sort
       - name: Install pbiotools
-        run: pip install . --no-deps --ignore-installed -vvv
+        #run: pip install . --no-deps --ignore-installed -vvv
+        run: pip install . -vvv
       - name: Run tests
         run: python -m pytest . -v
