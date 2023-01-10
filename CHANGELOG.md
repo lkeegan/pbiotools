@@ -5,9 +5,9 @@ All notable changes to the `pbiotools` package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [Unreleased] 
 
-We are working on a major version upgrade.
+## [3.0.0] - 2023-01-10
 
 ### Changed
 
@@ -18,13 +18,15 @@ We are working on a major version upgrade.
 - PyStan dependency
 - Pickling of Stan models
 - Periodic offsets with the best Bayes factor mean `largest_bf_`
-- pbiotools.ribo
+- pbiotools.ribo (now in Rp-Bp)
 
 ### Fixed
 
 - Variance estimates `bayes_factor_var` (metagene profiles)
 
-## [2.0.0] - - started 2022-07
+## [2.0.0] 
+
+API change.
 
 ### Changed
 
