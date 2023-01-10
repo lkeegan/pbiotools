@@ -23,13 +23,19 @@ default_num_groups = 500
 
 
 # transcript BED12+
-attr_names = ["transcript_id", "transcript_biotype", "gene_id", "gene_name", "gene_biotype"]
+attr_names = [
+    "transcript_id",
+    "transcript_biotype",
+    "gene_id",
+    "gene_name",
+    "gene_biotype",
+]
 field_names = ["biotype", "gene_id", "gene_name", "gene_biotype"]
 extended_field_names = bed_utils.bed12_field_names + field_names
 
 
 def get_transcript_id(gtf_entry, attr_names):
-    
+
     attributes = gtf_utils.parse_gtf_attributes(gtf_entry)
     # ... but what happen then?
     if not attr_names[0] in attributes.index:
@@ -40,19 +46,17 @@ def get_transcript_id(gtf_entry, attr_names):
             continue
         ret[attr] = attributes[attr]
     return ret
-    
-    
+
+
 def get_transcript_ids(gtf_entries, attr_names):
-    ret = parallel.apply_df_simple(
-        gtf_entries, get_transcript_id, attr_names
-    )
+    ret = parallel.apply_df_simple(gtf_entries, get_transcript_id, attr_names)
     return ret
 
 
 def get_bed12_entry(gtf_entries):
-    
+
     # must match bed_utils.bed12_field_names!
-    
+
     starts = np.array(gtf_entries["start"])
     start = min(starts)
 
@@ -164,8 +168,9 @@ def main():
         progress_bar=True,
         num_groups=args.num_groups,
     )
-    cds_transcript_ids = [ids['transcript_id'] for ids 
-                            in utils.flatten_lists(cds_transcript_ids)]
+    cds_transcript_ids = [
+        ids["transcript_id"] for ids in utils.flatten_lists(cds_transcript_ids)
+    ]
     cds_df["transcript_id"] = cds_transcript_ids
 
     msg = "Calculating CDS genomic start and end positions"
@@ -197,7 +202,9 @@ def main():
         num_groups=args.num_groups,
     )
     exon_transcript_ids = pd.DataFrame(utils.flatten_lists(exon_transcript_ids))
-    exons = exons.reset_index(drop=True).join(exon_transcript_ids.reset_index(drop=True))
+    exons = exons.reset_index(drop=True).join(
+        exon_transcript_ids.reset_index(drop=True)
+    )
 
     exons["length"] = exons["end"] - exons["start"] + 1
     exons["length"] = exons["length"].astype(str)
@@ -226,14 +233,23 @@ def main():
 
     bed12_df["thick_start"] = bed12_df["cds_start"].astype(int)
     bed12_df["thick_end"] = bed12_df["cds_end"].astype(int)
-    
-    subset = ["seqname", "start", "end", "strand", "thick_start", "thick_end", 
-              "num_exons", "exon_lengths", "exon_genomic_relative_starts"]
-    duplicated = bed12_df.duplicated(subset = subset)
+
+    subset = [
+        "seqname",
+        "start",
+        "end",
+        "strand",
+        "thick_start",
+        "thick_end",
+        "num_exons",
+        "exon_lengths",
+        "exon_genomic_relative_starts",
+    ]
+    duplicated = bed12_df.duplicated(subset=subset)
     if duplicated.any():
-        removed = ",".join(bed12_df[duplicated]['id'].values)
+        removed = ",".join(bed12_df[duplicated]["id"].values)
         msg = f"Removing duplicate transcripts: {removed}"
-        logger.warning(msg)    
+        logger.warning(msg)
 
     msg = "Sorting BED12+ entries"
     logger.info(msg)
