@@ -53,13 +53,16 @@ def test_commands_help_arg(list_commands):
         assert subprocess.run([command, "--help"]).returncode == 0
 
 
-# def test_pickle_stan_command_help_arg():
-#     try:
-#         import pystan
-#         have_pystan2 = True
-#     except:
-#         have_pystan2 = False
-#     if have_pystan2:
-#         assert subprocess.run(["pickle-stan", "--help"]).returncode == 0
-#     else:
-#         pytest.skip("pystan2 not found")
+def test_pickle_stan_command_help_arg():
+    # pickle-stan requires pystan < 3
+    # which is not available on all python versions
+    # so this test only runs if the pystan module can be imported
+    try:
+        import pystan
+        have_pystan2 = True
+    except:
+        have_pystan2 = False
+    if have_pystan2:
+        assert subprocess.run(["pickle-stan", "--help"]).returncode == 0
+    else:
+        pytest.skip("pystan2 not found")
