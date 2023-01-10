@@ -51,3 +51,15 @@ def list_commands():
 def test_commands_help_arg(list_commands):
     for command in list_commands:
         assert subprocess.run([command, "--help"]).returncode == 0
+
+
+# def test_pickle_stan_command_help_arg():
+#     try:
+#         import pystan
+#         have_pystan2 = True
+#     except:
+#         have_pystan2 = False
+#     if have_pystan2:
+#         assert subprocess.run(["pickle-stan", "--help"]).returncode == 0
+#     else:
+#         pytest.skip("pystan2 not found")

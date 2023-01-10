@@ -2,13 +2,13 @@ name: CI
 
 on:
   push:
-    branches:
-      - master
-      - dev-ssciwr
-  pull_request:
-    branches:
-      - master
-      - dev-ssciwr
+  #   branches:
+  #     - master
+  #     - dev-ssciwr
+  # pull_request:
+  #   branches:
+  #     - master
+  #     - dev-ssciwr
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -21,7 +21,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest", "macos-latest"]
-        python-version: ["3.6", "3.7", "3.8", "3.9"]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11"]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
@@ -40,7 +40,7 @@ jobs:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest", "macos-latest"]
-        python-version: ["3.6", "3.7", "3.8", "3.9"]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11"]
     steps:
       - uses: actions/checkout@v3
       - name: Create pbiotools conda environment
