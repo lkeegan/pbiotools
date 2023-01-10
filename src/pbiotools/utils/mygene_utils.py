@@ -33,7 +33,7 @@ FIELDS = (
 
 
 def parse_go_terms(row, ontologies=["BP", "MF", "CC"], term="id"):
-    
+
     """This function parses all of the gene ontology terms out of the "go"
     field of a record. It assumes the "go" field, if it is present, contains
     a dictionary in which the keys are the high-level GO hierarchies, and
@@ -49,25 +49,28 @@ def parse_go_terms(row, ontologies=["BP", "MF", "CC"], term="id"):
     Returns:
         dictionary: containing the keys:
             'gene_id': which is retrieved from the 'query' field of row
-            'go_terms': a delimited list of the GO terms in order of 
+            'go_terms': a delimited list of the GO terms in order of
             the ontologies
 
     Imports:
         misc.utils
 
     """
-    
+
     import pbiotools.misc.utils as utils
-    
+
     go_terms = []
-    
+
     for ont in ontologies:
         # there could be different evidences for the same GO term...
         go_terms_ont = set()
         col = f"go.{ont}"
         # if one entry, not a list, but item can be present with a NaN...
-        if (col not in row or (isinstance(row[col], list) and pd.isna(row[col]).all()) 
-            or (isinstance(row[col], float) and pd.isna(row[col]))):
+        if (
+            col not in row
+            or (isinstance(row[col], list) and pd.isna(row[col]).all())
+            or (isinstance(row[col], float) and pd.isna(row[col]))
+        ):
             col = f"{col}.id"
             if col in row and not isinstance(row[col], float):
                 go_terms.append(row[col])
@@ -307,7 +310,7 @@ def _parse_transcript_to_gene_query_result(entry):
         else:
             r = {"transcript_id": transcript, "gene_id": ensembl_entries["gene"]}
             ret.append(r)
-            
+
     return ret
 
 
@@ -349,11 +352,11 @@ def get_transcript_to_gene_mapping(transcript_ids, species="all"):
     import pbiotools.misc.utils as utils
     import pandas as pd
 
-    #msg = (
-        #"[mygene_utils.get_transcript_to_gene_mapping]: Use the pyensembl "
-        #"package to find this mapping. It works locally and is much faster."
-    #)
-    #raise DeprecationWarning(msg)
+    # msg = (
+    # "[mygene_utils.get_transcript_to_gene_mapping]: Use the pyensembl "
+    # "package to find this mapping. It works locally and is much faster."
+    # )
+    # raise DeprecationWarning(msg)
 
     MG = mygene.MyGeneInfo()
     res = MG.querymany(
@@ -409,7 +412,9 @@ def _parse_gene_to_transcript_query_result(entry):
     return ret
 
 
-def get_gene_to_transcript_mapping(gene_ids, mygene_url="http://mygene.info/v3", species="all"):
+def get_gene_to_transcript_mapping(
+    gene_ids, mygene_url="http://mygene.info/v3", species="all"
+):
     """This function uses mygene.info to find the Ensembl transcript identifiers
     which match the provided list of Ensembl gene identifiers. The result is
     returned as a pandas data frame.
@@ -435,11 +440,11 @@ def get_gene_to_transcript_mapping(gene_ids, mygene_url="http://mygene.info/v3",
     import pbiotools.misc.utils as utils
     import pandas as pd
 
-    #msg = (
-        #"[mygene_utils.get_gene_to_transcript_mapping]: Use the pyensembl "
-        #"package to find this mapping. It works locally and is much faster."
-    #)
-    #raise DeprecationWarning(msg)
+    # msg = (
+    # "[mygene_utils.get_gene_to_transcript_mapping]: Use the pyensembl "
+    # "package to find this mapping. It works locally and is much faster."
+    # )
+    # raise DeprecationWarning(msg)
 
     MG = mygene.MyGeneInfo()
     MG.url = mygene_url

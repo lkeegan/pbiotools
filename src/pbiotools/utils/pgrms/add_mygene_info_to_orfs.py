@@ -85,7 +85,7 @@ def main():
         type=str,
         default="all",
     )
-    
+
     parser.add_argument(
         "--do-not-convert-ids",
         help="By default, the script will "
@@ -127,8 +127,7 @@ def main():
 
     msg = "Querying gene annotations"
     logger.info(msg)
-    res_df = mygene_utils.query_mygene(gene_ids["gene_id"],
-                                       species=args.species)
+    res_df = mygene_utils.query_mygene(gene_ids["gene_id"], species=args.species)
 
     msg = "Combining gene annotations with transcript ids"
     logger.info(msg)

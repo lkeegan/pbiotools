@@ -2930,7 +2930,7 @@ def sort(bed, seqname_order=None, transcript_ids=None):
     # now do the actual sorting
     sort_fields = ["seqname_index", "start", "end", "id_index"]
     bed12_df = bed12_df.sort_values(sort_fields)
-    
+
     # remove additional fields
     cols = [c for c in bed12_df.columns if c not in ["id_index", "seqname_index"]]
 
