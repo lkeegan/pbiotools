@@ -5,7 +5,7 @@ All notable changes to the `pbiotools` package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased] 
+## [Unreleased]
 
 ## [3.0.0] - 2023-01-10
 
@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Variance estimates `bayes_factor_var` (metagene profiles)
 
-## [2.0.0] 
+## [2.0.0]
 
 API change.
 
